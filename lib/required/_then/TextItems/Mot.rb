@@ -13,4 +13,6 @@ end # /<< self
 #
 # ---------------------------------------------------------------------
 attr_accessor :canon
+
+def non_mot? ; false end
 end #/Mot < TexteItem

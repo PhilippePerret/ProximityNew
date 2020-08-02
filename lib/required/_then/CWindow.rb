@@ -19,6 +19,9 @@ class CWindow
 #   CLASSE
 #
 # ---------------------------------------------------------------------
+INDEX_COLOR  = 1
+RED_COLOR   = 2
+TEXT_COLOR  = 3
 class << self
   attr_reader :textWind, :statusWind, :uiWind, :logWind
   def prepare_windows
@@ -30,7 +33,9 @@ class << self
     Curses.noecho
 
     # Pour définir une couleur
-    Curses.init_pair(2, Curses::COLOR_RED, Curses::COLOR_BLUE)
+    Curses.init_pair(INDEX_COLOR, Curses::COLOR_YELLOW, Curses::COLOR_WHITE)
+    Curses.init_pair(TEXT_COLOR,  Curses::COLOR_BLACK,  Curses::COLOR_WHITE)
+    Curses.init_pair(RED_COLOR,   Curses::COLOR_RED,    Curses::COLOR_WHITE)
 
     hauteur_status  = 2
     hauteur_ui      = 4
@@ -38,6 +43,7 @@ class << self
     hauteur_texte   = Curses.lines - (hauteur_status + hauteur_ui + hauteur_log)
 
     @textWind = new([hauteur_texte, Curses.cols-2, 1, 2])
+    # @textWind.curse.color_set(TEXT_COLOR)
     @uiWind   = new([hauteur_ui,    Curses.cols, hauteur_texte+hauteur_status, 0])
     @logWind  = new([hauteur_log,   Curses.cols, hauteur_texte+hauteur_status+hauteur_ui, 0])
 
@@ -57,10 +63,15 @@ def initialize(params)
   @curse.box(SPACE,SPACE) # pour voir des "hirondelles"
   @curse.keypad = true
 end #/ initialize
-def write(str)
+def write(str, color = nil)
+  curse.attrset(Curses.color_pair(color)) unless color.nil?
   curse.addstr(str)
   curse.refresh
 end #/ puts
+def writepos(pos, str, color = nil)
+  curse.setpos(*pos)
+  write(str, color)
+end #/ writepos
 def resetpos
   clear
   curse.setpos(1,1)

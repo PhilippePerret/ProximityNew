@@ -1,18 +1,26 @@
 # encoding: UTF-8
 module ProximityNew
-  attr_reader :itexte
-  attr_reader :iextrait # extrait courant
+class << self
+  def itexte
+    @itexte ||= begin
+      log("Instanciation de @itexte")
+      Texte.new(ARGV[0] || File.join(APP_FOLDER,'asset','exemples','simple_text.txt'))
+    end
+  end #/ itexte
+  def iextrait
+    @iextrait ||= begin
+      log("Instanciation @extrait")
+      ExtraitTexte.new(itexte, {from: itexte.current_first_item})
+    end
+  end #/ iextrait
   def run
-
-    @itexte = Texte.new(ARGV[0] || File.join(APP_FOLDER,'asset','exemples','simple_text.txt'))
-    @itexte.parse_if_necessary
-    @iextrait = ExtraitTexte.new(itexte, {from: itexte.current_first_item})
+    itexte.parse_if_necessary
 
     # On prépare les fenêtres
     prepare_screen
 
     begin
-      CWindow.textWind.write(iextrait.output)
+      iextrait.output
       CWindow.uiWind.write("Taper “:help” pour obtenir de l’aide. Pour quitter : “:q”")
       CWindow.uiWind.watch
     rescue Exception => e
@@ -34,5 +42,5 @@ module ProximityNew
     CWindow.prepare_windows
   end #/ prepare_screen
 
-
-end
+end #/<< self
+end #/ProximityNew

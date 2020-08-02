@@ -138,7 +138,7 @@ def dispatche
       # On crée un nouveau paragraphe avec les éléments
       @items << NonMot.create([RC, 'paragraphe'], cur_offset)
       cur_offset += 2
-    elsif type == 'SENT'
+    elsif type == 'SENT' || type == 'PUN'
       # Est-ce une fin de phrase ?
       @items << NonMot.create([mot,type], cur_offset)
       cur_offset += mot.length

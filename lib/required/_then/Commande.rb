@@ -5,6 +5,9 @@ class << self
     cmd = cmd.split(SPACE)
     cmd_name = cmd.shift
     case cmd_name
+    when 'ref', 'refresh'
+      # Pour rafraichir l'affichage
+      CWindow.textWind.write(ProximityNew.iextrait.output)
     when 'ins', 'insert'
       where = cmd.shift
       where_index = cmd.shift
@@ -13,9 +16,5 @@ class << self
     end
   end #/ run
 
-
-  def log(str)
-    CWindow.logWind.write(str)
-  end #/ log
 end # /<< self
 end #/Commande
