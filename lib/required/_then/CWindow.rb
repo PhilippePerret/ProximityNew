@@ -13,15 +13,20 @@
 require 'curses'
 WindParams = Struct.new(:height, :top)
 
+Curses::COLOR_ORANGE = 5 # MAGENTA
+
 class CWindow
 # ---------------------------------------------------------------------
 #
 #   CLASSE
 #
 # ---------------------------------------------------------------------
-INDEX_COLOR  = 1
-RED_COLOR   = 2
-TEXT_COLOR  = 3
+INDEX_COLOR   = 1
+RED_COLOR     = 2
+TEXT_COLOR    = 3
+ORANGE_COLOR  = 4
+BLUE_COLOR    = 5
+GREEN_COLOR   = 6
 class << self
   attr_reader :textWind, :statusWind, :uiWind, :logWind
   def prepare_windows
@@ -32,10 +37,15 @@ class << self
     Curses.start_color # pour la couleur
     Curses.noecho
 
+    Curses.init_color(Curses::COLOR_ORANGE, 1000, 128*4, 0)
+
     # Pour définir une couleur
-    Curses.init_pair(INDEX_COLOR, Curses::COLOR_YELLOW, Curses::COLOR_WHITE)
-    Curses.init_pair(TEXT_COLOR,  Curses::COLOR_BLACK,  Curses::COLOR_WHITE)
-    Curses.init_pair(RED_COLOR,   Curses::COLOR_RED,    Curses::COLOR_WHITE)
+    Curses.init_pair(INDEX_COLOR,   Curses::COLOR_YELLOW, Curses::COLOR_WHITE)
+    Curses.init_pair(TEXT_COLOR,    Curses::COLOR_BLACK,  Curses::COLOR_WHITE)
+    Curses.init_pair(RED_COLOR,     Curses::COLOR_RED,    Curses::COLOR_WHITE)
+    Curses.init_pair(ORANGE_COLOR,  Curses::COLOR_ORANGE, Curses::COLOR_WHITE)
+    Curses.init_pair(BLUE_COLOR,    Curses::COLOR_BLUE,   Curses::COLOR_WHITE)
+    Curses.init_pair(GREEN_COLOR,   Curses::COLOR_BLUE,   Curses::COLOR_WHITE)
 
     hauteur_status  = 2
     hauteur_ui      = 4

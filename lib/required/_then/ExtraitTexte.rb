@@ -1,6 +1,7 @@
 # encoding: UTF-8
 class ExtraitTexte
-DEFAULT_NOMBRE_ITEMS = 150
+DEFAULT_NOMBRE_ITEMS  = 250
+TEXTE_COLS_WIDTH      = 100
 # ---------------------------------------------------------------------
 #
 #   INSTANCE
@@ -17,7 +18,7 @@ end #/ initialize
 # Sortie de l'extrait. La mise en forme est assez complexe puisqu'elle
 # doit mettre les index des mots ainsi que leur distance de proximité lorsqu'il
 # y a proximité.
-# On fonctionne ligne par ligne en sachant qu'une ligne est en réalité
+# On fonctionne mot à mot en sachant qu'une ligne est en réalité
 # trois lignes l'une sur l'autre :
 #   - ligne des index (avec index du mot en gris)
 #   - ligne des mots proprement dit
@@ -26,17 +27,14 @@ def output
   log("-> ExtraitTexte#output")
   CWindow.textWind.clear
 
-  ary_items = []
-  all_lines = []
-
-  # TODO Isoler, plus tard
   max_line_length = Curses.cols - 6
-  max_line_length = 80 if max_line_length > 80
+  max_line_length = TEXTE_COLS_WIDTH if max_line_length > TEXTE_COLS_WIDTH
 
   top_line_index = 0
 
   # Décalage horizontal courant
   offset = 0
+  # On décale toujours d'une espace pour la lisibilité
   write3lines([SPACE,SPACE,SPACE], top_line_index, offset)
   offset = 1
 
@@ -66,19 +64,19 @@ def output
         break
       end
     end
-    write3lines([mot.f_index(idx_extrait),mot.f_content,mot.f_proximities], top_line_index, offset)
+    write3lines([mot.f_index(idx_extrait),mot.f_content,mot.f_proximities], top_line_index, offset, mot.prox_color)
     offset += mot.f_length
 
-    # Pour voir mot à mot
+    # Pour voir chaque mot s'afficher l'un après l'autre
     # break if CWindow.textWind.curse.getch.to_s == 'q'
   end
   log("<- ExtraitTexte#output")
 end #/ output
 
-def write3lines treelines, top, offset
+def write3lines treelines, top, offset, color_prox = nil
   idx, mot, prox = treelines
   CWindow.textWind.writepos([top,   offset], idx,   CWindow::INDEX_COLOR)
   CWindow.textWind.writepos([top+1, offset], mot,   CWindow::TEXT_COLOR)
-  CWindow.textWind.writepos([top+2, offset], prox,  CWindow::RED_COLOR)
+  CWindow.textWind.writepos([top+2, offset], prox,  color_prox || CWindow::RED_COLOR)
 end #/ write3lines
 end #/ExtraitTexte

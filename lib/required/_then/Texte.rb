@@ -23,6 +23,7 @@ end #/ initialize
 def save
   data = {
     items: items,
+    canons:  Canon.items_as_hash,
     path:  path,
     current_first_item: current_first_item,
     updated_at: Time.now,
@@ -35,6 +36,7 @@ def load
   @data = Marshal.load(File.read(data_path))
   @items = @data[:items]
   @current_first_item = @data[:current_first_item]
+  Canon.items_as_hash = @data[:canons]
 end #/ load
 
 # Il faut voir s'il est nécessaire de parser le fichier. C'est nécessaire
@@ -131,21 +133,23 @@ end #/ lemmatize
 def dispatche
   # Pour garder l'offset courant
   cur_offset = 0
+  cur_index  = 0
   File.foreach(lemmatized_file_path) do |line|
     mot, type, canon = line.strip.split(TAB)
     if mot == PARAGRAPHE
       # Marque de nouveau paragraphe
       # On crée un nouveau paragraphe avec les éléments
-      @items << NonMot.create([RC, 'paragraphe'], cur_offset)
+      @items << NonMot.create([RC, 'paragraphe'], cur_offset, cur_index)
       cur_offset += 2
     elsif type == 'SENT' || type == 'PUN'
       # Est-ce une fin de phrase ?
-      @items << NonMot.create([mot,type], cur_offset)
+      @items << NonMot.create([mot,type], cur_offset, cur_index)
       cur_offset += mot.length
     else
-      @items << Mot.create([mot,type,canon], cur_offset)
+      @items << Mot.create([mot,type,canon], cur_offset, cur_index)
       cur_offset += mot.length + 1
     end
+    cur_index += 1
   end
 
   # *** attributions ***
