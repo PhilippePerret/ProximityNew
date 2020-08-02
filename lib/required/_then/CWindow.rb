@@ -4,7 +4,7 @@
   CWindow
   -------
   Classe pour une fenêtre curses
-  Fondamentalement, il y en a trois pour ProximityNew :
+  Fondamentalement, il y en a trois pour Runner :
     1. La fenêtre affichant le texte et les proximités
     2. La fenêtre affichant le statut
     3. La fenêtre permettant d'entrer les commandes.
@@ -23,12 +23,14 @@ class CWindow
 # ---------------------------------------------------------------------
 INDEX_COLOR   = 1
 RED_COLOR     = 2
+RED_ON_BLACK_COLOR = 7
 TEXT_COLOR    = 3
 ORANGE_COLOR  = 4
 BLUE_COLOR    = 5
 GREEN_COLOR   = 6
 class << self
   attr_reader :textWind, :statusWind, :uiWind, :logWind
+  attr_reader :top_ligne_texte_max
   def prepare_windows
     Curses.init_screen
     Curses.curs_set(0)  # Invisible cursor
@@ -43,24 +45,45 @@ class << self
     Curses.init_pair(INDEX_COLOR,   Curses::COLOR_YELLOW, Curses::COLOR_WHITE)
     Curses.init_pair(TEXT_COLOR,    Curses::COLOR_BLACK,  Curses::COLOR_WHITE)
     Curses.init_pair(RED_COLOR,     Curses::COLOR_RED,    Curses::COLOR_WHITE)
+    Curses.init_pair(RED_ON_BLACK_COLOR, Curses::COLOR_RED, Curses::COLOR_BLACK)
     Curses.init_pair(ORANGE_COLOR,  Curses::COLOR_ORANGE, Curses::COLOR_WHITE)
     Curses.init_pair(BLUE_COLOR,    Curses::COLOR_BLUE,   Curses::COLOR_WHITE)
     Curses.init_pair(GREEN_COLOR,   Curses::COLOR_BLUE,   Curses::COLOR_WHITE)
 
+    hauteur_log     = 2
     hauteur_status  = 2
-    hauteur_ui      = 4
-    hauteur_log     = 4
+    hauteur_ui      = 1
     hauteur_texte   = Curses.lines - (hauteur_status + hauteur_ui + hauteur_log)
 
-    @textWind = new([hauteur_texte, Curses.cols-2, 1, 2])
-    # @textWind.curse.color_set(TEXT_COLOR)
-    @uiWind   = new([hauteur_ui,    Curses.cols, hauteur_texte+hauteur_status, 0])
-    @logWind  = new([hauteur_log,   Curses.cols, hauteur_texte+hauteur_status+hauteur_ui, 0])
+    @textWind   = new([hauteur_texte, Curses.cols-2, 0,0])
+    @logWind    = new([hauteur_log,   Curses.cols, hauteur_texte, 0])
+    @statusWind = new([hauteur_status, Curses.cols, hauteur_texte+hauteur_log,0])
+    @uiWind     = new([hauteur_ui,    Curses.cols, hauteur_texte+hauteur_log+hauteur_status, 0])
+
+    @top_ligne_texte_max = hauteur_texte - 1
 
     # @textWind   = create(WindParams.new(hauteur_texte,0))
     # @statusWind = create(WindParams.new(hauteur_status, hauteur_texte))
     # @uiWind     = create(WindParams.new(hauteur_ui, hauteur_texte))
   end #/ prepare_windows
+
+  # Pour écrire dans la fenêtre de log
+  def log(str)
+    @logWind.resetpos
+    @logWind.write(str)
+  end #/ log
+
+  # Pour écrire une erreur
+  def error(msg)
+    @logWind.reset
+    @logWind.write(msg,RED_ON_BLACK_COLOR)
+  end #/ error
+
+  def status(msg)
+    @statusWind.reset
+    @statusWind.write(msg+RC, BLUE_COLOR)
+  end #/ status
+
 end #/<< self
 # ---------------------------------------------------------------------
 #
@@ -84,8 +107,9 @@ def writepos(pos, str, color = nil)
 end #/ writepos
 def resetpos
   clear
-  curse.setpos(1,1)
+  curse.setpos(0,0)
 end #/ resetpos
+alias :reset :resetpos
 def clear
   curse.clear
 end #/ clear
@@ -104,19 +128,24 @@ def watch
       command = ""
       resetpos
       write(':')
-    when 10
+    when 10 # Touche retour => soumission de la commande
       case command
       when 'q'
         break
       else
         clear
-        Commande.run(command)
-        historize(command)
+        begin
+          Commande.run(command)
+          historize(command)
+        rescue Exception => e
+          log("ERROR COMMANDE : #{e.message}#{RC}#{e.backtrace.join(RC)}")
+          CWindow.error("Une erreur fatale est survenue (#{e.message}). Quitter et consulter le journal de bord.")
+        end
       end
     when 261 # RIGHT ARROW
-      write("Aller à droite")
+      Commande.run('next page')
     when 260 # LEFT ARROW
-      write("Aller à gauche")
+      Commande.run('prev page')
     when 258 # BOTTOM ARROW
       write("Aller en bas")
     when 259 # TOP ARROW

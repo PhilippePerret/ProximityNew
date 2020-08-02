@@ -36,6 +36,14 @@ def length
   @length ||= content.length + 1
 end #/ length
 
+def main_type
+  @main_type ||= type.split(':').first
+end #/ main_type
+
+def sous_type
+  @sous_type ||= type.split(':').last
+end #/ sous_type
+
 # La longueur "formatée", c'est-à-dire lorsque le mot doit être
 # inscrit dans la fenêtre de terminal, avec son index (dans l'extrait) et
 # ses distances avec les autres mots.
@@ -110,6 +118,8 @@ end #/ f_proximities
 def proximizable?
   return false if non_mot?
   return false if length < 4
+  return false if main_type == 'DET' # on passe les déterminants
+  return false if main_type == 'PRO' # on passe les pronoms
   return true
 end #/ proximizable?
 
@@ -149,7 +159,7 @@ def prox_apres
   @prox_apres
 end #/ prox_apres
 def calcule_proximites
-  log("calcule_proximites de #{self.inspect}")
+  log("calcule_proximites de #{self.content}/index #{self.index}")
   @prox_avant = nil
   @prox_apres = nil
   # Si le canon ne possède que cet item, il ne peut pas y avoir
@@ -158,20 +168,22 @@ def calcule_proximites
   # On cherche d'abord une éventuelle proximité avant
   idx = index.dup
   distance = 0
-  while item = ProximityNew.itexte.items[idx -= 1]
+  while item = Runner.itexte.items[idx -= 1]
     distance += item.length
     break if distance > icanon.distance_minimale
     if item.canon == canon
       # PROXIMITÉ TROUVÉE !
       @prox_avant = Proximite.new(avant:item, apres:self, distance:distance)
+      break
     end
   end
   idx = index.dup
   distance = 1
-  while item = ProximityNew.itexte.items[idx += 1]
+  while item = Runner.itexte.items[idx += 1]
     if item.canon == canon
       # PROXIMITÉ TROUVÉE !
       @prox_apres = Proximite.new(avant:self, apres:item, distance:distance)
+      break
     end
     distance += item.length
     break if distance > icanon.distance_minimale # fini

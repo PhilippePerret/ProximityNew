@@ -1,6 +1,6 @@
 # encoding: UTF-8
 class ExtraitTexte
-DEFAULT_NOMBRE_ITEMS  = 250
+DEFAULT_NOMBRE_ITEMS  = 400 # c'est de toute façon le nombre de lignes qui importe
 TEXTE_COLS_WIDTH      = 100
 # ---------------------------------------------------------------------
 #
@@ -9,7 +9,7 @@ TEXTE_COLS_WIDTH      = 100
 # ---------------------------------------------------------------------
 attr_reader :itexte, :from_item, :to_item
 def initialize itexte, params
-  log("params: #{params.inspect}")
+  # log("params: #{params.inspect}")
   @itexte     = itexte
   @from_item  = params[:from] || 0
   @to_item    = params[:to] || (@from_item + DEFAULT_NOMBRE_ITEMS)
@@ -38,12 +38,15 @@ def output
   write3lines([SPACE,SPACE,SPACE], top_line_index, offset)
   offset = 1
 
-  # On boucle pour trouver
+  # Pour conserver le vrai dernier indice d'item
+  real_last_idx = nil
 
   # On boucle sur chaque item qui doit être affiché
   (from_item..to_item).each_with_index do |idx, idx_extrait|
     # S'il n'y a plus de text-item, on arrête
     mot = itexte.items[idx] || break
+    real_last_idx = idx
+
     # log("mot: #{mot.inspect}")
     # Si la ligne, avec ce mot, dépasse la valeur maximale, on
     # passe à la ligne suivante
@@ -56,6 +59,7 @@ def output
       # On passe à la ligne (seulement si on n'est pas sur le dernier mot)
       unless itexte.items[idx + 1].nil?
         top_line_index += 3
+        break if top_line_index + 2 > CWindow.top_ligne_texte_max
         offset = 0
         write3lines([SPACE,SPACE,SPACE], top_line_index, offset)
         offset = 1
@@ -70,6 +74,8 @@ def output
     # Pour voir chaque mot s'afficher l'un après l'autre
     # break if CWindow.textWind.curse.getch.to_s == 'q'
   end
+  @to_item = real_last_idx
+  CWindow.status("From #{@from_item} to #{@to_item}")
   log("<- ExtraitTexte#output")
 end #/ output
 

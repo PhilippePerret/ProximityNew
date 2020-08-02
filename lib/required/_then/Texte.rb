@@ -1,11 +1,13 @@
 # encoding: UTF-8
-TAB = "\t".freeze unless defined?(TAB)
-RC = "\n".freeze  unless defined?(RC)
+TAB   = "\t".freeze unless defined?(TAB)
+RC    = "\n".freeze  unless defined?(RC)
+NL    = "\r".freeze  unless defined?(NL)
 APO = "'".freeze  unless defined?(APO)
 SPACE = ' '.freeze unless defined?(SPACE)
 EMPTY_STRING = ''.freeze unless defined?(EMPTY_STRING)
 
 class Texte
+include ConfigModule
 # ---------------------------------------------------------------------
 #
 #   INSTANCE
@@ -19,6 +21,14 @@ attr_accessor :current_first_item
 def initialize(path)
   @path = path
 end #/ initialize
+
+# On doit forcer la ré-analyse du texte
+def reproximitize
+  CWindow.logWind.write('Ré-analyse du texte…')
+  File.delete(data_path) if File.exists?(data_path)
+  parse
+  CWindow.logWind.write('Texte analysé avec succès.')
+end #/ reproximitize
 
 def save
   data = {
@@ -161,15 +171,28 @@ end #/ parse
 #   CHEMINS
 #
 # ---------------------------------------------------------------------
+def config_path
+  @config_path ||= File.join(prox_folder,'config.json')
+end #/ config_path
+def config_default_data
+  {
+    last_first_index: 0
+  }
+end #/ config_default_data
 
 def data_path
-  @data_path ||= File.join(folder,"#{affixe}-prox.data.msh")
+  @data_path ||= File.join(prox_folder,"#{affixe}-prox.data.msh")
 end #/ data_path
 
 def corrected_text_path
-  @corrected_text_path ||= File.join(folder,"#{affixe}_c#{extension}".freeze)
+  @corrected_text_path ||= File.join(prox_folder,"#{affixe}_c#{extension}".freeze)
 end #/ corrected_text_path
 
+def prox_folder
+  @prox_folder ||= begin
+    File.join(folder,"#{affixe}_prox").tap { |pth| `mkdir -p "#{pth}"` }
+  end
+end #/ prox_folder
 
 def folder
   @folder ||= File.dirname(path)
@@ -181,9 +204,5 @@ def extension
   @extension ||= File.extname(path)
 end #/ extension
 
-# Pour lire le contenu du fichier, mais ça ne devrait pas être nécessaire
-# ni utile. Si le fichier est gros, ça peut même être maladroit.
-def content
-  @content ||= File.read(path).force_encoding(Encoding::ASCII_8BIT).force_encoding(Encoding::UTF_8)
-end #/ content
+
 end #/Texte
