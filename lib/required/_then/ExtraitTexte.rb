@@ -114,7 +114,7 @@ def remove(params)
   at = params[:real_at]
   if at.range?
     Runner.itexte.items.slice!(at.from, at.nombre)
-  elsif at.list?
+  else
     at.list.each {|idx| Runner.itexte.items.slice!(idx)}
   end
   update(params[:real_at].at) unless params[:noupdate]
