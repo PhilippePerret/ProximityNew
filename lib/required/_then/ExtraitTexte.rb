@@ -95,26 +95,91 @@ end #/ write3lines
 #   Opérations sur le texte
 #
 # ---------------------------------------------------------------------
-def insert(params)
-  CWindow.log("Je dois insérer le texte “#{params[:content]}” à l'index #{params[:at]} (avant “#{Runner.itexte.items[params[:at]].content}”)")
-  new_mots = Lemma.parse_str(params[:content], format: :instances)
-  times = [[Time.now.to_f, 'démarrage']]
-  Runner.itexte.items.insert(params[:at], *new_mots)
-  times << [Time.now.to_f, 'insertion']
-  Runner.itexte.recompte(from: params[:at])
-  times << [Time.now.to_f, 'recomptage']
 
-  # On rafraichit l'affichage
-  output
+# Remplacer un mot par un ou des autres
+# Le remplacement consiste à supprimer l'élément courant et à insérer le
+# nouvel élément à la place (ou *les* nouveaux éléments)
+def replace(params)
+  CWindow.log("Remplacement du/des mot/s #{params[:at]} par “#{params[:content]}”")
+  params.merge!(real_at: AtStructure.new(params[:at], from_item))
+  remove(params.merge(noupdate: true))
+  insert(params)
+end #/ replace
 
-  # Affichage des temps
-  times.each_with_index do |dtime, idx|
-    # log("#{RC}#{new_mots}#{RC}")
-    if idx == 0
-      log("Start: #{dtime.first}")
-    else
-      log("#{dtime.last}: #{dtime.first - times[idx-1].first}")
-    end
+# Suppression d'un ou plusieurs mots
+def remove(params)
+  params[:real_at] ||= begin
+    AtStructure.new(params[:at], from_item).tap { |at| params.merge!(real_at: at) }
   end
+  at = params[:real_at]
+  if at.range?
+    Runner.itexte.items.slice!(at.from, at.nombre)
+  elsif at.list?
+    at.list.each {|idx| Runner.itexte.items.slice!(idx)}
+  end
+  update(params[:real_at].at) unless params[:noupdate]
+end #/ remove
+
+# Insert un ou plusieurs mots
+def insert(params)
+  params[:real_at] ||= AtStructure.new(params[:at], from_item)
+  CWindow.log("Insertion de “#{params[:content]}”#{params[:real_at].to_s} (avant “#{Runner.itexte.items[params[:real_at].at].content}”)")
+  new_mots = Lemma.parse_str(params[:content], format: :instances)
+  Runner.itexte.items.insert(params[:real_at].at, *new_mots)
+  update(params[:real_at].at) unless params[:noupdate]
 end #/ insert
+
+# Actualisation de l'affichage
+def update(from_item = 0)
+  Runner.itexte.recompte(from: from_item)
+  output
+end #/ update
 end #/ExtraitTexte
+
+# Transformer le params[:at] en ce qu'il est vraiment, en sachant qu'il peut
+# être défini :
+#   - par un chiffre seul     12
+#   - par un range            12-14     de douze à quatorze
+#   - par une liste           12,14,17    12, 14 et 17
+#
+# En sachant aussi que l'index donné est l'index relatif à la fenêtre
+class AtStructure
+  attr_reader :at, :from, :to, :nombre, :list, :at_init, :first_index
+  def initialize(at_init, first_index)
+    @at_init = at_init
+    @first_index = first_index
+    parse
+  end #/ initialize
+  def parse
+    if at_init.match?(TIRET) # => un rang
+      @from, @to = at_init.split(TIRET).collect{|i|i.to_i + first_index}
+      @at = @from # par exemple pour replace
+      @nombre = @to - @from + 1
+      @is_a_range = true
+    elsif at_init.match?(VG)
+      @list = at_init.split(VG).collect{|i|i.strip.to_i + first_index}
+      @is_a_list = true
+    else
+      @at = at_init.to_i + first_index
+      @list = [@at] # pour simplifier certaines méthodes
+    end
+  end #/ parse
+
+  def range?
+    @is_a_range === true
+  end #/ range?
+  def list?
+    @is_a_list === true
+  end #/ list?
+
+  # Retourne le at en version humaine
+  def to_s
+    if range?
+      "de #{from} à #{to} (#{nombre})".freeze
+    elsif list?
+      "pour les index #{list.join(VGE)}".freeze
+    else
+      "pour l’index #{at}".freeze
+    end
+  end #/ to_s
+end

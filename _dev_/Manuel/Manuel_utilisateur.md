@@ -8,6 +8,10 @@ Pour le moment :
 
 ~~~bash
 > proxnew path/to/texte.txt
+
+# OU
+
+> newprox
 ~~~
 
 

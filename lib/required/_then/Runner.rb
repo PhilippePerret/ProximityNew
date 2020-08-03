@@ -30,7 +30,19 @@ class << self
     self.iextrait = ExtraitTexte.new(itexte, from: from)
     self.iextrait.output
   end #/ show_extrait
-  
+
+  # Pour ouvrir le texte de chemin d'accès +text_path+
+  def open_texte text_path, commands = nil
+    if File.exists?(text_path)
+      config.data.merge!(last_text_path: text_path)
+      config.save
+    else
+      CWindow.error("Le fichier “#{text_path}” est introuvable.")
+      return
+    end
+
+  end #/ open_texte
+
   # = main =
   #
   # Lancement de l'application
@@ -46,8 +58,7 @@ class << self
     if ARGV[0]
       # Un premier argument définit le texte à ouvrir
       if File.exists?(ARGV[0])
-        config.data.merge!(last_text_path: ARGV[0])
-        config.save
+        open_texte(ARGV[0])
       else
         ARGV[0] = nil
       end
@@ -57,10 +68,10 @@ class << self
     itexte.parse_if_necessary
 
     begin
-      # On affiche l'extrait du texte
+      # On affiche l'extrait courant du texte
       iextrait.output rescue nil
       CWindow.uiWind.write("Taper “:help” pour obtenir de l’aide. Pour quitter : “:q”")
-      CWindow.uiWind.watch
+      Runner.interact_with_user
     rescue Exception => e
       Curses.close_screen
       puts "ERROR: #{e.message}#{RC}#{e.backtrace.join(RC)}"
@@ -73,6 +84,102 @@ class << self
 
   end #/ run
 
+  T195_TO_LETTER = {
+    168 => "è".freeze, 169 => "é".freeze, 170 => "ê".freeze, 171 => "ë".freeze,
+    136 => 'È'.freeze, 137 => "É".freeze, 138 => 'Ê'.freeze, 139 => 'Ë'.freeze,
+    167 => 'ç'.freeze, 135 => 'Ç'.freeze,
+    160 => 'à'.freeze, 162 => 'ä'.freeze,
+    128 => 'À'.freeze, 130 => 'Ä'.freeze,
+    174 => 'î'.freeze, 175 => 'ï'.freeze,
+    142 => 'Î'.freeze, 143 => 'Ï'.freeze,
+    185 => 'ù'.freeze, 187 => 'û'.freeze, 188 => 'ü'.freeze,
+    153 => 'Ù'.freeze, 155 => 'Û'.freeze, 156 => 'Ü'.freeze,
+  }
+  T194_TO_LETTER = {
+    160 => ISPACE, #insécable
+    171 => '«'.freeze, 187 => '»'.freeze
+  }
+  T226_TO_LETTER = {
+
+  }
+
+  def interact_with_user
+    wind  = CWindow.uiWind
+    curse = wind.curse # raccourci
+    start_command = false # mis à true quand il tape ':'
+    command = nil
+    while true
+      # On attend sur la touche de l'utilisateur
+      s = curse.getch
+      case s
+      when 194, 195, 226
+        s3 = case s
+        when 194
+          T194_TO_LETTER[s2 = curse.getch] || " --- inconnu avec 194  : #{s2}"
+        when 195
+          T195_TO_LETTER[s2 = curse.getch] || " --- inconnu avec 195 : #{s2}"
+        when 226
+          suite = "#{curse.getch}-#{curse.getch}"
+          case suite
+          when '128-148' then '—'
+          when '128-147' then '–'
+          when '128-156' then '“'
+          when '128-157' then '”'
+          else "-- suite inconnue : '#{suite}'"
+          end
+        end
+        if start_command
+          command << s3
+          wind.clear
+          wind.write(":#{command}")
+        end
+      when 27 # Escape button
+        start_command = false
+        command = ""
+        wind.clear
+        wind.write(EMPTY_STRING)
+      when ':'
+        start_command = true
+        command = ""
+        wind.resetpos
+        wind.write(':')
+      when 10 # Touche retour => soumission de la commande
+        log("Soumission de la commande #{command.inspect}")
+        case command
+        when 'q'
+          break
+        else
+          wind.clear
+          begin
+            Commande.run(command)
+          rescue Exception => e
+            log("ERROR COMMANDE : #{e.message}#{RC}#{e.backtrace.join(RC)}")
+            CWindow.error("Une erreur fatale est survenue (#{e.message}). Quitter et consulter le journal de bord.")
+          end
+        end
+      when 261 # RIGHT ARROW
+        Commande.run('next page')
+      when 260 # LEFT ARROW
+        Commande.run('prev page')
+      when 258 # BOTTOM ARROW
+        wind.write("Aller en bas")
+      when 259 # TOP ARROW
+        wind.write("Aller en haut")
+      when 127 # effacement arrière
+        if start_command
+          command = command[0...-1]
+          wind.clear
+          wind.write(":#{command}")
+        end
+      else
+        # Cas d'une touche normale
+        if start_command && s.is_a?(String)
+          command << s
+        end
+        wind.write(s.to_s)
+      end
+    end
+  end #/ interact_with_user
 
   # Méthode qui prépare l'écran du Terminal pour recevoir les
   # trois fenêtres :

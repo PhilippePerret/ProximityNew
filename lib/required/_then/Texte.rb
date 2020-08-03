@@ -1,11 +1,4 @@
 # encoding: UTF-8
-TAB   = "\t".freeze unless defined?(TAB)
-RC    = "\n".freeze  unless defined?(RC)
-NL    = "\r".freeze  unless defined?(NL)
-APO = "'".freeze  unless defined?(APO)
-SPACE = ' '.freeze unless defined?(SPACE)
-EMPTY_STRING = ''.freeze unless defined?(EMPTY_STRING)
-PARAGRAPHE = '__PARAGRAPHE__'.freeze
 
 class Texte
 include ConfigModule

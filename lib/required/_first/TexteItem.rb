@@ -7,6 +7,10 @@ class << self
     @items = []
   end #/ init
 
+  def to_s
+    "Content:'#{content}'/offset:#{offset.inspect}/length:#{length.inspect}/index:#{index.inspect}"
+  end #/ to_s
+
   def create(params, offset, index)
     item = new(params[0..1])
     item.canon  = params[2] if item.is_a?(Mot)
