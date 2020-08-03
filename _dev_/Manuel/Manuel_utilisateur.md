@@ -63,3 +63,17 @@ Quelques exemples :
 `mov 23-26 bef 12`		Déplacer les mots 23-26 avant le mot 12
 ~~~
 
+
+
+## Informations du texte
+
+
+
+### Configuration du texte
+
+~~~bash
+:set distance_minimale_commune <valeur>
+
+# Pour réinitialiser à la valeur par défaut, ne donner aucune valeur
+~~~
+

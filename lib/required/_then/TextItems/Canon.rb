@@ -5,6 +5,15 @@ class << self
   def init
     self.items_as_hash = {}
   end #/ init
+
+  def each &block
+    if block_given?
+      items_as_hash.each do |c, ic|
+        break if yield(ic) === false
+      end
+    end
+  end #/ each
+
   def add(mot)
     mot.canon = mot.content.downcase if mot.canon == '<unknown>'
     unless self.items_as_hash.key?(mot.canon)
@@ -45,9 +54,14 @@ def update
   @offsets = @items.collect{|i|i.offset}
 end #/ update
 
-MIN_DISTANCE = 100
+# Appelé pour le moment uniquement quand on change la distance minimale pour
+# le texte
+def reset
+  @distance_minimale = nil
+end #/ reset
+
 def distance_minimale
-  @distance_minimale ||= MIN_DISTANCE # pour le moment TODO
+  @distance_minimale ||= Runner.itexte.distance_minimale_commune
 end #/ distance_minimale
 
 end #/Canon

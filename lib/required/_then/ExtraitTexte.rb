@@ -142,8 +142,13 @@ def insert(params)
 end #/ insert
 
 # Actualisation de l'affichage
+#
+# [1] Ça ne coûte rien de tout recompter et ça évite de traiter des cas
+#     différents (par exemple, on ne peut pas se contenter de traiter les
+#     proximités depuis le mot changé, car il peut y avoir des modifications
+#     avant aussi)
 def update(from_item = 0)
-  Runner.itexte.recompte(from: from_item)
+  Runner.itexte.recompte(from: 0) # [1]
   output
 end #/ update
 end #/ExtraitTexte

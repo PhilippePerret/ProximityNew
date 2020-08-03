@@ -87,6 +87,29 @@ class << self
         from = 0 if from < 0
         Runner.show_extrait(from)
       end
+    when 'get'
+      what = cmd.shift
+      case what
+      when 'distance_minimale_commune'
+        CWindow.log("La :distance_minimale_commune du texte courant vaut #{Runner.itexte.distance_minimale_commune}.")
+      else
+        CWindow.error("Je ne comprends pas la valeur '#{what}'")
+      end
+    when 'set'
+      what = cmd.shift
+      val  = cmd.join(SPACE)
+      case what
+      when 'distance_minimale_commune'
+        val = val.to_i
+        val = DISTANCE_MINIMALE_COMMUNE if val == 0
+        Runner.itexte.config.save(distance_minimale_commune: val)
+        Runner.itexte.reset(:distance_minimale_commune)
+        CWindow.log("distance_minimale_commune du texte mis à #{val}")
+        Canon.each { |can| can.reset }
+        Runner.iextrait.update
+      else
+        CWindow.error("Je ne sais pas régler '#{what}'")
+      end
     when 'reprox'
       if cmd.shift == '--force'
         # On peut le faire puisque ça a été confirmé

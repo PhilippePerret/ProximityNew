@@ -16,6 +16,10 @@ def initialize(path)
   @path = path
 end #/ initialize
 
+def reset(key)
+  instance_variable_set("@#{key}", nil)
+end #/ reset
+
 # Essai de recomptage de tout pour voir le temps que ça prend
 def recompte(params = nil)
   params ||= {}
@@ -200,6 +204,10 @@ def dispatche
 
 end #/ parse
 
+def distance_minimale_commune
+  @distance_minimale_commune ||= config[:distance_minimale_commune] || DISTANCE_MINIMALE_COMMUNE
+end #/ distance_minimale_commune
+
 # ---------------------------------------------------------------------
 #
 #   CHEMINS
@@ -210,7 +218,8 @@ def config_path
 end #/ config_path
 def config_default_data
   {
-    last_first_index: 0
+    last_first_index: 0,
+    distance_minimale_commune: 1000
   }
 end #/ config_default_data
 
