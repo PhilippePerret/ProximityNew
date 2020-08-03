@@ -34,6 +34,14 @@ class << self
   # Pour ouvrir le texte de chemin d'accès +text_path+
   def open_texte text_path, commands = nil
     if File.exists?(text_path)
+      if File.extname(text_path) == '.scrivx'
+        extend ScrivenerModule
+        Scrivener::Projet.open(text_path)
+      elsif File.extname(text_path) == '.scriv'
+        extend ScrivenerModule
+        affixe = File.basename(text_path, File.extname(text_path))
+        Scrivener::Projet.open(File.join(text_path,"#{affixe}.scrivx"))
+      end
       config.data.merge!(last_text_path: text_path)
       config.save
     else

@@ -77,3 +77,12 @@ Quelques exemples :
 # Pour réinitialiser à la valeur par défaut, ne donner aucune valeur
 ~~~
 
+
+
+Pour obtenir une valeur, utiliser `get` :
+
+~~~bash
+:get distance_minimale_commune
+# => Écrit la valeur en retour
+~~~
+
