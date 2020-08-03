@@ -29,7 +29,7 @@ def recompte(params = nil)
   while item = items[idx += 1]
     # Si le décalage du mot change et que son canon n'est pas encore à
     # actualiser, il faut l'enregistrer pour l'actualiser
-    if item.offset != offset && !canons_to_update.key?(item.canon)
+    if item.offset != offset && item.canon && !canons_to_update.key?(item.canon)
       canons_to_update.merge!(item.canon => item.icanon)
     end
     item.offset = offset

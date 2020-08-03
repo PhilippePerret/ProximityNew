@@ -1,12 +1,9 @@
-2020-08-03 11:55:10 +0200 Instanciation de @itexte
-2020-08-03 11:55:10 +0200 Instanciation @extrait
-2020-08-03 11:55:10 +0200 -> ExtraitTexte#output
-2020-08-03 11:55:10 +0200 <- ExtraitTexte#output
-2020-08-03 11:55:27 +0200 Soumission de la commande "rep 87 dedans"
-2020-08-03 11:55:27 +0200 Commande jouée : "rep 87 dedans"
-2020-08-03 11:55:28 +0200 ### ERREUR UPDATE CANON ###
-ERREUR: Le canon nil est nul
-2020-08-03 11:55:28 +0200 Durée du recomptage de 62799 items : 0.07918310165405273
-2020-08-03 11:55:28 +0200 -> ExtraitTexte#output
-2020-08-03 11:55:29 +0200 <- ExtraitTexte#output
-2020-08-03 11:55:37 +0200 Soumission de la commande "q"
+2020-08-03 11:58:35 +0200 Instanciation de @itexte
+2020-08-03 11:58:36 +0200 Instanciation @extrait
+2020-08-03 11:58:36 +0200 -> ExtraitTexte#output
+2020-08-03 11:58:36 +0200 <- ExtraitTexte#output
+2020-08-03 11:58:40 +0200 Soumission de la commande "show 1000"
+2020-08-03 11:58:40 +0200 Commande jouée : "show 1000"
+2020-08-03 11:58:40 +0200 -> ExtraitTexte#output
+2020-08-03 11:58:40 +0200 <- ExtraitTexte#output
+2020-08-03 11:59:19 +0200 Soumission de la commande "q"
