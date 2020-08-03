@@ -22,16 +22,28 @@ def recompte(params = nil)
   start_time = Time.now.to_f
   offset = 0
   nb = 0
+  # Les canons qu'il faudra actualiser
+  canons_to_update = {}
   params.merge!(from: 0) unless params.key?(:from)
   idx = params[:from] - 1
   while item = items[idx += 1]
+    # Si le décalage du mot change et que son canon n'est pas encore à
+    # actualiser, il faut l'enregistrer pour l'actualiser
+    if item.offset != offset && !canons_to_update.key?(item.canon)
+      canons_to_update.merge!(item.canon => item.icanon)
+    end
     item.offset = offset
     item.index  = idx
     offset += item.length
     nb += 1
   end
+
+  # Actualisation des canons
+  canons_to_update.each { |canon, icanon| icanon.update }
+
   end_time = Time.now.to_f
   CWindow.log("Fin du recalcul. Quitter et voir le temps")
+
   log("Durée du recomptage de #{nb} items : #{end_time - start_time}")
 end #/ recompte
 
@@ -96,6 +108,7 @@ def parse
 
   # Pour savoir le temps que ça prend
   start = Time.now.to_f
+  log("Parsing du texte #{path}")
 
   # Initialisations
   @items = []
@@ -121,6 +134,9 @@ def parse
   delai = Time.now.to_f - start
   puts "Délai secondes méthode : #{delai}"
 
+rescue Exception => e
+  log("PROBLÈME EN PARSANT le texte #{path} : #{e.message}#{RC}#{e.backtrace.join(RC)}")
+  CWindow.error("Une erreur est survenue : #{e.message} (quitter et consulter le journal)")
 ensure
   File.delete(corrected_text_path) if File.exists?(corrected_text_path)
 end
@@ -159,9 +175,9 @@ def dispatche
   File.foreach(lemmatized_file_path) do |line|
     instance = TexteItem.lemma_to_instance(line,cur_offset,cur_index)
     @items << instance # Mot ou NonMot
-    cur_offset += if mot == PARAGRAPHE # Marque de paragraphe
+    cur_offset += if instance.content == PARAGRAPHE # Marque de paragraphe
                     2
-                  elsif type == 'SENT' || type == 'PUN' # Ponctuation
+                  elsif instance.ponctuation?
                     instance.content.length
                   else
                     instance.length + 1

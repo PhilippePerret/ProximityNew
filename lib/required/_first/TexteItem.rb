@@ -113,10 +113,10 @@ def f_proximities
       dist_avant = nil
       dist_apres = nil
       if prox_avant
-        dist_avant = prox_avant.mot_avant.index.to_s
+        dist_avant = (prox_avant.mot_avant.index - Runner.iextrait.from_item).to_s
       end
       if prox_apres
-        dist_apres = prox_apres.mot_apres.index.to_s
+        dist_apres = (prox_apres.mot_apres.index - Runner.iextrait.from_item).to_s
       end
 
       dist_avant_len = dist_avant&.length || 0
@@ -133,6 +133,11 @@ def f_proximities
     end
   end
 end #/ f_proximities
+
+# Retourne true si l'item est une ponctuation
+def ponctuation?
+  type == 'PUN' || type == 'SENT'
+end #/ ponctuation?
 
 # Retourne true si le text-item peut être étudié au niveau de ses proximités
 def proximizable?
@@ -171,42 +176,46 @@ def no_proximites?
 end #/ no_proximites?
 
 def prox_avant
-  @prox_avant || calcule_proximites
+  @prox_avant_calculed || begin
+    if icanon.nil? || icanon.count == 1
+      @prox_avant = nil
+    else
+      idx_canon = icanon.offsets.index(offset)
+      if idx_canon > 0 # il peut y avoir un mot avant
+        prev_item_in_canon = icanon.items[idx_canon - 1]
+        distance = offset - prev_item_in_canon.offset
+        if distance < icanon.distance_minimale
+          @prox_avant = Proximite.new(avant:prev_item_in_canon, apres:self, distance:distance)
+          prev_item_in_canon.prox_apres = @prox_avant
+        end
+      end
+    end
+    @prox_avant_calculed = true
+  end
   @prox_avant
 end #/ prox_avant
+def prox_avant=(prox); @prox_avant = prox end
+
 def prox_apres
-  @prox_apres || calcule_proximites
+   @prox_apres_calculed || begin
+    if icanon.nil? || icanon.count == 1
+      @prox_apres = nil
+    else
+      idx_canon = icanon.offsets.index(offset)
+      next_item_in_canon = icanon.items[idx_canon + 1]
+      if next_item_in_canon # il y a un mot après
+        distance = next_item_in_canon.offset - offset
+        if distance < icanon.distance_minimale
+          @prox_apres = Proximite.new(avant:self, apres:next_item_in_canon, distance:distance)
+          next_item_in_canon.prox_avant = @prox_apres
+        end
+      end
+    end
+    @prox_apres_calculed = true
+  end
   @prox_apres
 end #/ prox_apres
-def calcule_proximites
-  log("calcule_proximites de #{self.content}/index #{self.index}")
-  @prox_avant = nil
-  @prox_apres = nil
-  # Si le canon ne possède que cet item, il ne peut pas y avoir
-  # de proximités.
-  return if icanon.nil? || icanon.count == 1
-  # On cherche d'abord une éventuelle proximité avant
-  idx = index.dup
-  distance = 0
-  while item = Runner.itexte.items[idx -= 1]
-    distance += item.length
-    break if distance > icanon.distance_minimale
-    if item.canon == canon
-      # PROXIMITÉ TROUVÉE !
-      @prox_avant = Proximite.new(avant:item, apres:self, distance:distance)
-      break
-    end
-  end
-  idx = index.dup
-  distance = 1
-  while item = Runner.itexte.items[idx += 1]
-    if item.canon == canon
-      # PROXIMITÉ TROUVÉE !
-      @prox_apres = Proximite.new(avant:self, apres:item, distance:distance)
-      break
-    end
-    distance += item.length
-    break if distance > icanon.distance_minimale # fini
-  end
-end #/ calcule_proximites
+
+def prox_apres=(prox); @prox_apres = prox end
+
 end #/TexteItem
