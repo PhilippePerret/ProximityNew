@@ -10,11 +10,27 @@ class << self
   def create(params, offset, index)
     item = new(params[0..1])
     item.canon  = params[2] if item.is_a?(Mot)
-    item.offset = offset
-    item.index  = index
+    item.offset = offset # peut être null
+    item.index  = index  # peut être null
     send(:on_create, item) if respond_to?(:on_create)
     return item
   end #/ create
+
+  # Transforme une ligne lemmatisée (par exemple mot TAB PRP TAB mot) en
+  # instance Mot ou NonMot
+  def lemma_to_instance(line, cur_offset = nil, cur_index = nil)
+    mot, type, canon = line.strip.split(TAB)
+    if mot == PARAGRAPHE
+      # Marque de nouveau paragraphe
+      # On crée un nouveau paragraphe avec les éléments
+      NonMot.create([RC, 'paragraphe'], cur_offset, cur_index)
+    elsif type == 'SENT' || type == 'PUN'
+      # Est-ce une fin de phrase ?
+      NonMot.create([mot,type], cur_offset, cur_index)
+    else
+      Mot.create([mot,type,canon], cur_offset, cur_index)
+    end
+  end #/ lemma_to_instance
 
 end # /<< self
 # ---------------------------------------------------------------------

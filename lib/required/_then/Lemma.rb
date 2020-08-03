@@ -20,13 +20,28 @@ class << self
     return dst_path
   end #/ parse
 
-  def parse_str(str)
+  def parse_str(str, options = nil)
+    options || {}
+    options.merge!(format: :raw) unless options.key?(:format)
     cmd = <<-CODE
 /usr/local/bin/tree-tagger-french <<TEXT
 #{str}
 TEXT
     CODE
-    return `#{cmd}`
+    res = `#{cmd}`
+    case options[:format]
+    when :raw
+      res
+    when :array
+      res.split(RC).collect do |line|
+        line.split(TAB)
+      end
+    when :instances
+      res.split(RC).collect do |line|
+        TexteItem.lemma_to_instance(line)
+      end
+    end
+
   end #/ parse_str
 end # /<< self
 

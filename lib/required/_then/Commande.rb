@@ -5,14 +5,15 @@ class << self
     cmd = cmd.split(SPACE)
     cmd_name = cmd.shift
     case cmd_name
+    when 'recompte'
+      Runner.itexte.recompte
     when 'ref', 'refresh'
       # Pour rafraichir l'affichage
       CWindow.textWind.write(Runner.iextrait.output)
     when 'ins', 'insert'
-      where = cmd.shift
       where_index = cmd.shift
       texte = cmd.join(SPACE)
-      log("Insérer le texte “#{texte}”")
+      Runner.iextrait.insert(content:texte, at:Runner.iextrait.from_item + where_index.to_i)
     when 'show'
       from = cmd.shift.to_i
       Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)

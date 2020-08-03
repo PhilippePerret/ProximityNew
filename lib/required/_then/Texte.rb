@@ -5,6 +5,7 @@ NL    = "\r".freeze  unless defined?(NL)
 APO = "'".freeze  unless defined?(APO)
 SPACE = ' '.freeze unless defined?(SPACE)
 EMPTY_STRING = ''.freeze unless defined?(EMPTY_STRING)
+PARAGRAPHE = '__PARAGRAPHE__'.freeze
 
 class Texte
 include ConfigModule
@@ -21,6 +22,25 @@ attr_accessor :current_first_item
 def initialize(path)
   @path = path
 end #/ initialize
+
+# Essai de recomptage de tout pour voir le temps que ça prend
+def recompte(params = nil)
+  params ||= {}
+  start_time = Time.now.to_f
+  offset = 0
+  nb = 0
+  params.merge!(from: 0) unless params.key?(:from)
+  idx = params[:from] - 1
+  while item = items[idx += 1]
+    item.offset = offset
+    item.index  = idx
+    offset += item.length
+    nb += 1
+  end
+  end_time = Time.now.to_f
+  CWindow.log("Fin du recalcul. Quitter et voir le temps")
+  log("Durée du recomptage de #{nb} items : #{end_time - start_time}")
+end #/ recompte
 
 # On doit forcer la ré-analyse du texte
 def reproximitize
@@ -79,7 +99,6 @@ end #/ out_of_date?
 # pour permettre le traitement par l'application.
 # Le traitement se fait par stream donc le fichier peut avoir une taille
 # conséquente sans problème
-PARAGRAPHE = '__PARAGRAPHE__'.freeze
 def parse
 
   # Pour savoir le temps que ça prend
@@ -145,20 +164,16 @@ def dispatche
   cur_offset = 0
   cur_index  = 0
   File.foreach(lemmatized_file_path) do |line|
-    mot, type, canon = line.strip.split(TAB)
-    if mot == PARAGRAPHE
-      # Marque de nouveau paragraphe
-      # On crée un nouveau paragraphe avec les éléments
-      @items << NonMot.create([RC, 'paragraphe'], cur_offset, cur_index)
-      cur_offset += 2
-    elsif type == 'SENT' || type == 'PUN'
-      # Est-ce une fin de phrase ?
-      @items << NonMot.create([mot,type], cur_offset, cur_index)
-      cur_offset += mot.length
-    else
-      @items << Mot.create([mot,type,canon], cur_offset, cur_index)
-      cur_offset += mot.length + 1
-    end
+    instance = TexteItem.lemma_to_instance(line,cur_offset,cur_index)
+    @items << instance # Mot ou NonMot
+    cur_offset += if mot == PARAGRAPHE # Marque de paragraphe
+                    2
+                  elsif type == 'SENT' || type == 'PUN' # Ponctuation
+                    instance.content.length
+                  else
+                    instance.length + 1
+                  end
+    # Index suivant
     cur_index += 1
   end
 

@@ -15,7 +15,9 @@ def initialize itexte, params
   @to_item    = params[:to] || (@from_item + DEFAULT_NOMBRE_ITEMS)
 end #/ initialize
 
-# Sortie de l'extrait. La mise en forme est assez complexe puisqu'elle
+# Sortie de l'extrait
+# --------------------
+# La mise en forme est assez complexe puisqu'elle
 # doit mettre les index des mots ainsi que leur distance de proximité lorsqu'il
 # y a proximité.
 # On fonctionne mot à mot en sachant qu'une ligne est en réalité
@@ -85,4 +87,34 @@ def write3lines treelines, top, offset, color_prox = nil
   CWindow.textWind.writepos([top+1, offset], mot,   CWindow::TEXT_COLOR)
   CWindow.textWind.writepos([top+2, offset], prox,  color_prox || CWindow::RED_COLOR)
 end #/ write3lines
+
+
+
+# ---------------------------------------------------------------------
+#
+#   Opérations sur le texte
+#
+# ---------------------------------------------------------------------
+def insert(params)
+  CWindow.log("Je dois insérer le texte “#{params[:content]}” à l'index #{params[:at]} (avant “#{Runner.itexte.items[params[:at]].content}”)")
+  new_mots = Lemma.parse_str(params[:content], format: :instances)
+  times = [[Time.now.to_f, 'démarrage']]
+  Runner.itexte.items.insert(params[:at], *new_mots)
+  times << [Time.now.to_f, 'insertion']
+  Runner.itexte.recompte(from: params[:at])
+  times << [Time.now.to_f, 'recomptage']
+
+  # On rafraichit l'affichage
+  output
+
+  # Affichage des temps
+  times.each_with_index do |dtime, idx|
+    # log("#{RC}#{new_mots}#{RC}")
+    if idx == 0
+      log("Start: #{dtime.first}")
+    else
+      log("#{dtime.last}: #{dtime.first - times[idx-1].first}")
+    end
+  end
+end #/ insert
 end #/ExtraitTexte
