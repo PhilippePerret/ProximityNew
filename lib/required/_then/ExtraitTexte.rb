@@ -87,6 +87,9 @@ def output
   end
   @to_item = real_last_idx
   CWindow.status("From #{@from_item} to #{@to_item}")
+
+  # Il faut se souvenir qu'on a regardé en dernier ce tableau
+  Runner.itexte.config.save(last_first_index: from_item)
   log("<- ExtraitTexte#output")
 end #/ output
 

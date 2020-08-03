@@ -33,7 +33,8 @@ module ConfigModule
         JSON.parse(File.read(path), symbolize_names:true)
       end
     end #/ load
-    def save
+    def save(hdata = nil)
+      data.merge!(hdata) unless hdata.nil?
       data.merge!(last_saved: Time.now.to_i)
       File.open(path,'wb'){|f|f.write(data.to_json)}
     end #/ save

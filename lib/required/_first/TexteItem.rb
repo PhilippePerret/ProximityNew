@@ -88,20 +88,38 @@ end #/ sous_type
 # La longueur "formatée", c'est-à-dire lorsque le mot doit être
 # inscrit dans la fenêtre de terminal, avec son index (dans l'extrait) et
 # ses distances avec les autres mots.
+# Tous les cas possibles :
+#
+#   La longueur du mot est suffisante
+#
+#     123
+#     motassezlong
+#     121      134
+#
+#   L'index est plus grand le que le mot sans proximités
+#
+#     123
+#     a
+#
+#   Les proximités sont plus longues que le mot et que l'index
+#
+#     123
+#     a
+#     134|125
+#
 def f_length
   @f_length
 end #/ f_length
 
-# Pour la première ligne contenant l'index
+# L'index formaté. On ne l'indique pas si c'est une ponctuation.
 def f_index(idx)
-  SPACE + (non_mot? ? SPACE : idx).to_s.ljust(@f_length)
+  pre_required + (non_mot? ? SPACE : idx).to_s.ljust(f_length)
 end #/ f_index
 
 # Pour la deuxième ligne contenant le texte
 def f_content
   c = pre_required + content + post_required
-  # c.prepend(' ') if f_length > length + 1
-  c.ljust(@f_length)
+  c.ljust(f_length)
 end #/ f_content
 
 # Méthode qui retourne les proximités formatées
@@ -116,13 +134,11 @@ end #/ f_content
 # Noter aussi que dans le cas de ce 'mot', le mot commence avec un décalage
 # de 2 (pour être sur le 4)
 def f_proximities
-  if ! proximizable?
-    ' ' * f_length
-  elsif prox_avant.nil? && prox_apres.nil?
+  if !proximizable? || (prox_avant.nil? && prox_apres.nil?)
     ' ' * f_length
   else
-    dist_avant = nil
-    dist_apres = nil
+    dist_avant = ''
+    dist_apres = ''
     if prox_avant
       log("Mot “#{content}” (#{index}/#{offset}) a une proximité AVANT : #{prox_avant.mot_avant.content} (#{prox_avant.mot_avant.index}/#{prox_avant.mot_avant.offset})")
       dist_avant = (prox_avant.mot_avant.index - Runner.iextrait.from_item).to_s
@@ -132,20 +148,34 @@ def f_proximities
       dist_apres = (prox_apres.mot_apres.index - Runner.iextrait.from_item).to_s
     end
 
-    dist_avant_len = dist_avant&.length || 0
-    dist_apres_len = dist_apres&.length || 0
+    dist_avant_len = dist_avant.length || 0
+    dist_apres_len = dist_apres.length || 0
 
     long_dist  = dist_avant_len + dist_apres_len
+
+    moitie_avant = (f_length / 2) - 1 # -1 pour la barre
+    moitie_apres = f_length - moitie_avant - 1
     # Utile pour les autres calculs
-    "#{dist_avant}#{' '*(f_length - long_dist)}#{dist_apres} ".freeze
+    pre_required + if prox_avant && prox_apres
+      if "#{dist_avant}|#{dist_apres}".length+1 >= f_length
+        "#{dist_avant}|#{dist_apres}".freeze
+      else
+        "#{dist_avant.ljust(moitie_avant)}|#{dist_apres.rjust(moitie_apres)}".freeze
+      end
+    elsif prox_avant
+      "#{dist_avant}|".ljust(f_length)
+    else
+      "|#{dist_apres} ".rjust(f_length - 1)
+    end + post_required
   end
 end #/ f_proximities
 
 def calcule_longueurs
-  if ! proximizable?
-    @f_length = length + pre_required.length + post_required.length
-  elsif prox_avant.nil? && prox_apres.nil?
-    @f_length = length + pre_required.length + post_required.length
+  # Longueur occupée par le mot
+  long_mot = content.length + pre_required.length + post_required.length
+  if !proximizable? || ( prox_avant.nil? && prox_apres.nil? )
+    long_index = (index - Runner.iextrait.from_item).to_s.length + 1
+    @f_length = [long_mot, long_index].max
   else
     dist_avant = nil
     dist_apres = nil
@@ -160,14 +190,11 @@ def calcule_longueurs
     dist_apres_len = dist_apres&.length || 0
 
     # Longueur occupée par l'index relatif du mot
-    long_index = (index - Runner.iextrait.from_item).to_s.length + 1
+    long_index = (index - Runner.iextrait.from_item).to_s.length
     # Longueur occupée par les distances
     long_dist  = dist_avant_len + dist_apres_len
-    long_proxs = long_dist + 1
-    # Longueur occupée par le mot
-    long_mot = content.length + pre_required.length + post_required.length
-    long_max = [long_index, long_proxs, long_mot].max
-    @f_length = long_max
+    long_proxs = long_dist + 1 # +1 pour la barre
+    @f_length = [long_index, long_proxs, long_mot].max + pre_required.length + post_required.length
   end
 end #/ calcule_longueurs
 
@@ -225,23 +252,23 @@ def prox_avant
     if !proximizable? || icanon.nil? || icanon.count == 1
       @prox_avant = nil
     else
-      log("*** Recherche proximité avant de #{cio} ***")
-      log("Offsets du canon #{icanon.canon.inspect} : #{icanon.offsets.inspect}")
+      # log("*** Recherche proximité avant de #{cio} ***")
+      # log("Offsets du canon #{icanon.canon.inspect} : #{icanon.offsets.inspect}")
       idx_canon = icanon.offsets.index(offset)
-      log("Index du mot courant dans icanon.offsets: #{idx_canon}")
+      # log("Index du mot courant dans icanon.offsets: #{idx_canon}")
       if idx_canon > 0 # il peut y avoir un mot avant
-        log("Le mot possède un item avant lui")
+        # log("Le mot possède un item avant lui")
         prev_item_in_canon = icanon.items[idx_canon - 1]
-        log("Cet item est : #{prev_item_in_canon.cio}")
+        # log("Cet item est : #{prev_item_in_canon.cio}")
         distance = offset - prev_item_in_canon.offset
-        log("Ils sont séparés de #{distance}")
+        # log("Ils sont séparés de #{distance}")
         if distance < icanon.distance_minimale
-          log("Ils sont en proximité")
+          # log("Ils sont en proximité")
           @prox_avant = Proximite.new(avant:prev_item_in_canon, apres:self, distance:distance)
           prev_item_in_canon.prox_apres = @prox_avant
         end
       else
-        log("C'est le premier offset => pas d'item avant")
+        # log("C'est le premier offset => pas d'item avant")
       end
     end
     @prox_avant_calculed = true
@@ -255,22 +282,22 @@ def prox_apres
     if !proximizable? || icanon.nil? || icanon.count == 1
       @prox_apres = nil
     else
-      log("*** Recherche proximité APRÈS pour #{cio} ***")
+      # log("*** Recherche proximité APRÈS pour #{cio} ***")
       idx_canon = icanon.offsets.index(offset)
-      log("Index dans icanon.offsets: #{idx_canon}")
-      log("(icanon.offsets = #{icanon.offsets.inspect})")
+      # log("Index dans icanon.offsets: #{idx_canon}")
+      # log("(icanon.offsets = #{icanon.offsets.inspect})")
       next_item_in_canon = icanon.items[idx_canon + 1]
       if next_item_in_canon # il y a un mot après
-        log("Un item a été trouvé après : #{next_item_in_canon.cio}")
+        # log("Un item a été trouvé après : #{next_item_in_canon.cio}")
         distance = next_item_in_canon.offset - offset
-        log("Distancié de #{distance}")
+        # log("Distancié de #{distance}")
         if distance < icanon.distance_minimale
-          log("=> Ils sont en proximité")
+          # log("=> Ils sont en proximité")
           @prox_apres = Proximite.new(avant:self, apres:next_item_in_canon, distance:distance)
           next_item_in_canon.prox_avant = @prox_apres
         end
       else
-        log("Pas d'item après")
+        # log("Pas d'item après")
       end
     end
     @prox_apres_calculed = true

@@ -17,8 +17,8 @@ class << self
   # L'extrait courant
   def iextrait
     @iextrait ||= begin
-      log("Instanciation @extrait")
-      ExtraitTexte.new(itexte, {from: itexte.current_first_item})
+      log("Instanciation @extrait (à partir de l'item #{itexte.current_first_item})")
+      ExtraitTexte.new(itexte, from: itexte.current_first_item)
     end
   end #/ iextrait
   def iextrait= extract

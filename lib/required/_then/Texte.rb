@@ -71,7 +71,6 @@ def save
     items: items,
     canons:  Canon.items_as_hash,
     path:  path,
-    current_first_item: current_first_item,
     updated_at: Time.now,
     created_at: Time.now
   }
@@ -81,7 +80,7 @@ end #/ save
 def load
   @data = Marshal.load(File.read(data_path))
   @items = @data[:items]
-  @current_first_item = @data[:current_first_item]
+  @current_first_item = config[:last_first_index]
   Canon.items_as_hash = @data[:canons]
 end #/ load
 
