@@ -40,7 +40,8 @@ def output
   write3lines([SPACE,SPACE,SPACE], top_line_index, offset)
   offset = 1
 
-  # Pour conserver le vrai dernier indice d'item
+  # Pour conserver le vrai dernier indice d'item, car to_item dépasse
+  # peut-être le nombre d'items
   real_last_idx = nil
 
   # On boucle sur chaque item qui doit être affiché
@@ -57,9 +58,6 @@ def output
     # passe à la ligne suivante
     if (offset + titem.f_length > max_line_length) || titem.new_paragraphe?
       manque = (' ' * (max_line_length - offset)).freeze
-      # CWindow.textWind.writepos([top_line_index, offset], manque)
-      # CWindow.textWind.writepos([top_line_texte, offset], manque)
-      # CWindow.textWind.writepos([top_line_proxi, offset], manque)
       write3lines([manque,manque,manque], top_line_index, offset)
       # On passe à la ligne (seulement si on n'est pas sur le dernier titem)
       unless itexte.items[idx + 1].nil?
@@ -73,7 +71,15 @@ def output
         break
       end
     end
-    write3lines([titem.f_index(idx_extrait),titem.f_content,titem.f_proximities], top_line_index, offset, titem.prox_color)
+    # C'est ici que sont véritablement écrite les 3 lignes du mot/nonmot
+    write3lines(
+      [
+        titem.f_index(idx_extrait),
+        titem.f_content,
+        titem.f_proximities
+      ],
+      top_line_index, offset, titem.prox_color
+    )
     offset += titem.f_length
 
     # Pour voir chaque titem s'afficher l'un après l'autre

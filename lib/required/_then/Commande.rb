@@ -9,14 +9,40 @@ class << self
     cmd = cmd.split(SPACE)
     cmd_name = cmd.shift
     case cmd_name
+    when 'eval'
+      code = cmd.join(SPACE)
+      begin
+        eval(code)
+      rescue Exception => e
+        CWindow.error(e.message)
+        log("ERROR EVAL: #{e.message}#{RC}#{e.backtrace.join(RC)}")
+      end
     when 'debug'
       what = cmd.shift
       case what
-      when 'item'
+      when 'canon'
+        canon = cmd.shift
+        log("-- canon #{canon} --")
+        icanon = Canon.items_as_hash[canon]
+        if icanon.nil?
+          CWindow.log("Aucune information canonique pour #{canon.inspect}")
+        else
+          icanon.items.each {|item| log(item.cio) }
+          CWindow.log("Canon de #{canon} écrits dans le journal. Quitter et l'ouvrir.")
+        end
+      when 'canons'
+        # Pour écrire les canons en log
+        log(RC*3)
+        Canon.items_as_hash.each do |can, ican|
+          log("-- canon #{can} --")
+          ican.items.each {|item| log(item.cio) }
+        end
+        CWindow.log("Canons écrits dans le journal. Quitter et l'ouvrir.")
+      when 'item', 'mot'
         item_index = cmd.shift.to_i
         item = Runner.itexte.items[item_index]
-        log("DEBUG item #{item_index} : #{item.inspect}")
-        CWindow.log("DEBUG item #{item_index} : #{item.to_s}")
+        log("DEBUG item #{item_index} : #{item.cio} (canon: #{item.canon.inspect})")
+        CWindow.log("DEBUG item #{item_index} : #{item.cio} (canon: #{item.canon.inspect})")
       end
     when 'open' # ouvrir un nouveau texte avec son path
       what = cmd.shift

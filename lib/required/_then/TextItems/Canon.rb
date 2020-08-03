@@ -6,6 +6,7 @@ class << self
     self.items_as_hash = {}
   end #/ init
   def add(mot)
+    mot.canon = mot.content.downcase if mot.canon == '<unknown>'
     unless self.items_as_hash.key?(mot.canon)
       new_canon = new(mot.canon)
       self.items_as_hash.merge!(mot.canon => new_canon)
