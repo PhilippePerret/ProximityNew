@@ -46,34 +46,37 @@ def output
   # On boucle sur chaque item qui doit être affiché
   (from_item..to_item).each_with_index do |idx, idx_extrait|
     # S'il n'y a plus de text-item, on arrête
-    mot = itexte.items[idx] || break
+    titem = itexte.items[idx] || break
     real_last_idx = idx
 
-    # log("mot: #{mot.inspect}")
-    # Si la ligne, avec ce mot, dépasse la valeur maximale, on
+    # On doit calculer les longueurs du mot (index, mot, proximités)
+    titem.calcule_longueurs
+
+    # log("titem: #{titem.inspect}")
+    # Si la ligne, avec ce titem, dépasse la valeur maximale, on
     # passe à la ligne suivante
-    if (offset + mot.f_length > max_line_length) || mot.new_paragraphe?
+    if (offset + titem.f_length > max_line_length) || titem.new_paragraphe?
       manque = (' ' * (max_line_length - offset)).freeze
       # CWindow.textWind.writepos([top_line_index, offset], manque)
       # CWindow.textWind.writepos([top_line_texte, offset], manque)
       # CWindow.textWind.writepos([top_line_proxi, offset], manque)
       write3lines([manque,manque,manque], top_line_index, offset)
-      # On passe à la ligne (seulement si on n'est pas sur le dernier mot)
+      # On passe à la ligne (seulement si on n'est pas sur le dernier titem)
       unless itexte.items[idx + 1].nil?
         top_line_index += 3
         break if top_line_index + 2 > CWindow.top_ligne_texte_max
         offset = 0
         write3lines([SPACE,SPACE,SPACE], top_line_index, offset)
         offset = 1
-        next if mot.new_paragraphe?
+        next if titem.new_paragraphe?
       else
         break
       end
     end
-    write3lines([mot.f_index(idx_extrait),mot.f_content,mot.f_proximities], top_line_index, offset, mot.prox_color)
-    offset += mot.f_length
+    write3lines([titem.f_index(idx_extrait),titem.f_content,titem.f_proximities], top_line_index, offset, titem.prox_color)
+    offset += titem.f_length
 
-    # Pour voir chaque mot s'afficher l'un après l'autre
+    # Pour voir chaque titem s'afficher l'un après l'autre
     # break if CWindow.textWind.curse.getch.to_s == 'q'
   end
   @to_item = real_last_idx
@@ -82,9 +85,9 @@ def output
 end #/ output
 
 def write3lines treelines, top, offset, color_prox = nil
-  idx, mot, prox = treelines
+  idx, titem, prox = treelines
   CWindow.textWind.writepos([top,   offset], idx,   CWindow::INDEX_COLOR)
-  CWindow.textWind.writepos([top+1, offset], mot,   CWindow::TEXT_COLOR)
+  CWindow.textWind.writepos([top+1, offset], titem,   CWindow::TEXT_COLOR)
   CWindow.textWind.writepos([top+2, offset], prox,  color_prox || CWindow::RED_COLOR)
 end #/ write3lines
 

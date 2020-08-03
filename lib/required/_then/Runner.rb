@@ -171,6 +171,7 @@ class << self
     '128-157' => '”',
   }
   def gestion_touches_speciales(s)
+    curse = CWindow.uiWind.curse # raccourci
     s2 = curse.getch
     case s
     when 194

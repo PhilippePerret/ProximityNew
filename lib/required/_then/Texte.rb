@@ -34,12 +34,23 @@ def recompte(params = nil)
     end
     item.offset = offset
     item.index  = idx
-    offset += item.length
+    offset += item.length + 1 # approximatif car on n'ajoute pas toujours 1 espace
     nb += 1
   end
 
   # Actualisation des canons
-  canons_to_update.each { |canon, icanon| icanon.update }
+  erreurs = []
+  canons_to_update.each do |canon, icanon|
+    if icanon.nil?
+      erreurs << "ERREUR: Le canon #{canon.inspect} est nul"
+    else
+      icanon.update
+    end
+  end
+  unless erreurs.empty?
+    CWindow.error("Une erreur est survenue avec les canons. Quitter et consulter le journal.")
+    log("### ERREUR UPDATE CANON ####{RC}#{erreurs.join(RC)}")
+  end
 
   end_time = Time.now.to_f
   CWindow.log("Fin du recalcul. Quitter et voir le temps")
