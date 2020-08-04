@@ -191,8 +191,10 @@ end
 # ATTENTION : Cette procédure détruit toutes les transformations déjà
 # opérées
 def reprepare
-  File.delete(main_file_txt) if File.exists?(main_file_txt)
-  prepare
+  [data_path, main_file_txt, only_mots_path].each do |fpath|
+    File.delete(fpath) if File.exists?(fpath)
+  end
+  parse
 end #/ reprepare
 
 def prepare
@@ -228,7 +230,7 @@ def decoupe_fichier_corriged
   # On le fait par paragraphe pour ne pas avoir trop à traiter d'un coup
   File.foreach(corrected_text_path) do |line|
     # log("Phrase originale: #{line.inspect}")
-    new_items = traite_line_of_texte(line, refonlymots)
+    new_items = traite_line_of_texte(line.strip, refonlymots)
     log("#{new_items.count} ajoutés à itexte.items")
     @items += new_items
     # À la fin de chaque “ligne”, il faut mettre une fin de paragraphe
@@ -246,7 +248,6 @@ end #/ decoupe_fichier_corriged
 # dans le mode normal et un fichier virtuel pour les insertions et
 # remplacement.
 def traite_line_of_texte(line, refmotscontainer)
-  line = line.strip
   new_items = []
   line.scan(MOT_NONMOT_REG).to_a.each_with_index do |item, idx|
     # next if item.nil? # pas de premier délimiteur par exemple

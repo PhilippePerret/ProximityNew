@@ -35,6 +35,11 @@ class << self
     self.iextrait.output
   end #/ show_extrait
 
+  # Pour afficher l'aide
+  def display_help(options = nil)
+    Help.show(options)
+  end #/ display_help
+
   # Pour ouvrir le texte de chemin d'accès +text_path+
   def open_texte text_path, commands = nil
     if File.exists?(text_path)

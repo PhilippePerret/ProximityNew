@@ -1,66 +1,334 @@
-2020-08-04 15:31:07 +0200 Instanciation de @itexte
-2020-08-04 15:31:07 +0200 Texte à charger : /Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt
-2020-08-04 15:31:07 +0200 Parsing du texte /Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt
-2020-08-04 15:31:07 +0200 44 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 22 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 64 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 15 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 14 ajoutés à itexte.items
-2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
-2020-08-04 15:31:08 +0200 Durée du recomptage de 169 items : 0.0004570484161376953
-2020-08-04 15:31:08 +0200 👍 PARSING OPÉRÉ AVEC SUCCÈS
-2020-08-04 15:31:08 +0200 Instanciation @extrait (à partir de l'item 0)
-2020-08-04 15:31:08 +0200 -> ExtraitTexte#output
-2020-08-04 15:31:08 +0200 On doit afficher les items de 0 à 400 (nombre total : 169)
-2020-08-04 15:31:08 +0200 Mot “contenant” (23/80) a une proximité APRÈS : contient (36/142)
-2020-08-04 15:31:08 +0200 Mot “aujourd'hui” (32/122) a une proximité APRÈS : aujourd'hui (88/352)
-2020-08-04 15:31:08 +0200 Mot “contient” (36/142) a une proximité AVANT : contenant (23/80)
-2020-08-04 15:31:08 +0200 Mot “contient” (36/142) a une proximité APRÈS : contient (102/408)
-2020-08-04 15:31:08 +0200 Mot “paragraphes” (42/177) a une proximité APRÈS : paragraphes (54/224)
-2020-08-04 15:31:08 +0200 Mot “paragraphes” (54/224) a une proximité AVANT : paragraphes (42/177)
-2020-08-04 15:31:08 +0200 Mot “paragraphes” (54/224) a une proximité APRÈS : paragraphes (74/294)
-2020-08-04 15:31:08 +0200 Mot “paragraphes” (74/294) a une proximité AVANT : paragraphes (54/224)
-2020-08-04 15:31:08 +0200 Mot “paragraphes” (74/294) a une proximité APRÈS : paragraphe (141/574)
-2020-08-04 15:31:08 +0200 Mot “plus” (82/331) a une proximité APRÈS : plus (96/387)
-2020-08-04 15:31:08 +0200 Mot “long” (84/338) a une proximité APRÈS : long (98/394)
-2020-08-04 15:31:08 +0200 Mot “pour” (86/345) a une proximité APRÈS : pour (122/500)
-2020-08-04 15:31:08 +0200 Mot “aujourd'hui” (88/352) a une proximité AVANT : aujourd'hui (32/122)
-2020-08-04 15:31:08 +0200 Mot “plus” (96/387) a une proximité AVANT : plus (82/331)
-2020-08-04 15:31:08 +0200 Mot “long” (98/394) a une proximité AVANT : long (84/338)
-2020-08-04 15:31:08 +0200 Mot “contient” (102/408) a une proximité AVANT : contient (36/142)
-2020-08-04 15:31:08 +0200 Mot “pour” (122/500) a une proximité AVANT : pour (86/345)
-2020-08-04 15:31:08 +0200 Mot “paragraphe” (141/574) a une proximité AVANT : paragraphes (74/294)
-2020-08-04 15:31:08 +0200 Mot “dialogue” (149/604) a une proximité APRÈS : dialogue (160/640)
-2020-08-04 15:31:08 +0200 Mot “dialogue” (160/640) a une proximité AVANT : dialogue (149/604)
-2020-08-04 15:31:08 +0200 <- ExtraitTexte#output
-2020-08-04 15:31:24 +0200 Soumission de la commande "rep 16 bonjour"
-2020-08-04 15:31:24 +0200 Commande jouée : "rep 16 bonjour"
-2020-08-04 15:31:26 +0200 Durée du recomptage de 168 items : 0.000640869140625
-2020-08-04 15:31:26 +0200 -> ExtraitTexte#output
-2020-08-04 15:31:26 +0200 On doit afficher les items de 0 à 168 (nombre total : 168)
-2020-08-04 15:31:26 +0200 Mot “contenant” (22/74) a une proximité APRÈS : contient (35/136)
-2020-08-04 15:31:26 +0200 Mot “aujourd'hui” (31/116) a une proximité APRÈS : aujourd'hui (87/346)
-2020-08-04 15:31:26 +0200 Mot “contient” (35/136) a une proximité AVANT : contenant (22/74)
-2020-08-04 15:31:26 +0200 Mot “contient” (35/136) a une proximité APRÈS : contient (101/402)
-2020-08-04 15:31:26 +0200 Mot “paragraphes” (41/171) a une proximité APRÈS : paragraphes (53/218)
-2020-08-04 15:31:26 +0200 Mot “paragraphes” (53/218) a une proximité AVANT : paragraphes (41/171)
-2020-08-04 15:31:26 +0200 Mot “paragraphes” (53/218) a une proximité APRÈS : paragraphes (73/288)
-2020-08-04 15:31:26 +0200 Mot “paragraphes” (73/288) a une proximité AVANT : paragraphes (53/218)
-2020-08-04 15:31:26 +0200 Mot “paragraphes” (73/288) a une proximité APRÈS : paragraphe (140/568)
-2020-08-04 15:31:26 +0200 Mot “plus” (81/325) a une proximité APRÈS : plus (95/381)
-2020-08-04 15:31:26 +0200 Mot “long” (83/332) a une proximité APRÈS : long (97/388)
-2020-08-04 15:31:26 +0200 Mot “pour” (85/339) a une proximité APRÈS : pour (121/494)
-2020-08-04 15:31:26 +0200 Mot “aujourd'hui” (87/346) a une proximité AVANT : aujourd'hui (31/116)
-2020-08-04 15:31:26 +0200 Mot “plus” (95/381) a une proximité AVANT : plus (81/325)
-2020-08-04 15:31:26 +0200 Mot “long” (97/388) a une proximité AVANT : long (83/332)
-2020-08-04 15:31:26 +0200 Mot “contient” (101/402) a une proximité AVANT : contient (35/136)
-2020-08-04 15:31:26 +0200 Mot “pour” (121/494) a une proximité AVANT : pour (85/339)
-2020-08-04 15:31:26 +0200 Mot “paragraphe” (140/568) a une proximité AVANT : paragraphes (73/288)
-2020-08-04 15:31:26 +0200 Mot “dialogue” (148/598) a une proximité APRÈS : dialogue (159/634)
-2020-08-04 15:31:26 +0200 Mot “dialogue” (159/634) a une proximité AVANT : dialogue (148/598)
-2020-08-04 15:31:26 +0200 <- ExtraitTexte#output
-2020-08-04 15:31:33 +0200 Soumission de la commande "q"
+2020-08-04 20:33:57 +0200 Instanciation de @itexte
+2020-08-04 20:33:57 +0200 Texte à charger : /Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt
+2020-08-04 20:33:57 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-04 20:33:57 +0200 -> ExtraitTexte#output
+2020-08-04 20:33:57 +0200 On doit afficher les items de 0 à 400 (nombre total : 173)
+2020-08-04 20:33:57 +0200 Mot “voir” (9/31) a une proximité APRÈS : voir (17/60)
+2020-08-04 20:33:57 +0200 Mot “pour” (15/53) a une proximité AVANT : pour (126/513)
+2020-08-04 20:33:57 +0200 Mot “voir” (17/60) a une proximité AVANT : voir (9/31)
+2020-08-04 20:33:57 +0200 Mot “contenant” (27/93) a une proximité APRÈS : contient (40/155)
+2020-08-04 20:33:57 +0200 Mot “aujourd'hui” (36/135) a une proximité APRÈS : aujourd'hui (92/365)
+2020-08-04 20:33:57 +0200 Mot “contient” (40/155) a une proximité AVANT : contenant (27/93)
+2020-08-04 20:33:57 +0200 Mot “contient” (40/155) a une proximité APRÈS : contient (106/421)
+2020-08-04 20:33:57 +0200 Mot “paragraphes” (46/190) a une proximité APRÈS : paragraphes (58/237)
+2020-08-04 20:33:57 +0200 Mot “paragraphes” (58/237) a une proximité AVANT : paragraphes (46/190)
+2020-08-04 20:33:57 +0200 Mot “paragraphes” (58/237) a une proximité APRÈS : paragraphes (78/307)
+2020-08-04 20:33:57 +0200 Mot “paragraphes” (78/307) a une proximité AVANT : paragraphes (58/237)
+2020-08-04 20:33:57 +0200 Mot “paragraphes” (78/307) a une proximité APRÈS : paragraphe (145/587)
+2020-08-04 20:33:57 +0200 Mot “plus” (86/344) a une proximité APRÈS : plus (100/400)
+2020-08-04 20:33:57 +0200 Mot “long” (88/351) a une proximité APRÈS : long (102/407)
+2020-08-04 20:33:57 +0200 Mot “pour” (90/358) a une proximité APRÈS : pour (126/513)
+2020-08-04 20:33:57 +0200 Mot “aujourd'hui” (92/365) a une proximité AVANT : aujourd'hui (36/135)
+2020-08-04 20:33:57 +0200 Mot “plus” (100/400) a une proximité AVANT : plus (86/344)
+2020-08-04 20:33:57 +0200 Mot “long” (102/407) a une proximité AVANT : long (88/351)
+2020-08-04 20:33:57 +0200 Mot “contient” (106/421) a une proximité AVANT : contient (40/155)
+2020-08-04 20:33:57 +0200 Mot “pour” (126/513) a une proximité AVANT : pour (90/358)
+2020-08-04 20:33:57 +0200 Mot “pour” (126/513) a une proximité APRÈS : pour (15/53)
+2020-08-04 20:33:57 +0200 Mot “paragraphe” (145/587) a une proximité AVANT : paragraphes (78/307)
+2020-08-04 20:33:57 +0200 Mot “dialogue” (153/617) a une proximité APRÈS : dialogue (164/653)
+2020-08-04 20:33:57 +0200 Mot “dialogue” (164/653) a une proximité AVANT : dialogue (153/617)
+2020-08-04 20:33:57 +0200 <- ExtraitTexte#output
+2020-08-04 20:33:59 +0200 Soumission de la commande "help"
+2020-08-04 20:33:59 +0200 Commande jouée : "help"
+2020-08-04 20:34:23 +0200 -> ExtraitTexte#output
+2020-08-04 20:34:23 +0200 On doit afficher les items de 0 à 172 (nombre total : 173)
+2020-08-04 20:34:23 +0200 Mot “voir” (9/31) a une proximité APRÈS : voir (17/60)
+2020-08-04 20:34:23 +0200 Mot “pour” (15/53) a une proximité AVANT : pour (126/513)
+2020-08-04 20:34:23 +0200 Mot “voir” (17/60) a une proximité AVANT : voir (9/31)
+2020-08-04 20:34:23 +0200 Mot “contenant” (27/93) a une proximité APRÈS : contient (40/155)
+2020-08-04 20:34:23 +0200 Mot “aujourd'hui” (36/135) a une proximité APRÈS : aujourd'hui (92/365)
+2020-08-04 20:34:23 +0200 Mot “contient” (40/155) a une proximité AVANT : contenant (27/93)
+2020-08-04 20:34:23 +0200 Mot “contient” (40/155) a une proximité APRÈS : contient (106/421)
+2020-08-04 20:34:23 +0200 Mot “paragraphes” (46/190) a une proximité APRÈS : paragraphes (58/237)
+2020-08-04 20:34:23 +0200 Mot “paragraphes” (58/237) a une proximité AVANT : paragraphes (46/190)
+2020-08-04 20:34:23 +0200 Mot “paragraphes” (58/237) a une proximité APRÈS : paragraphes (78/307)
+2020-08-04 20:34:23 +0200 Mot “paragraphes” (78/307) a une proximité AVANT : paragraphes (58/237)
+2020-08-04 20:34:23 +0200 Mot “paragraphes” (78/307) a une proximité APRÈS : paragraphe (145/587)
+2020-08-04 20:34:23 +0200 Mot “plus” (86/344) a une proximité APRÈS : plus (100/400)
+2020-08-04 20:34:23 +0200 Mot “long” (88/351) a une proximité APRÈS : long (102/407)
+2020-08-04 20:34:23 +0200 Mot “pour” (90/358) a une proximité APRÈS : pour (126/513)
+2020-08-04 20:34:23 +0200 Mot “aujourd'hui” (92/365) a une proximité AVANT : aujourd'hui (36/135)
+2020-08-04 20:34:23 +0200 Mot “plus” (100/400) a une proximité AVANT : plus (86/344)
+2020-08-04 20:34:23 +0200 Mot “long” (102/407) a une proximité AVANT : long (88/351)
+2020-08-04 20:34:23 +0200 Mot “contient” (106/421) a une proximité AVANT : contient (40/155)
+2020-08-04 20:34:23 +0200 Mot “pour” (126/513) a une proximité AVANT : pour (90/358)
+2020-08-04 20:34:23 +0200 Mot “pour” (126/513) a une proximité APRÈS : pour (15/53)
+2020-08-04 20:34:23 +0200 Mot “paragraphe” (145/587) a une proximité AVANT : paragraphes (78/307)
+2020-08-04 20:34:23 +0200 Mot “dialogue” (153/617) a une proximité APRÈS : dialogue (164/653)
+2020-08-04 20:34:23 +0200 Mot “dialogue” (164/653) a une proximité AVANT : dialogue (153/617)
+2020-08-04 20:34:23 +0200 <- ExtraitTexte#output
+2020-08-04 20:41:27 +0200 -> ExtraitTexte#output
+2020-08-04 20:41:27 +0200 On doit afficher les items de 0 à 172 (nombre total : 173)
+2020-08-04 20:41:27 +0200 Mot “voir” (9/31) a une proximité APRÈS : voir (17/60)
+2020-08-04 20:41:27 +0200 Mot “pour” (15/53) a une proximité AVANT : pour (126/513)
+2020-08-04 20:41:27 +0200 Mot “voir” (17/60) a une proximité AVANT : voir (9/31)
+2020-08-04 20:41:27 +0200 Mot “contenant” (27/93) a une proximité APRÈS : contient (40/155)
+2020-08-04 20:41:27 +0200 Mot “aujourd'hui” (36/135) a une proximité APRÈS : aujourd'hui (92/365)
+2020-08-04 20:41:27 +0200 Mot “contient” (40/155) a une proximité AVANT : contenant (27/93)
+2020-08-04 20:41:27 +0200 Mot “contient” (40/155) a une proximité APRÈS : contient (106/421)
+2020-08-04 20:41:27 +0200 Mot “paragraphes” (46/190) a une proximité APRÈS : paragraphes (58/237)
+2020-08-04 20:41:27 +0200 Mot “paragraphes” (58/237) a une proximité AVANT : paragraphes (46/190)
+2020-08-04 20:41:27 +0200 Mot “paragraphes” (58/237) a une proximité APRÈS : paragraphes (78/307)
+2020-08-04 20:41:27 +0200 Mot “paragraphes” (78/307) a une proximité AVANT : paragraphes (58/237)
+2020-08-04 20:41:27 +0200 Mot “paragraphes” (78/307) a une proximité APRÈS : paragraphe (145/587)
+2020-08-04 20:41:27 +0200 Mot “plus” (86/344) a une proximité APRÈS : plus (100/400)
+2020-08-04 20:41:27 +0200 Mot “long” (88/351) a une proximité APRÈS : long (102/407)
+2020-08-04 20:41:27 +0200 Mot “pour” (90/358) a une proximité APRÈS : pour (126/513)
+2020-08-04 20:41:27 +0200 Mot “aujourd'hui” (92/365) a une proximité AVANT : aujourd'hui (36/135)
+2020-08-04 20:41:27 +0200 Mot “plus” (100/400) a une proximité AVANT : plus (86/344)
+2020-08-04 20:41:27 +0200 Mot “long” (102/407) a une proximité AVANT : long (88/351)
+2020-08-04 20:41:27 +0200 Mot “contient” (106/421) a une proximité AVANT : contient (40/155)
+2020-08-04 20:41:27 +0200 Mot “pour” (126/513) a une proximité AVANT : pour (90/358)
+2020-08-04 20:41:27 +0200 Mot “pour” (126/513) a une proximité APRÈS : pour (15/53)
+2020-08-04 20:41:27 +0200 Mot “paragraphe” (145/587) a une proximité AVANT : paragraphes (78/307)
+2020-08-04 20:41:27 +0200 Mot “dialogue” (153/617) a une proximité APRÈS : dialogue (164/653)
+2020-08-04 20:41:27 +0200 Mot “dialogue” (164/653) a une proximité AVANT : dialogue (153/617)
+2020-08-04 20:41:27 +0200 <- ExtraitTexte#output
+2020-08-04 20:41:32 +0200 -> ExtraitTexte#output
+2020-08-04 20:41:32 +0200 On doit afficher les items de 0 à 172 (nombre total : 173)
+2020-08-04 20:41:32 +0200 Mot “voir” (9/31) a une proximité APRÈS : voir (17/60)
+2020-08-04 20:41:32 +0200 Mot “pour” (15/53) a une proximité AVANT : pour (126/513)
+2020-08-04 20:41:32 +0200 Mot “voir” (17/60) a une proximité AVANT : voir (9/31)
+2020-08-04 20:41:32 +0200 Mot “contenant” (27/93) a une proximité APRÈS : contient (40/155)
+2020-08-04 20:41:32 +0200 Mot “aujourd'hui” (36/135) a une proximité APRÈS : aujourd'hui (92/365)
+2020-08-04 20:41:32 +0200 Mot “contient” (40/155) a une proximité AVANT : contenant (27/93)
+2020-08-04 20:41:32 +0200 Mot “contient” (40/155) a une proximité APRÈS : contient (106/421)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (46/190) a une proximité APRÈS : paragraphes (58/237)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (58/237) a une proximité AVANT : paragraphes (46/190)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (58/237) a une proximité APRÈS : paragraphes (78/307)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (78/307) a une proximité AVANT : paragraphes (58/237)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (78/307) a une proximité APRÈS : paragraphe (145/587)
+2020-08-04 20:41:32 +0200 Mot “plus” (86/344) a une proximité APRÈS : plus (100/400)
+2020-08-04 20:41:32 +0200 Mot “long” (88/351) a une proximité APRÈS : long (102/407)
+2020-08-04 20:41:32 +0200 Mot “pour” (90/358) a une proximité APRÈS : pour (126/513)
+2020-08-04 20:41:32 +0200 Mot “aujourd'hui” (92/365) a une proximité AVANT : aujourd'hui (36/135)
+2020-08-04 20:41:32 +0200 Mot “plus” (100/400) a une proximité AVANT : plus (86/344)
+2020-08-04 20:41:32 +0200 Mot “long” (102/407) a une proximité AVANT : long (88/351)
+2020-08-04 20:41:32 +0200 Mot “contient” (106/421) a une proximité AVANT : contient (40/155)
+2020-08-04 20:41:32 +0200 Mot “pour” (126/513) a une proximité AVANT : pour (90/358)
+2020-08-04 20:41:32 +0200 Mot “pour” (126/513) a une proximité APRÈS : pour (15/53)
+2020-08-04 20:41:32 +0200 Mot “paragraphe” (145/587) a une proximité AVANT : paragraphes (78/307)
+2020-08-04 20:41:32 +0200 Mot “dialogue” (153/617) a une proximité APRÈS : dialogue (164/653)
+2020-08-04 20:41:32 +0200 Mot “dialogue” (164/653) a une proximité AVANT : dialogue (153/617)
+2020-08-04 20:41:32 +0200 <- ExtraitTexte#output
+2020-08-04 20:41:32 +0200 -> ExtraitTexte#output
+2020-08-04 20:41:32 +0200 On doit afficher les items de 0 à 172 (nombre total : 173)
+2020-08-04 20:41:32 +0200 Mot “voir” (9/31) a une proximité APRÈS : voir (17/60)
+2020-08-04 20:41:32 +0200 Mot “pour” (15/53) a une proximité AVANT : pour (126/513)
+2020-08-04 20:41:32 +0200 Mot “voir” (17/60) a une proximité AVANT : voir (9/31)
+2020-08-04 20:41:32 +0200 Mot “contenant” (27/93) a une proximité APRÈS : contient (40/155)
+2020-08-04 20:41:32 +0200 Mot “aujourd'hui” (36/135) a une proximité APRÈS : aujourd'hui (92/365)
+2020-08-04 20:41:32 +0200 Mot “contient” (40/155) a une proximité AVANT : contenant (27/93)
+2020-08-04 20:41:32 +0200 Mot “contient” (40/155) a une proximité APRÈS : contient (106/421)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (46/190) a une proximité APRÈS : paragraphes (58/237)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (58/237) a une proximité AVANT : paragraphes (46/190)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (58/237) a une proximité APRÈS : paragraphes (78/307)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (78/307) a une proximité AVANT : paragraphes (58/237)
+2020-08-04 20:41:32 +0200 Mot “paragraphes” (78/307) a une proximité APRÈS : paragraphe (145/587)
+2020-08-04 20:41:32 +0200 Mot “plus” (86/344) a une proximité APRÈS : plus (100/400)
+2020-08-04 20:41:32 +0200 Mot “long” (88/351) a une proximité APRÈS : long (102/407)
+2020-08-04 20:41:32 +0200 Mot “pour” (90/358) a une proximité APRÈS : pour (126/513)
+2020-08-04 20:41:32 +0200 Mot “aujourd'hui” (92/365) a une proximité AVANT : aujourd'hui (36/135)
+2020-08-04 20:41:32 +0200 Mot “plus” (100/400) a une proximité AVANT : plus (86/344)
+2020-08-04 20:41:32 +0200 Mot “long” (102/407) a une proximité AVANT : long (88/351)
+2020-08-04 20:41:32 +0200 Mot “contient” (106/421) a une proximité AVANT : contient (40/155)
+2020-08-04 20:41:32 +0200 Mot “pour” (126/513) a une proximité AVANT : pour (90/358)
+2020-08-04 20:41:32 +0200 Mot “pour” (126/513) a une proximité APRÈS : pour (15/53)
+2020-08-04 20:41:32 +0200 Mot “paragraphe” (145/587) a une proximité AVANT : paragraphes (78/307)
+2020-08-04 20:41:32 +0200 Mot “dialogue” (153/617) a une proximité APRÈS : dialogue (164/653)
+2020-08-04 20:41:32 +0200 Mot “dialogue” (164/653) a une proximité AVANT : dialogue (153/617)
+2020-08-04 20:41:32 +0200 <- ExtraitTexte#output
+2020-08-04 20:41:39 +0200 ERROR COMMANDE : 
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:34:in `getch'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:34:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:48:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:44:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Help.rb:19:in `show'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner.rb:40:in `display_help'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Commande.rb:143:in `run'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner.rb:126:in `interact_with_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner.rb:95:in `run'
+/Users/philippeperret/Programmation/ProximityNew/run.rb:6:in `<main>'
+2020-08-04 20:41:45 +0200 Soumission de la commande "debug canons"
+2020-08-04 20:41:45 +0200 Commande jouée : "debug canons"
+2020-08-04 20:41:45 +0200 
+
+
+
+2020-08-04 20:41:45 +0200 -- canon de --
+2020-08-04 20:41:45 +0200 D'/0/0
+2020-08-04 20:41:45 +0200 de/29/105
+2020-08-04 20:41:45 +0200 de/114/448
+2020-08-04 20:41:45 +0200 -- canon aussi --
+2020-08-04 20:41:45 +0200 aussi/1/3
+2020-08-04 20:41:45 +0200 -- canon loin --
+2020-08-04 20:41:45 +0200 loin/3/11
+2020-08-04 20:41:45 +0200 -- canon que --
+2020-08-04 20:41:45 +0200 qu'/5/18
+2020-08-04 20:41:45 +0200 qu'/35/131
+2020-08-04 20:41:45 +0200 -- canon on --
+2020-08-04 20:41:45 +0200 on/6/22
+2020-08-04 20:41:45 +0200 -- canon pouvoir --
+2020-08-04 20:41:45 +0200 puisse/8/27
+2020-08-04 20:41:45 +0200 -- canon voir --
+2020-08-04 20:41:45 +0200 voir/9/31
+2020-08-04 20:41:45 +0200 voir/17/60
+2020-08-04 20:41:45 +0200 -- canon un --
+2020-08-04 20:41:45 +0200 un/11/39
+2020-08-04 20:41:45 +0200 un/25/88
+2020-08-04 20:41:45 +0200 un/54/221
+2020-08-04 20:41:45 +0200 Un/141/570
+2020-08-04 20:41:45 +0200 un/151/612
+2020-08-04 20:41:45 +0200 un/160/640
+2020-08-04 20:41:45 +0200 -- canon simple --
+2020-08-04 20:41:45 +0200 simple/13/44
+2020-08-04 20:41:45 +0200 -- canon texte --
+2020-08-04 20:41:45 +0200 texte/16/58
+2020-08-04 20:41:45 +0200 -- canon ne --
+2020-08-04 20:41:45 +0200 n'/22/79
+2020-08-04 20:41:45 +0200 -- canon être --
+2020-08-04 20:41:45 +0200 est/23/82
+2020-08-04 20:41:45 +0200 est/52/215
+2020-08-04 20:41:45 +0200 est/80/321
+2020-08-04 20:41:45 +0200 est/96/389
+2020-08-04 20:41:45 +0200 est/149/606
+2020-08-04 20:41:45 +0200 -- canon contenir --
+2020-08-04 20:41:45 +0200 contenant/27/93
+2020-08-04 20:41:45 +0200 contient/40/155
+2020-08-04 20:41:45 +0200 contient/106/421
+2020-08-04 20:41:45 +0200 -- canon plusieurs --
+2020-08-04 20:41:45 +0200 plusieurs/31/110
+2020-08-04 20:41:45 +0200 plusieurs/44/178
+2020-08-04 20:41:45 +0200 -- canon ligne --
+2020-08-04 20:41:45 +0200 lignes/33/122
+2020-08-04 20:41:45 +0200 -- canon aujourd'hui --
+2020-08-04 20:41:45 +0200 aujourd'hui/36/135
+2020-08-04 20:41:45 +0200 aujourd'hui/92/365
+2020-08-04 20:41:45 +0200 -- canon il --
+2020-08-04 20:41:45 +0200 Il/38/150
+2020-08-04 20:41:45 +0200 il/62/256
+2020-08-04 20:41:45 +0200 Il/104/416
+2020-08-04 20:41:45 +0200 -il/167/670
+2020-08-04 20:41:45 +0200 -- canon également --
+2020-08-04 20:41:45 +0200 également/42/166
+2020-08-04 20:41:45 +0200 -- canon paragraphe --
+2020-08-04 20:41:45 +0200 paragraphes/46/190
+2020-08-04 20:41:45 +0200 paragraphes/58/237
+2020-08-04 20:41:45 +0200 paragraphes/78/307
+2020-08-04 20:41:45 +0200 paragraphe/145/587
+2020-08-04 20:41:45 +0200 -- canon ceci --
+2020-08-04 20:41:45 +0200 Ceci/50/208
+2020-08-04 20:41:45 +0200 -- canon deuxième --
+2020-08-04 20:41:45 +0200 deuxième/56/226
+2020-08-04 20:41:45 +0200 -- canon et --
+2020-08-04 20:41:45 +0200 et/60/251
+2020-08-04 20:41:45 +0200 Et/158/635
+2020-08-04 20:41:45 +0200 -- canon y --
+2020-08-04 20:41:45 +0200 y/64/261
+2020-08-04 20:41:45 +0200 -- canon en --
+2020-08-04 20:41:45 +0200 en/66/265
+2020-08-04 20:41:45 +0200 -- canon avoir --
+2020-08-04 20:41:45 +0200 aura/68/270
+2020-08-04 20:41:45 +0200 -- canon trois --
+2020-08-04 20:41:45 +0200 trois/70/277
+2020-08-04 20:41:45 +0200 -- canon le --
+2020-08-04 20:41:45 +0200 Le/74/290
+2020-08-04 20:41:45 +0200 le/84/339
+2020-08-04 20:41:45 +0200 le/98/395
+2020-08-04 20:41:45 +0200 -- canon troisième --
+2020-08-04 20:41:45 +0200 troisième/76/295
+2020-08-04 20:41:45 +0200 -- canon peut-être --
+2020-08-04 20:41:45 +0200 peut-être/82/327
+2020-08-04 20:41:45 +0200 -- canon plus --
+2020-08-04 20:41:45 +0200 plus/86/344
+2020-08-04 20:41:45 +0200 plus/100/400
+2020-08-04 20:41:45 +0200 -- canon long --
+2020-08-04 20:41:45 +0200 long/88/351
+2020-08-04 20:41:45 +0200 long/102/407
+2020-08-04 20:41:45 +0200 -- canon pour --
+2020-08-04 20:41:45 +0200 pour/90/358
+2020-08-04 20:41:45 +0200 pour/126/513
+2020-08-04 20:41:45 +0200 pour/15/53
+2020-08-04 20:41:45 +0200 -- canon lequel --
+2020-08-04 20:41:45 +0200 Lequel/94/380
+2020-08-04 20:41:45 +0200 -- canon peu --
+2020-08-04 20:41:45 +0200 peu/108/432
+2020-08-04 20:41:45 +0200 peu/112/442
+2020-08-04 20:41:45 +0200 -- canon à --
+2020-08-04 20:41:45 +0200 à/110/438
+2020-08-04 20:41:45 +0200 -- canon nombreux --
+2020-08-04 20:41:45 +0200 nombreuses/116/453
+2020-08-04 20:41:45 +0200 -- canon locution --
+2020-08-04 20:41:45 +0200 locutions/118/466
+2020-08-04 20:41:45 +0200 -- canon ou --
+2020-08-04 20:41:45 +0200 ou/120/478
+2020-08-04 20:41:45 +0200 -- canon expression --
+2020-08-04 20:41:45 +0200 expressions/122/483
+2020-08-04 20:41:45 +0200 -- canon particulier --
+2020-08-04 20:41:45 +0200 particulières/124/497
+2020-08-04 20:41:45 +0200 -- canon tester --
+2020-08-04 20:41:45 +0200 tester/128/520
+2020-08-04 20:41:45 +0200 -- canon du --
+2020-08-04 20:41:45 +0200 des/130/529
+2020-08-04 20:41:45 +0200 -- canon chose --
+2020-08-04 20:41:45 +0200 choses/132/535
+2020-08-04 20:41:45 +0200 -- canon assez --
+2020-08-04 20:41:45 +0200 assez/134/544
+2020-08-04 20:41:45 +0200 -- canon basique --
+2020-08-04 20:41:45 +0200 basiques/136/552
+2020-08-04 20:41:45 +0200 -- canon quatrième --
+2020-08-04 20:41:45 +0200 quatrième/143/575
+2020-08-04 20:41:45 +0200 -- canon qui --
+2020-08-04 20:41:45 +0200 qui/147/600
+2020-08-04 20:41:45 +0200 -- canon dialogue --
+2020-08-04 20:41:45 +0200 dialogue/153/617
+2020-08-04 20:41:45 +0200 dialogue/164/653
+2020-08-04 20:41:45 +0200 -- canon autre --
+2020-08-04 20:41:45 +0200 autre/162/645
+2020-08-04 20:41:45 +0200 -- canon dire --
+2020-08-04 20:41:45 +0200 dit/166/666
+2020-08-04 20:41:45 +0200 -- canon soudainement --
+2020-08-04 20:41:45 +0200 soudainement/169/676
+2020-08-04 20:41:45 +0200 -- canon bonjour --
+2020-08-04 20:41:45 +0200 bonjour/19/67
+2020-08-04 20:41:45 +0200 -- canon rien --
+2020-08-04 20:41:45 +0200 rien/6/22
+2020-08-04 20:41:50 +0200 Soumission de la commande "q"

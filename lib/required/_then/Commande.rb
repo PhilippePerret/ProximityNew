@@ -9,7 +9,7 @@ class << self
     cmd = cmd.split(SPACE)
     cmd_name = cmd.shift
     case cmd_name
-    when 'rebuild'
+    when 'rebuild' # reconstruire le texte final
       Runner.itexte.rebuild
     when 'eval'
       code = cmd.join(SPACE)
@@ -57,18 +57,22 @@ class << self
         # texte à ouvrir.
         Runner.open_texte(what, cmd)
       end
+
     when 'recompte' # Recompte tout le texte (fait automatiquement, normalement)
       Runner.itexte.recompte
-    when 'reprepare' # pour forcer la repréparation du texte
+
+    when 'reprepare', 'update' # pour forcer la repréparation du texte
       confirmation = cmd.shift
       if confirmation == '--confirmed'
         Runner.itexte.reprepare
+        CWindow.textWind.write(Runner.iextrait.output)
       else
         CWindow.log("Ajouter --confirmed à la commande pour confirmer l'opération, qui va DÉTRUIRE TOUTES LES TRANSFORMATIONS déjà opérées pour repartir du texte initial.")
       end
     when 'ref', 'refresh'
       # Pour rafraichir l'affichage
       CWindow.textWind.write(Runner.iextrait.output)
+      CWindow.log("L'affichage a été rafraichi. Ça va mieux ?".freeze)
 
       # *** Toutes les méthodes de modification du texte ***
 
@@ -135,6 +139,8 @@ class << self
       else
         CWindow.uiWind.write("Attention, cette opération va détruire tous les changements opérés à tout jamais. Ajouter `--force` à la commande pour confirmer que vous voulez tout perdre et repartir à zéro.")
       end
+    when 'help'
+      Runner.display_help
     else
       CWindow.log("Command inconnue : “#{cmd_init}”")
       @historique.pop # on la supprime de l'historique
