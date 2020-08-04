@@ -21,7 +21,7 @@ class << self
   end #/ parse
 
   def parse_str(str, options = nil)
-    options || {}
+    options ||= {}
     options.merge!(format: :raw) unless options.key?(:format)
     cmd = <<-CODE
 /usr/local/bin/tree-tagger-french <<TEXT

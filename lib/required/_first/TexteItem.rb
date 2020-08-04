@@ -16,25 +16,29 @@ class << self
     return item
   end #/ create
 
-  # Transforme une ligne lemmatisée (par exemple mot TAB PRP TAB mot) en
-  # instance Mot ou NonMot
-  def lemma_to_instance(line, cur_offset = nil, cur_index = nil)
-    mot, type, canon = line.strip.split(TAB)
-    if mot == PARAGRAPHE
-      # Marque de nouveau paragraphe
-      # On crée un nouveau paragraphe avec les éléments
-      NonMot.create([RC, 'paragraphe'], cur_offset, cur_index)
-    elsif type == 'SENT' || type == 'PUN'
-      # Est-ce une fin de phrase ?
-      NonMot.create([mot,type], cur_offset, cur_index)
-    else
-      Mot.create([mot,type,canon], cur_offset, cur_index)
-    end
-  end #/ lemma_to_instance
+  # # Transforme une ligne lemmatisée (par exemple mot TAB PRP TAB mot) en
+  # # instance Mot ou NonMot
+  # def lemma_to_instance(line, cur_offset = nil, cur_index = nil)
+  #   mot, type, canon = line.strip.split(TAB)
+  #   if mot == PARAGRAPHE
+  #     # Marque de nouveau paragraphe
+  #     # On crée un nouveau paragraphe avec les éléments
+  #     NonMot.create([RC, 'paragraphe'], cur_offset, cur_index)
+  #   elsif type == 'SENT' || type == 'PUN'
+  #     # Est-ce une fin de phrase ?
+  #     NonMot.create([mot,type], cur_offset, cur_index)
+  #   else
+  #     Mot.create([mot,type,canon], cur_offset, cur_index)
+  #   end
+  # end #/ lemma_to_instance
 
   def add(titem)
     @items ||= []
-    @items << titem
+    if titem.is_a?(Array)
+      @items += titem
+    else
+      @items << titem
+    end
   end #/ add
 
 end # /<< self
@@ -74,7 +78,13 @@ def length
 end #/ length
 
 def main_type
-  @main_type ||= type.split(DEUX_POINTS).first
+  @main_type ||= begin
+    type.split(DEUX_POINTS).first
+  rescue Exception => e
+    log("PROBLÈME AVEC #{self.inspect} : #{e.message}")
+    log(e)
+    raise
+  end
 end #/ main_type
 
 def sous_type
@@ -170,7 +180,6 @@ end #/ f_proximities
 
 def calcule_longueurs
   # Longueur occupée par le mot
-  log("Index pour calcul de longueur : #{index.inspect}")
   long_index  = (index - Runner.iextrait.from_item).to_s.length
 
   if !proximizable? || ( prox_avant.nil? && prox_apres.nil? )

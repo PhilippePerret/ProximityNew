@@ -9,6 +9,8 @@ class << self
     cmd = cmd.split(SPACE)
     cmd_name = cmd.shift
     case cmd_name
+    when 'rebuild'
+      Runner.itexte.rebuild
     when 'eval'
       code = cmd.join(SPACE)
       begin

@@ -1,251 +1,66 @@
-2020-08-04 14:24:01 +0200 Instanciation de @itexte
-2020-08-04 14:24:01 +0200 Texte à charger : /Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt
-2020-08-04 14:24:01 +0200 Instanciation @extrait (à partir de l'item 12)
-2020-08-04 14:24:01 +0200 -> ExtraitTexte#output
-2020-08-04 14:24:01 +0200 On doit afficher les items de 12 à 412 (nombre total : 162)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 12
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 13
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 14
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 15
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 16
-2020-08-04 14:24:01 +0200 Mot “contenant” (16/55) a une proximité APRÈS : contient (29/117)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 17
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 18
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 19
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 20
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 21
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 22
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 23
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 24
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 25
-2020-08-04 14:24:01 +0200 Mot “aujourd'hui” (25/97) a une proximité APRÈS : aujourd'hui (81/327)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 26
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 27
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 28
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 29
-2020-08-04 14:24:01 +0200 Mot “contient” (29/117) a une proximité AVANT : contenant (16/55)
-2020-08-04 14:24:01 +0200 Mot “contient” (29/117) a une proximité APRÈS : contient (95/383)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 30
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 31
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 32
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 33
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 34
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 35
-2020-08-04 14:24:01 +0200 Mot “paragraphes” (35/152) a une proximité APRÈS : paragraphes (47/199)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 36
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 37
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 38
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 39
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 40
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 41
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 42
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 43
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 44
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 45
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 46
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 47
-2020-08-04 14:24:01 +0200 Mot “paragraphes” (47/199) a une proximité AVANT : paragraphes (35/152)
-2020-08-04 14:24:01 +0200 Mot “paragraphes” (47/199) a une proximité APRÈS : paragraphes (67/269)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 48
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 49
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 50
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 51
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 52
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 53
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 54
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 55
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 56
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 57
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 58
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 59
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 60
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 61
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 62
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 63
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 64
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 65
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 66
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 67
-2020-08-04 14:24:01 +0200 Mot “paragraphes” (67/269) a une proximité AVANT : paragraphes (47/199)
-2020-08-04 14:24:01 +0200 Mot “paragraphes” (67/269) a une proximité APRÈS : paragraphe (134/549)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 68
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 69
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 70
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 71
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 72
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 73
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 74
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 75
-2020-08-04 14:24:01 +0200 Mot “plus” (75/306) a une proximité APRÈS : plus (89/362)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 76
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 77
-2020-08-04 14:24:01 +0200 Mot “long” (77/313) a une proximité APRÈS : long (91/369)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 78
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 79
-2020-08-04 14:24:01 +0200 Mot “pour” (79/320) a une proximité APRÈS : pour (115/475)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 80
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 81
-2020-08-04 14:24:01 +0200 Mot “aujourd'hui” (81/327) a une proximité AVANT : aujourd'hui (25/97)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 82
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 83
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 84
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 85
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 86
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 87
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 88
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 89
-2020-08-04 14:24:01 +0200 Mot “plus” (89/362) a une proximité AVANT : plus (75/306)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 90
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 91
-2020-08-04 14:24:01 +0200 Mot “long” (91/369) a une proximité AVANT : long (77/313)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 92
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 93
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 94
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 95
-2020-08-04 14:24:01 +0200 Mot “contient” (95/383) a une proximité AVANT : contient (29/117)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 96
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 97
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 98
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 99
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 100
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 101
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 102
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 103
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 104
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 105
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 106
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 107
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 108
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 109
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 110
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 111
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 112
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 113
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 114
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 115
-2020-08-04 14:24:01 +0200 Mot “pour” (115/475) a une proximité AVANT : pour (79/320)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 116
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 117
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 118
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 119
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 120
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 121
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 122
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 123
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 124
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 125
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 126
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 127
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 128
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 129
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 130
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 131
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 132
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 133
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 134
-2020-08-04 14:24:01 +0200 Mot “paragraphe” (134/549) a une proximité AVANT : paragraphes (67/269)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 135
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 136
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 137
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 138
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 139
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 140
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 141
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 142
-2020-08-04 14:24:01 +0200 Mot “dialogue” (142/579) a une proximité APRÈS : dialogue (153/615)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 143
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 144
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 145
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 146
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 147
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 148
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 149
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 150
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 151
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 152
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 153
-2020-08-04 14:24:01 +0200 Mot “dialogue” (153/615) a une proximité AVANT : dialogue (142/579)
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 154
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 155
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 156
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 157
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 158
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 159
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 160
-2020-08-04 14:24:01 +0200 Index pour calcul de longueur : 161
-2020-08-04 14:24:01 +0200 <- ExtraitTexte#output
-2020-08-04 14:24:04 +0200 Commande jouée : "prev page"
-2020-08-04 14:24:04 +0200 -> ExtraitTexte#output
-2020-08-04 14:24:04 +0200 On doit afficher les items de 0 à 400 (nombre total : 162)
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 0
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 1
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 2
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 3
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 4
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 5
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 6
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 7
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 8
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 9
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 10
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 11
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 12
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 13
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 14
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 15
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 16
-2020-08-04 14:24:04 +0200 Mot “contenant” (16/55) a une proximité APRÈS : contient (29/117)
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 17
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 18
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 19
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 20
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 21
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 22
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 23
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 24
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 25
-2020-08-04 14:24:04 +0200 Mot “aujourd'hui” (25/97) a une proximité APRÈS : aujourd'hui (81/327)
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 26
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 27
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 28
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 29
-2020-08-04 14:24:04 +0200 Mot “contient” (29/117) a une proximité AVANT : contenant (16/55)
-2020-08-04 14:24:04 +0200 Mot “contient” (29/117) a une proximité APRÈS : contient (95/383)
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 30
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 31
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 32
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 33
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 34
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 35
-2020-08-04 14:24:04 +0200 Mot “paragraphes” (35/152) a une proximité APRÈS : paragraphes (47/199)
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 36
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 37
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 38
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 39
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 40
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 41
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 42
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 43
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 44
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 45
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 46
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 47
-2020-08-04 14:24:04 +0200 Mot “paragraphes” (47/199) a une proximité AVANT : paragraphes (35/152)
-2020-08-04 14:24:04 +0200 Mot “paragraphes” (47/199) a une proximité APRÈS : paragraphes (67/269)
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 48
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 49
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 50
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 51
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 52
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 53
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 54
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 55
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 56
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 57
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 58
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 59
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 60
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 61
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 62
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 63
-2020-08-04 14:24:04 +0200 Index pour calcul de longueur : 64
+2020-08-04 15:31:07 +0200 Instanciation de @itexte
+2020-08-04 15:31:07 +0200 Texte à charger : /Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt
+2020-08-04 15:31:07 +0200 Parsing du texte /Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt
+2020-08-04 15:31:07 +0200 44 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 22 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 64 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 15 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 14 ajoutés à itexte.items
+2020-08-04 15:31:07 +0200 0 ajoutés à itexte.items
+2020-08-04 15:31:08 +0200 Durée du recomptage de 169 items : 0.0004570484161376953
+2020-08-04 15:31:08 +0200 👍 PARSING OPÉRÉ AVEC SUCCÈS
+2020-08-04 15:31:08 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-04 15:31:08 +0200 -> ExtraitTexte#output
+2020-08-04 15:31:08 +0200 On doit afficher les items de 0 à 400 (nombre total : 169)
+2020-08-04 15:31:08 +0200 Mot “contenant” (23/80) a une proximité APRÈS : contient (36/142)
+2020-08-04 15:31:08 +0200 Mot “aujourd'hui” (32/122) a une proximité APRÈS : aujourd'hui (88/352)
+2020-08-04 15:31:08 +0200 Mot “contient” (36/142) a une proximité AVANT : contenant (23/80)
+2020-08-04 15:31:08 +0200 Mot “contient” (36/142) a une proximité APRÈS : contient (102/408)
+2020-08-04 15:31:08 +0200 Mot “paragraphes” (42/177) a une proximité APRÈS : paragraphes (54/224)
+2020-08-04 15:31:08 +0200 Mot “paragraphes” (54/224) a une proximité AVANT : paragraphes (42/177)
+2020-08-04 15:31:08 +0200 Mot “paragraphes” (54/224) a une proximité APRÈS : paragraphes (74/294)
+2020-08-04 15:31:08 +0200 Mot “paragraphes” (74/294) a une proximité AVANT : paragraphes (54/224)
+2020-08-04 15:31:08 +0200 Mot “paragraphes” (74/294) a une proximité APRÈS : paragraphe (141/574)
+2020-08-04 15:31:08 +0200 Mot “plus” (82/331) a une proximité APRÈS : plus (96/387)
+2020-08-04 15:31:08 +0200 Mot “long” (84/338) a une proximité APRÈS : long (98/394)
+2020-08-04 15:31:08 +0200 Mot “pour” (86/345) a une proximité APRÈS : pour (122/500)
+2020-08-04 15:31:08 +0200 Mot “aujourd'hui” (88/352) a une proximité AVANT : aujourd'hui (32/122)
+2020-08-04 15:31:08 +0200 Mot “plus” (96/387) a une proximité AVANT : plus (82/331)
+2020-08-04 15:31:08 +0200 Mot “long” (98/394) a une proximité AVANT : long (84/338)
+2020-08-04 15:31:08 +0200 Mot “contient” (102/408) a une proximité AVANT : contient (36/142)
+2020-08-04 15:31:08 +0200 Mot “pour” (122/500) a une proximité AVANT : pour (86/345)
+2020-08-04 15:31:08 +0200 Mot “paragraphe” (141/574) a une proximité AVANT : paragraphes (74/294)
+2020-08-04 15:31:08 +0200 Mot “dialogue” (149/604) a une proximité APRÈS : dialogue (160/640)
+2020-08-04 15:31:08 +0200 Mot “dialogue” (160/640) a une proximité AVANT : dialogue (149/604)
+2020-08-04 15:31:08 +0200 <- ExtraitTexte#output
+2020-08-04 15:31:24 +0200 Soumission de la commande "rep 16 bonjour"
+2020-08-04 15:31:24 +0200 Commande jouée : "rep 16 bonjour"
+2020-08-04 15:31:26 +0200 Durée du recomptage de 168 items : 0.000640869140625
+2020-08-04 15:31:26 +0200 -> ExtraitTexte#output
+2020-08-04 15:31:26 +0200 On doit afficher les items de 0 à 168 (nombre total : 168)
+2020-08-04 15:31:26 +0200 Mot “contenant” (22/74) a une proximité APRÈS : contient (35/136)
+2020-08-04 15:31:26 +0200 Mot “aujourd'hui” (31/116) a une proximité APRÈS : aujourd'hui (87/346)
+2020-08-04 15:31:26 +0200 Mot “contient” (35/136) a une proximité AVANT : contenant (22/74)
+2020-08-04 15:31:26 +0200 Mot “contient” (35/136) a une proximité APRÈS : contient (101/402)
+2020-08-04 15:31:26 +0200 Mot “paragraphes” (41/171) a une proximité APRÈS : paragraphes (53/218)
+2020-08-04 15:31:26 +0200 Mot “paragraphes” (53/218) a une proximité AVANT : paragraphes (41/171)
+2020-08-04 15:31:26 +0200 Mot “paragraphes” (53/218) a une proximité APRÈS : paragraphes (73/288)
+2020-08-04 15:31:26 +0200 Mot “paragraphes” (73/288) a une proximité AVANT : paragraphes (53/218)
+2020-08-04 15:31:26 +0200 Mot “paragraphes” (73/288) a une proximité APRÈS : paragraphe (140/568)
+2020-08-04 15:31:26 +0200 Mot “plus” (81/325) a une proximité APRÈS : plus (95/381)
+2020-08-04 15:31:26 +0200 Mot “long” (83/332) a une proximité APRÈS : long (97/388)
+2020-08-04 15:31:26 +0200 Mot “pour” (85/339) a une proximité APRÈS : pour (121/494)
+2020-08-04 15:31:26 +0200 Mot “aujourd'hui” (87/346) a une proximité AVANT : aujourd'hui (31/116)
+2020-08-04 15:31:26 +0200 Mot “plus” (95/381) a une proximité AVANT : plus (81/325)
+2020-08-04 15:31:26 +0200 Mot “long” (97/388) a une proximité AVANT : long (83/332)
+2020-08-04 15:31:26 +0200 Mot “contient” (101/402) a une proximité AVANT : contient (35/136)
+2020-08-04 15:31:26 +0200 Mot “pour” (121/494) a une proximité AVANT : pour (85/339)
+2020-08-04 15:31:26 +0200 Mot “paragraphe” (140/568) a une proximité AVANT : paragraphes (73/288)
+2020-08-04 15:31:26 +0200 Mot “dialogue” (148/598) a une proximité APRÈS : dialogue (159/634)
+2020-08-04 15:31:26 +0200 Mot “dialogue” (159/634) a une proximité AVANT : dialogue (148/598)
+2020-08-04 15:31:26 +0200 <- ExtraitTexte#output
+2020-08-04 15:31:33 +0200 Soumission de la commande "q"

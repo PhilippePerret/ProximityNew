@@ -30,6 +30,11 @@ end #/ reset
 #   @db ||= TextSQLite.new(self)
 # end #/ db
 
+# Reconstruction totale du texte.
+def rebuild
+  CWindow.log("Je dois reconstruire le texte.")
+end #/ rebuild
+
 # Essai de recomptage de tout pour voir le temps que ça prend
 def recompte(params = nil)
   params ||= {}
@@ -44,6 +49,7 @@ def recompte(params = nil)
     # Si le décalage du mot change et que son canon n'est pas encore à
     # actualiser, il faut l'enregistrer pour l'actualiser
     if titem.mot? && titem.offset != offset && !canons_to_update.key?(titem.canon)
+      raise "Le canon de #{titem.inspect} n'est pas défini" if titem.canon.nil? || titem.icanon.nil?
       canons_to_update.merge!(titem.canon => titem.icanon)
     end
     titem.offset = offset
@@ -57,7 +63,7 @@ def recompte(params = nil)
   erreurs = []
   canons_to_update.each do |canon, icanon|
     if icanon.nil?
-      erreurs << "ERREUR: Le canon #{canon.inspect} est nul"
+      erreurs << "ERREUR CANON: Le canon #{canon.inspect} est nul"
     else
       icanon.update
     end
@@ -215,7 +221,6 @@ MOT_NONMOT_REG = /([#{DELIMITERS}]+)?([^#{DELIMITERS}]+)([#{DELIMITERS}]+)/
 
 # On découpe le fichier corrigé en mot et non mots
 def decoupe_fichier_corriged
-  @items = []
   # On prépare le fichier pour la lémmatisation. Il ne contiendra que
   # les mots, séparés par des espaces simple
   File.delete(only_mots_path) if File.exists?(only_mots_path)
@@ -223,44 +228,9 @@ def decoupe_fichier_corriged
   # On le fait par paragraphe pour ne pas avoir trop à traiter d'un coup
   File.foreach(corrected_text_path) do |line|
     # log("Phrase originale: #{line.inspect}")
-    line.scan(MOT_NONMOT_REG).to_a.each_with_index do |item, idx|
-      # next if item.nil? # pas de premier délimiteur par exemple
-      amorce, mot, nonmot = item # amorce : le tiret, par exemple, pour dialogue
-      @items << NonMot.new(amorce) unless amorce.nil?
-      if mot.match?(/#{APO}/) && !MOTS_APOSTROPHE.key?(mot.downcase)
-        # log("MOT APOSTROPHE À DÉCOUPER : #{mot.inspect}")
-        bouts = mot.split(APO)
-        motav = bouts.shift
-        motap = bouts.join(APO)
-        motav += APO
-        @items << Mot.new(motav)
-        @items << Mot.new(motap)
-      elsif mot.match?(/#{TIRET}/) && !MOTS_TIRETS.key?(mot.downcase)
-        mots = []
-        bouts = mot.split(TIRET)
-        mots << bouts.shift
-        motap = bouts.join(TIRET)
-        if motap.match?(/#{TIRET}/) && !MOTS_TIRETS.key?(motap.downcase)
-          mots += motap.split(TIRET)
-          mots.last = "#{TIRET}#{mots.last}" # on garde "-il"
-        else
-          mots << "#{TIRET}#{motap}" # on garde "-il"
-        end
-        mots.each do |smot|
-          @items << Mot.new(smot)
-        end
-      else
-        @items << Mot.new(mot)
-      end
-      # Dans tous les cas, même avec une apostrophe, on écrit le mot tel
-      # qu'il est. Parce que lors de la lémmatisation, avec l'apostrophe, il
-      # y aura deux mots trouvés alors que "D' aussi" produira "D" (inconnu)
-      # et "aussi"
-      # On le met en minuscule, car sinon, la lémmatisation ne comprend pas
-      # un mot avec capitale au milieu d'une phrase
-      refonlymots.write("#{mot.downcase}#{SPACE}".freeze)
-      @items << NonMot.new(nonmot)
-    end #/scan
+    new_items = traite_line_of_texte(line, refonlymots)
+    log("#{new_items.count} ajoutés à itexte.items")
+    @items += new_items
     # À la fin de chaque “ligne”, il faut mettre une fin de paragraphe
     @items << NonMot.new(RC, type: 'paragraphe')
   end
@@ -271,6 +241,53 @@ rescue Exception => e
 ensure
   refonlymots.close
 end #/ decoupe_fichier_corriged
+
+# +refmotscontainer+ Référence au fichier contenant tous les mots,
+# dans le mode normal et un fichier virtuel pour les insertions et
+# remplacement.
+def traite_line_of_texte(line, refmotscontainer)
+  line = line.strip
+  new_items = []
+  line.scan(MOT_NONMOT_REG).to_a.each_with_index do |item, idx|
+    # next if item.nil? # pas de premier délimiteur par exemple
+    amorce, mot, nonmot = item # amorce : le tiret, par exemple, pour dialogue
+    new_items << NonMot.new(amorce) unless amorce.nil?
+    if mot.match?(/#{APO}/) && !MOTS_APOSTROPHE.key?(mot.downcase)
+      # log("MOT APOSTROPHE À DÉCOUPER : #{mot.inspect}")
+      bouts = mot.split(APO)
+      motav = bouts.shift
+      motap = bouts.join(APO)
+      motav += APO
+      new_items << Mot.new(motav)
+      new_items << Mot.new(motap)
+    elsif mot.match?(/#{TIRET}/) && !MOTS_TIRETS.key?(mot.downcase)
+      mots = []
+      bouts = mot.split(TIRET)
+      mots << bouts.shift
+      motap = bouts.join(TIRET)
+      if motap.match?(/#{TIRET}/) && !MOTS_TIRETS.key?(motap.downcase)
+        mots += motap.split(TIRET)
+        mots.last = "#{TIRET}#{mots.last}" # on garde "-il"
+      else
+        mots << "#{TIRET}#{motap}" # on garde "-il"
+      end
+      mots.each do |smot|
+        new_items << Mot.new(smot)
+      end
+    else
+      new_items << Mot.new(mot)
+    end
+    # Dans tous les cas, même avec une apostrophe, on écrit le mot tel
+    # qu'il est. Parce que lors de la lémmatisation, avec l'apostrophe, il
+    # y aura deux mots trouvés alors que "D' aussi" produira "D" (inconnu)
+    # et "aussi"
+    # On le met en minuscule, car sinon, la lémmatisation ne comprend pas
+    # un mot avec capitale au milieu d'une phrase
+    refmotscontainer.write("#{mot.downcase}#{SPACE}".freeze)
+    new_items << NonMot.new(nonmot)
+  end #/scan
+  return new_items
+end #/ traite_line_of_texte
 
 # On prend le fichier total (contenant tout le texte initial) et on
 # le corriger pour qu'il puisse être traité
@@ -314,31 +331,29 @@ end #/ prepare_as_projet_scrivener
 def lemmatize
   @lemmatized_file_path = Lemma.parse(only_mots_path)
   # log("Contenu du fichier lemmatized_file_path : #{File.read(lemmatized_file_path)}")
-  File.foreach(lemmatized_file_path).with_index do |line, idx|
+  File.foreach(lemmatized_file_path).with_index do |line, mot_idx_in_lemma|
     next if line.strip.empty?
-    mot, type, canon = line.strip.split(TAB)
-    # log("mot:#{mot.inspect}|type:#{type.inspect}|canon:#{canon.inspect}")
-    if canon == LEMMA_UNKNOWN
-      type, canon = case mot
-                    when nil
-                    else
-                      log("CANON INCONNU: #{mot} L'AJOUTER À #{__FILE__}:#{__LINE__}")
-                      [type, canon]
-                    end
-    end
-    mtype, stype = type.split(DEUX_POINTS)
-    Mot.items[idx].type = type
-    if mot != Mot.items[idx].content.downcase
-      erreur("ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS :")
-      imot = Mot.items[idx]
-      log("mot:#{mot.inspect}, dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
-      break # ou return false ?
-    else # quand tout est normal
-      Canon.add(Mot.items[idx], canon)
-    end
+    traite_lemma_line(line, mot_idx_in_lemma) || break
   end # Fin de boucle sur chaque ligne du fichier de lemmatisation
   return true
 end #/ lemmatize
+
+# Traite une ligne de type mot TAB type TAB canon récupérer
+# des données de lemmatisation, soit au cours du parse complet du fichier
+# à travailler, soit aucun d'une insertion/remplacement
+def traite_lemma_line(line, idx)
+  mot, type, canon = line.strip.split(TAB)
+  Mot.items[idx].type = type
+  if mot != Mot.items[idx].content.downcase
+    erreur("ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS :")
+    imot = Mot.items[idx]
+    log("mot:#{mot.inspect}, dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
+    return false
+  else # quand tout est normal
+    Canon.add(Mot.items[idx], canon)
+  end
+  return true
+end #/ traite_lemma_line
 
 def distance_minimale_commune
   @distance_minimale_commune ||= config[:distance_minimale_commune] || DISTANCE_MINIMALE_COMMUNE

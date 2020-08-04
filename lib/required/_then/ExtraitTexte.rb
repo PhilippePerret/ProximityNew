@@ -1,4 +1,6 @@
 # encoding: UTF-8
+require 'tempfile'
+
 class ExtraitTexte
 DEFAULT_NOMBRE_ITEMS  = 400 # c'est de toute façon le nombre de lignes qui importe
 TEXTE_COLS_WIDTH      = 100
@@ -135,16 +137,45 @@ def remove(params)
   else
     at.list.each {|idx| Runner.itexte.items.slice!(idx)}
   end
-  update(params[:real_at].at) unless params[:noupdate]
+  unless params[:noupdate]
+    update(params[:real_at].at)
+    Runner.itexte.save
+  end
 end #/ remove
 
 # Insert un ou plusieurs mots
 def insert(params)
   params[:real_at] ||= AtStructure.new(params[:at], from_item)
   CWindow.log("Insertion de “#{params[:content]}”#{params[:real_at].to_s} (avant “#{Runner.itexte.items[params[:real_at].at].content}”)")
-  new_mots = Lemma.parse_str(params[:content], format: :instances)
-  Runner.itexte.items.insert(params[:real_at].at, *new_mots)
-  update(params[:real_at].at) unless params[:noupdate]
+  # Ici, il faut appliquer le nouveau découpage. Noter que l'insertion ne
+  # peut pas comporter des retours charriot, c'est déjà un repère.
+  # new_mots = Lemma.parse_str(params[:content], format: :instances)
+  tempfile = Tempfile.new('getmots')
+  Mot.init # remet la liste à vide, juste pour le contrôle des lemma
+  begin
+    refvirtualfile = File.open(tempfile, 'a')
+    new_items = itexte.traite_line_of_texte(params[:content], refvirtualfile)
+    Mot.add(new_items)
+  ensure
+    refvirtualfile.close
+  end
+
+  Runner.itexte.items.insert(params[:real_at].at, *new_items)
+  # Il faut traiter ces items qui n'ont été qu'instanciés pour le moment
+
+  begin
+    Lemma.parse_str(File.read(tempfile)).split(RC).each_with_index do |line, idx|
+      index_mot = idx # + first_index_in_mots
+      itexte.traite_lemma_line(line, index_mot)
+    end
+  ensure
+    tempfile.delete
+  end
+
+  unless params[:noupdate]
+    update(params[:real_at].at)
+    Runner.itexte.save
+  end
 end #/ insert
 
 # Actualisation de l'affichage
