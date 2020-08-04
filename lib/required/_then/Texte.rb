@@ -260,7 +260,9 @@ def decoupe_fichier_corriged
       # un mot avec capitale au milieu d'une phrase
       refonlymots.write("#{mot.downcase}#{SPACE}".freeze)
       @items << NonMot.new(nonmot)
-    end
+    end #/scan
+    # À la fin de chaque “ligne”, il faut mettre une fin de paragraphe
+    @items << NonMot.new(RC, type: 'paragraphe')
   end
   return true
 rescue Exception => e
@@ -325,13 +327,14 @@ def lemmatize
                     end
     end
     mtype, stype = type.split(DEUX_POINTS)
-    imot = Mot.items[idx]
-    if mot != imot.content.downcase
+    Mot.items[idx].type = type
+    if mot != Mot.items[idx].content.downcase
       erreur("ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS :")
+      imot = Mot.items[idx]
       log("mot:#{mot.inspect}, dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
       break # ou return false ?
     else # quand tout est normal
-      Canon.add(imot, canon)
+      Canon.add(Mot.items[idx], canon)
     end
   end # Fin de boucle sur chaque ligne du fichier de lemmatisation
   return true

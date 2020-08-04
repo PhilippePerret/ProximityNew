@@ -45,9 +45,12 @@ def output
   real_last_idx = nil
 
   # On boucle sur chaque item qui doit être affiché
+  log("On doit afficher les items de #{from_item} à #{to_item} (nombre total : #{itexte.items.count})")
   (from_item..to_item).each_with_index do |idx, idx_extrait|
     # S'il n'y a plus de text-item, on arrête
-    titem = itexte.items[idx] || break
+    titem = itexte.items[idx] || begin
+      break
+    end
     real_last_idx = idx
 
     # On doit calculer les longueurs du mot (index, mot, proximités)
@@ -84,9 +87,12 @@ def output
 
     # Pour voir chaque titem s'afficher l'un après l'autre
     # break if CWindow.textWind.curse.getch.to_s == 'q'
-  end
+  end #/loop sur les mots à voir
+
   @to_item = real_last_idx
-  CWindow.status("From #{@from_item} to #{@to_item}")
+  msg = "From #{@from_item} to #{@to_item}"
+  msg << " (dernier)" if (@to_item + 1 >= itexte.items.count)
+  CWindow.status(msg)
 
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)

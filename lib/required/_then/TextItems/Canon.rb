@@ -43,6 +43,7 @@ def add(mot)
   mot.icanon = self
   mot.canon  = self.canon
   @items << mot
+  @offsets << mot.offset unless mot.offset.nil?
 end #/ add
 
 def count

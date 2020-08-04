@@ -142,9 +142,17 @@ class << self
         wind.resetpos
         wind.write(':')
       when 261 # RIGHT ARROW
-        Commande.run('next page')
+        if iextrait.to_item + 1 >= itexte.items.count
+          CWindow.log("C'est la dernière page !".freeze)
+        else
+          Commande.run('next page')
+        end
       when 260 # LEFT ARROW
-        Commande.run('prev page')
+        if iextrait.from_item == 0
+          CWindow.log("C'est la première page !".freeze)
+        else
+          Commande.run('prev page')
+        end
       when 258 # BOTTOM ARROW
         wind.write("Aller en bas")
       when 259 # TOP ARROW

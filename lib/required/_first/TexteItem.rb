@@ -44,13 +44,20 @@ end # /<< self
 #
 # ---------------------------------------------------------------------
 
-attr_reader :content, :type
-attr_accessor :index, :offset, :canon
+
+attr_reader :content
+attr_accessor :type, :index, :offset, :canon
 attr_accessor :icanon
 
-def initialize(content)
+# +params+ Table de données. Permet d'envoyer des valeurs. L'argument a
+# été inauguré pour ajouter des NonMot's fin de paragraphe au cours du
+# découpage du texte.
+def initialize(content, params = nil)
   @content = content
   self.class.add(self)
+  unless params.nil?
+    params.each { |k,v| instance_variable_set("@#{k}", v)}
+  end
 end #/ initialize
 
 # Pour info, le content/index/offset
@@ -67,11 +74,11 @@ def length
 end #/ length
 
 def main_type
-  @main_type ||= type.split(':').first
+  @main_type ||= type.split(DEUX_POINTS).first
 end #/ main_type
 
 def sous_type
-  @sous_type ||= type.split(':').last
+  @sous_type ||= type.split(DEUX_POINTS).last
 end #/ sous_type
 
 # La longueur "formatée", c'est-à-dire lorsque le mot doit être
@@ -148,7 +155,7 @@ def f_proximities
     moitie_apres = f_length - moitie_avant - 1
     # Utile pour les autres calculs
     if prox_avant && prox_apres
-      if "#{dist_avant}|#{dist_apres}".length+1 >= f_length
+      if "#{dist_avant}|#{dist_apres}".length >= f_length
         "#{dist_avant}|#{dist_apres}".freeze
       else
         "#{dist_avant.ljust(moitie_avant)}|#{dist_apres.rjust(moitie_apres)}".freeze
@@ -156,20 +163,20 @@ def f_proximities
     elsif prox_avant
       "#{dist_avant}|".ljust(f_length)
     else
-      "|#{dist_apres} ".rjust(f_length - 1)
+      "|#{dist_apres}".rjust(f_length)
     end
   end
 end #/ f_proximities
 
 def calcule_longueurs
   # Longueur occupée par le mot
-  long_mot    = length.dup
+  log("Index pour calcul de longueur : #{index.inspect}")
   long_index  = (index - Runner.iextrait.from_item).to_s.length
 
   if !proximizable? || ( prox_avant.nil? && prox_apres.nil? )
     # Si ce n'est pas un mot proximizable ou qu'il n'y a pas de proximité
     # on compare juste la longueur de l'index et la longueur du mot
-    @f_length = [long_mot, long_index].max
+    @f_length = [length, long_index].max
   else
     dist_avant = prox_avant ? (prox_avant.mot_avant.index - Runner.iextrait.from_item).to_s : nil
     dist_apres = prox_apres ? (prox_apres.mot_apres.index - Runner.iextrait.from_item).to_s : nil
@@ -180,7 +187,7 @@ def calcule_longueurs
     # Longueur occupée par les distances
     long_dist  = dist_avant_len + dist_apres_len
     long_proxs = long_dist + 1 # +1 pour la barre
-    @f_length = [long_index, long_proxs, long_mot].max
+    @f_length = [long_index, length, long_proxs].max
   end
 end #/ calcule_longueurs
 
