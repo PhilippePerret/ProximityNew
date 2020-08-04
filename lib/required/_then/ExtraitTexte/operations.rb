@@ -60,6 +60,9 @@ def insert(params)
     # pris en compte.
     content_pour_reg = "#{params[:content]} "
     new_items = itexte.traite_line_of_texte(content_pour_reg, refvirtualfile)
+    # On retire le dernier item qui est l'espace
+    new_items.pop
+    # Et on ajoute les autres
     Mot.add(new_items)
   ensure
     refvirtualfile.close

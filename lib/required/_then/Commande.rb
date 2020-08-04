@@ -72,7 +72,7 @@ class << self
     when 'reprepare', 'update' # pour forcer la repréparation du texte
       confirmation = cmd.shift
       if confirmation == '--confirmed' || confirmation == '--force'
-        Runner.itexte.reproximitize
+        Runner.itexte.parse # maintenant, reprend tout
         CWindow.textWind.write(Runner.iextrait.output)
       else
         CWindow.log("Ajouter --confirmed à la commande pour confirmer l'opération, qui va DÉTRUIRE TOUTES LES TRANSFORMATIONS déjà opérées pour repartir du texte initial.")

@@ -1,0 +1,13 @@
+2020-08-04 22:15:12 +0200 Instanciation de @itexte
+2020-08-04 22:15:12 +0200 Texte à charger : /Users/philippeperret/Programmation/ProximityNew/asset/exemples/texte_simple.txt
+2020-08-04 22:15:12 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-04 22:15:12 +0200 -> ExtraitTexte#output
+2020-08-04 22:15:12 +0200 On doit afficher les items de 0 à 400 (nombre total : 12)
+2020-08-04 22:15:12 +0200 Mot “temps” (2/5) a une proximité APRÈS : temps (6/18)
+2020-08-04 22:15:12 +0200 Mot “temps” (6/18) a une proximité AVANT : temps (2/5)
+2020-08-04 22:15:12 +0200 <- ExtraitTexte#output
+2020-08-04 22:15:19 +0200 Soumission de la commande "rebuild"
+2020-08-04 22:15:19 +0200 Commande jouée : "rebuild"
+2020-08-04 22:15:29 +0200 Soumission de la commande "open"
+2020-08-04 22:15:29 +0200 Commande jouée : "open"
+2020-08-04 22:17:24 +0200 Soumission de la commande "q"
