@@ -46,9 +46,24 @@ class << self
       end
     when 'open' # ouvrir un nouveau texte avec son path
       what = cmd.shift
-      Runner.open_texte(what, cmd)
+      if what.nil?
+        # Si aucun argument n'est passé, il faut ouvrir le dossier du texte
+        # courant
+        `open -a Finder "#{Runner.itexte.folder}"`
+      else
+        # Si un argument est passé, c'est le chemin d'accès au nouveau
+        # texte à ouvrir.
+        Runner.open_texte(what, cmd)
+      end
     when 'recompte' # Recompte tout le texte (fait automatiquement, normalement)
       Runner.itexte.recompte
+    when 'reprepare' # pour forcer la repréparation du texte
+      confirmation = cmd.shift
+      if confirmation == '--confirmed'
+        Runner.itexte.reprepare
+      else
+        CWindow.log("Ajouter --confirmed à la commande pour confirmer l'opération, qui va DÉTRUIRE TOUTES LES TRANSFORMATIONS déjà opérées pour repartir du texte initial.")
+      end
     when 'ref', 'refresh'
       # Pour rafraichir l'affichage
       CWindow.textWind.write(Runner.iextrait.output)

@@ -1,5 +1,14 @@
-2020-08-03 15:56:58 +0200 Instanciation de @itexte
-2020-08-03 15:56:58 +0200 Parsing du texte /Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv/Le_Parc.scrivx
-2020-08-03 15:57:01 +0200 Instanciation @extrait (à partir de l'item 0)
-2020-08-03 15:57:01 +0200 -> ExtraitTexte#output
-2020-08-03 15:57:14 +0200 Soumission de la commande "q"
+2020-08-04 10:57:54 +0200 Instanciation de @itexte
+2020-08-04 10:57:54 +0200 Texte à charger : /Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt
+2020-08-04 10:57:54 +0200 Parsing du texte /Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt
+2020-08-04 10:57:57 +0200 Phrase originale: "D'aussi loin, Un simple texte n'est un contenant de plusieurs lignes qu'aujourd'hui. Il contient également plusieurs paragraphes.\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "__PARAGRAPHE__\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "Ceci est un deuxième paragraphes et il y en aura trois !\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "__PARAGRAPHE__\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "Le troisième paragraphes est peut-être le plus long pour aujourd'hui. Lequel est le plus long ? Il contient peu à peu de nombreuses locutions ou expressions particulières pour tester des choses assez basiques.\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "__PARAGRAPHE__\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "– Un quatrième paragraphe qui est un dialogue.\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "__PARAGRAPHE__\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "– Et un autre dialogue ! dit-il soudainement.\n"
+2020-08-04 10:57:57 +0200 Phrase originale: "__PARAGRAPHE__\n"
+2020-08-04 10:58:02 +0200 Soumission de la commande "q"

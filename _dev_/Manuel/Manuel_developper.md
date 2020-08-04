@@ -45,4 +45,24 @@ Elles sont sauvées de deux façons principales :
 On commence par fournir le texte à NewProximity à l’aide de :
 
 * en ligne de commande par `newprox /path/to/the/file.txt`,
-* dans le programme lancé par `open /path/to/the/file.txt`.
+* dans le programme lancé grâce à la commande `open /path/to/the/file.txt`.
+
+Ce texte est découpé en mots et non-mots.
+
+
+
+## Traitement des projets Scrivener
+
+Le traitement d’un projet Scrivener pose de nombreux problèmes dont notamment :
+
+* la répartition du texte dans plusieurs fichiers,
+* l’enregistrement (pour ma part) en RTF.
+
+La procédure de traitement suit ce parcours :
+
+1. On lit le fichier `.scrivx` du projet pour relever la liste des fichiers du manuscrit.
+2. On produit un fichier complet contenant tout le texte, avec des délimiteurs permettant d’identifier chaque fichier. Ces délimiteurs sont des marques de type `[Fxxx]` dont la longueur sera retirée du calcul des offsets. Pendant la produit de ce fichier, on met de côté l’entête des fichiers `rtf` pour qu’elle soit reprise.
+3. Ensuite la procédure est « normale », on découpe le texte en mots et non-mots pour pouvoir le travailler. À la fin de l’opération, le texte complet est reproduit à nouveau.
+4. On découpe le texte complet pour récupérer les textes de chaque fichier du projet Scrivener.
+5. On produit chaque nouveau fichier `content.rtf` tout en conservant l’ancien avec le nom `content-backup<date>.rtf`. Certaines corrections sont faites, par exemple pour la transformation des marques de styles.
+

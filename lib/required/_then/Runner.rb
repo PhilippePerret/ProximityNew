@@ -1,14 +1,18 @@
 # encoding: UTF-8
+require 'sqlite3'
 require 'json'
 
 module Runner
 class << self
   include ConfigModule
 
+  # Retourne et conserve l'instance Texte du texte courant
+  # Ce texte courant peut être soit un texte seul, soit un projet Scrivener
   def itexte
     @itexte ||= begin
       log("Instanciation de @itexte")
       path_text = ARGV[0] || config[:last_text_path] || File.join(APP_FOLDER,'asset','exemples','simple_text.txt')
+      log("Texte à charger : #{path_text}")
       CWindow.log("Texte à charger : #{path_text}")
       Texte.new(path_text)
     end
@@ -73,7 +77,11 @@ class << self
     end
 
     # On parse le texte
-    itexte.parse_if_necessary
+    itexte.parse_if_necessary || begin
+      CWindow.log "Problème en parsant le fichier. Je dois renoncer. Taper ':open path/to/file' pour ouvrir un autre fichier."
+      Runner.interact_with_user
+      return
+    end
 
     begin
       # On affiche l'extrait courant du texte

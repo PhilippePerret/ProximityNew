@@ -4,8 +4,10 @@
 =end
 
 APO = "'".freeze  unless defined?(APO)
+DEUX_POINTS = ':'.freeze unless defined?(DEUX_POINTS)
 EMPTY_STRING = ''.freeze unless defined?(EMPTY_STRING)
 ISPACE = ' '.freeze unless defined?(ISPACE) # espace insécable
+LEMMA_UNKNOWN = "<unknown>".freeze
 NL    = "\r".freeze  unless defined?(NL)
 PARAGRAPHE = '__PARAGRAPHE__'.freeze
 RC    = "\n".freeze  unless defined?(RC)

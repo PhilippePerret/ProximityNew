@@ -32,6 +32,11 @@ class << self
     end
   end #/ lemma_to_instance
 
+  def add(titem)
+    @items ||= []
+    @items << titem
+  end #/ add
+
 end # /<< self
 # ---------------------------------------------------------------------
 #
@@ -43,9 +48,9 @@ attr_reader :content, :type
 attr_accessor :index, :offset, :canon
 attr_accessor :icanon
 
-def initialize(params)
-  # Note : sera redéfini par chaque sous-classe
-  @content, @type = params
+def initialize(content)
+  @content = content
+  self.class.add(self)
 end #/ initialize
 
 # Pour info, le content/index/offset
