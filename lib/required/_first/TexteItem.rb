@@ -66,22 +66,6 @@ def length
   @length ||= content.length
 end #/ length
 
-def pre_required
-  if mot?
-    SPACE
-  else
-    EMPTY_STRING
-  end
-end #/ pre_required
-
-def post_required
-  if mot?
-    EMPTY_STRING
-  else
-    EMPTY_STRING
-  end
-end #/ post_required
-
 def main_type
   @main_type ||= type.split(':').first
 end #/ main_type
@@ -118,12 +102,14 @@ end #/ f_length
 
 # L'index formaté. On ne l'indique pas si c'est une ponctuation.
 def f_index(idx)
-  pre_required + (non_mot? ? SPACE : idx).to_s.ljust(f_length)
+  (non_mot? ? SPACE : idx).to_s.ljust(f_length)
 end #/ f_index
 
 # Pour la deuxième ligne contenant le texte
 def f_content
-  c = pre_required + content + post_required
+  c = ''
+  c << SPACE if f_length - length > 4
+  c << content
   c.ljust(f_length)
 end #/ f_content
 
@@ -161,7 +147,7 @@ def f_proximities
     moitie_avant = (f_length / 2) - 1 # -1 pour la barre
     moitie_apres = f_length - moitie_avant - 1
     # Utile pour les autres calculs
-    pre_required + if prox_avant && prox_apres
+    if prox_avant && prox_apres
       if "#{dist_avant}|#{dist_apres}".length+1 >= f_length
         "#{dist_avant}|#{dist_apres}".freeze
       else
@@ -171,47 +157,32 @@ def f_proximities
       "#{dist_avant}|".ljust(f_length)
     else
       "|#{dist_apres} ".rjust(f_length - 1)
-    end + post_required
+    end
   end
 end #/ f_proximities
 
 def calcule_longueurs
   # Longueur occupée par le mot
-  long_mot = content.length + pre_required.length + post_required.length
+  long_mot    = length.dup
+  long_index  = (index - Runner.iextrait.from_item).to_s.length
+
   if !proximizable? || ( prox_avant.nil? && prox_apres.nil? )
-    long_index = (index - Runner.iextrait.from_item).to_s.length + 1
+    # Si ce n'est pas un mot proximizable ou qu'il n'y a pas de proximité
+    # on compare juste la longueur de l'index et la longueur du mot
     @f_length = [long_mot, long_index].max
   else
-    dist_avant = nil
-    dist_apres = nil
-    if prox_avant
-      dist_avant = (prox_avant.mot_avant.index - Runner.iextrait.from_item).to_s
-    end
-    if prox_apres
-      dist_apres = (prox_apres.mot_apres.index - Runner.iextrait.from_item).to_s
-    end
+    dist_avant = prox_avant ? (prox_avant.mot_avant.index - Runner.iextrait.from_item).to_s : nil
+    dist_apres = prox_apres ? (prox_apres.mot_apres.index - Runner.iextrait.from_item).to_s : nil
 
     dist_avant_len = dist_avant&.length || 0
     dist_apres_len = dist_apres&.length || 0
 
-    # Longueur occupée par l'index relatif du mot
-    long_index = (index - Runner.iextrait.from_item).to_s.length
     # Longueur occupée par les distances
     long_dist  = dist_avant_len + dist_apres_len
     long_proxs = long_dist + 1 # +1 pour la barre
-    @f_length = [long_index, long_proxs, long_mot].max + pre_required.length + post_required.length
+    @f_length = [long_index, long_proxs, long_mot].max
   end
 end #/ calcule_longueurs
-
-# Retourne true si l'item est un mot
-def mot?
-  self.class.name == "Mot".freeze
-end #/ mot?
-
-# Retourne true si l'item est une ponctuation
-def ponctuation?
-  type == 'PUN' || type == 'SENT'
-end #/ ponctuation?
 
 # Retourne true si le text-item peut être étudié au niveau de ses proximités
 def proximizable?

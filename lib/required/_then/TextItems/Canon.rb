@@ -14,13 +14,15 @@ class << self
     end
   end #/ each
 
-  def add(mot)
-    mot.canon = mot.content.downcase if mot.canon == '<unknown>'
-    unless self.items_as_hash.key?(mot.canon)
-      new_canon = new(mot.canon)
-      self.items_as_hash.merge!(mot.canon => new_canon)
+  # Ici, +mot+ est un mot qui ne connait pas encore son canon, il a juste
+  # été enregistré dans Texte#items
+  def add(mot, canon)
+    canon = mot.content.downcase if canon == LEMMA_UNKNOWN
+    unless self.items_as_hash.key?(canon)
+      new_canon = new(canon)
+      self.items_as_hash.merge!(canon => new_canon)
     end
-    self.items_as_hash[mot.canon].add(mot)
+    self.items_as_hash[canon].add(mot)
   end #/ add
 
 end # /<< self
@@ -39,8 +41,8 @@ end #/ initialize
 # Ajout d'un mot au canon
 def add(mot)
   mot.icanon = self
+  mot.canon  = self.canon
   @items << mot
-  @offsets << mot.offset
 end #/ add
 
 def count

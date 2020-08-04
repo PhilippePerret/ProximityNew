@@ -8,4 +8,6 @@ end # /<< self
 #
 # ---------------------------------------------------------------------
 def non_mot? ; true end
+def mot? ; false end
+def ponctuation?; true end
 end #/NonMot < TexteItem

@@ -40,19 +40,20 @@ def recompte(params = nil)
   canons_to_update = {}
   params.merge!(from: 0) unless params.key?(:from)
   idx = params[:from] - 1
-  while item = items[idx += 1]
+  while titem = self.items[idx += 1]
     # Si le décalage du mot change et que son canon n'est pas encore à
     # actualiser, il faut l'enregistrer pour l'actualiser
-    if item.offset != offset && item.canon && !canons_to_update.key?(item.canon)
-      canons_to_update.merge!(item.canon => item.icanon)
+    if titem.mot? && titem.offset != offset && !canons_to_update.key?(titem.canon)
+      canons_to_update.merge!(titem.canon => titem.icanon)
     end
-    item.offset = offset
-    item.index  = idx
-    offset += item.length + 1 # approximatif car on n'ajoute pas toujours 1 espace
+    titem.offset = offset
+    titem.index  = idx
+    offset += titem.length + 1 # approximatif car on n'ajoute pas toujours 1 espace
     nb += 1
   end
 
   # Actualisation des canons
+  # ------------------------
   erreurs = []
   canons_to_update.each do |canon, icanon|
     if icanon.nil?
@@ -67,7 +68,7 @@ def recompte(params = nil)
   end
 
   end_time = Time.now.to_f
-  CWindow.log("Fin du recalcul. Quitter et voir le temps")
+  CWindow.log("Fin du recalcul. Quitter et pour voir le temps.")
 
   log("Durée du recomptage de #{nb} items : #{end_time - start_time}")
 end #/ recompte
@@ -106,6 +107,7 @@ def parse_if_necessary
   if out_of_date?
     # log "Le fichier doit être actualisé"
     parse || return
+    log("👍 PARSING OPÉRÉ AVEC SUCCÈS".freeze)
   else
     # log "Le fichier est à jour"
     load
@@ -120,6 +122,10 @@ def out_of_date?
   return File.stat(data_path).mtime < File.stat(path).mtime
 end #/ out_of_date?
 
+def init
+  @items = []
+  self.current_first_item = 0
+end #/ init
 
 # = main =
 #
@@ -137,9 +143,8 @@ def parse
   log("Parsing du texte #{path}")
 
   # Initialisations
-  @items = []
+  self.init
   Canon.init
-  self.current_first_item = 0
 
   # Préparation du texte
   # --------------------
@@ -155,9 +160,10 @@ def parse
   # On lemmatise la liste de tous les mots, on ajoutant chaque
   # mot à son canon.
   lemmatize || return
-  #
-  # # Et on dispatche en mots et non mots
-  # dispatche
+
+  # On doit recalculer tout le texte. C'est-à-dire définir les
+  # offsets de tous les éléments
+  recompte || return
 
   # On termine en enregistrant la donnée finale
   save
@@ -201,26 +207,48 @@ def prepare
   return true
 end #/ prepare
 
-# On découpe le fichier corrigé en mot et non mots
-DELIMITERS = '  ?!,;:\.…—–=+$¥€«»' # pas de trait d'union, par s'apostrophe
+# Tous les signes, dans le texte, qui vont être considérés comme ne
+# constituant pas un mot. Donc les apostrophes et les tirets sont exclus.
+DELIMITERS = '  ?!,;:\.…—–=+$¥€«»' # pas de trait d'union, pas d'apostrophe
+
 MOT_NONMOT_REG = /([#{DELIMITERS}]+)?([^#{DELIMITERS}]+)([#{DELIMITERS}]+)/
+
+# On découpe le fichier corrigé en mot et non mots
 def decoupe_fichier_corriged
   @items = []
   # On prépare le fichier pour la lémmatisation. Il ne contiendra que
   # les mots, séparés par des espaces simple
+  File.delete(only_mots_path) if File.exists?(only_mots_path)
   refonlymots = File.open(only_mots_path,'a')
   # On le fait par paragraphe pour ne pas avoir trop à traiter d'un coup
   File.foreach(corrected_text_path) do |line|
-    log("Phrase originale: #{line.inspect}")
+    # log("Phrase originale: #{line.inspect}")
     line.scan(MOT_NONMOT_REG).to_a.each_with_index do |item, idx|
       # next if item.nil? # pas de premier délimiteur par exemple
       amorce, mot, nonmot = item # amorce : le tiret, par exemple, pour dialogue
       @items << NonMot.new(amorce) unless amorce.nil?
-      if mot.match?(/#{APO}/) && mot.downcase != 'aujourd\'hui' && mot.downcase != 'prud\'hommes'
-        motav, motap = mot.split(APO)
+      if mot.match?(/#{APO}/) && !MOTS_APOSTROPHE.key?(mot.downcase)
+        # log("MOT APOSTROPHE À DÉCOUPER : #{mot.inspect}")
+        bouts = mot.split(APO)
+        motav = bouts.shift
+        motap = bouts.join(APO)
         motav += APO
         @items << Mot.new(motav)
         @items << Mot.new(motap)
+      elsif mot.match?(/#{TIRET}/) && !MOTS_TIRETS.key?(mot.downcase)
+        mots = []
+        bouts = mot.split(TIRET)
+        mots << bouts.shift
+        motap = bouts.join(TIRET)
+        if motap.match?(/#{TIRET}/) && !MOTS_TIRETS.key?(motap.downcase)
+          mots += motap.split(TIRET)
+          mots.last = "#{TIRET}#{mots.last}" # on garde "-il"
+        else
+          mots << "#{TIRET}#{motap}" # on garde "-il"
+        end
+        mots.each do |smot|
+          @items << Mot.new(smot)
+        end
       else
         @items << Mot.new(mot)
       end
@@ -228,7 +256,9 @@ def decoupe_fichier_corriged
       # qu'il est. Parce que lors de la lémmatisation, avec l'apostrophe, il
       # y aura deux mots trouvés alors que "D' aussi" produira "D" (inconnu)
       # et "aussi"
-      refonlymots.write("#{mot}#{SPACE}".freeze)
+      # On le met en minuscule, car sinon, la lémmatisation ne comprend pas
+      # un mot avec capitale au milieu d'une phrase
+      refonlymots.write("#{mot.downcase}#{SPACE}".freeze)
       @items << NonMot.new(nonmot)
     end
   end
@@ -236,6 +266,8 @@ def decoupe_fichier_corriged
 rescue Exception => e
   erreur(e)
   return false
+ensure
+  refonlymots.close
 end #/ decoupe_fichier_corriged
 
 # On prend le fichier total (contenant tout le texte initial) et on
@@ -262,7 +294,6 @@ end #/ prepare_fichier_corriged
 # Quand on doit préparer le texte comme un projet scrivener
 def prepare_as_projet_scrivener
   log("-> prepare_as_projet_scrivener".freeze)
-  CWindow.log("Je dois préparer le texte comme un projet Scrivener.")
   ScrivFile.create_table_base_for(Runner.itexte) || return
   projet = Scrivener::Projet.new(path)
   # Préparer le fichier contenant tout le texte si nécessaire
@@ -277,50 +308,34 @@ end #/ prepare_as_projet_scrivener
 
 # Lémmatiser le texte consiste à le passer par tree-tagger — ce qui prend
 # quelques secondes même pour un grand texte — pour ensuite récupérer chaque
-# mot et connaitre son canon dans le texte final (car le problème, c'est que
-# cette lemmatisation fait perdre la position exacte du mot, donc on ne pourrait
-# par reconstituer le texte exactement)
-# NOTE Mais pour le moment on va quand même se servir de ça
+# mot et connaitre son canon dans le texte final
 def lemmatize
   @lemmatized_file_path = Lemma.parse(only_mots_path)
+  # log("Contenu du fichier lemmatized_file_path : #{File.read(lemmatized_file_path)}")
   File.foreach(lemmatized_file_path).with_index do |line, idx|
     next if line.strip.empty?
     mot, type, canon = line.strip.split(TAB)
-    log("mot:#{mot.inspect}|type:#{type.inspect}|canon:#{canon.inspect}")
+    # log("mot:#{mot.inspect}|type:#{type.inspect}|canon:#{canon.inspect}")
     if canon == LEMMA_UNKNOWN
       type, canon = case mot
-                    when 'Un' then ['DET:ART', 'un']
+                    when nil
+                    else
+                      log("CANON INCONNU: #{mot} L'AJOUTER À #{__FILE__}:#{__LINE__}")
+                      [type, canon]
                     end
     end
     mtype, stype = type.split(DEUX_POINTS)
     imot = Mot.items[idx]
-    log("mot:#{mot.inspect}, dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
-  end
+    if mot != imot.content.downcase
+      erreur("ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS :")
+      log("mot:#{mot.inspect}, dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
+      break # ou return false ?
+    else # quand tout est normal
+      Canon.add(imot, canon)
+    end
+  end # Fin de boucle sur chaque ligne du fichier de lemmatisation
+  return true
 end #/ lemmatize
-
-# Ici, les données lemmatisées sont distribuées en mots et non-mots
-# OLD METHOD
-def dispatche
-  # Pour garder l'offset courant
-  cur_offset = 0
-  cur_index  = 0
-  File.foreach(lemmatized_file_path) do |line|
-    instance = TexteItem.lemma_to_instance(line,cur_offset,cur_index)
-    @items << instance # Mot ou NonMot
-    cur_offset += if instance.content == PARAGRAPHE # Marque de paragraphe
-                    2
-                  elsif instance.ponctuation?
-                    instance.content.length
-                  else
-                    instance.length + 1
-                  end
-    # Index suivant
-    cur_index += 1
-  end
-
-  # *** attributions ***
-
-end #/ parse
 
 def distance_minimale_commune
   @distance_minimale_commune ||= config[:distance_minimale_commune] || DISTANCE_MINIMALE_COMMUNE

@@ -15,4 +15,7 @@ end # /<< self
 attr_accessor :canon
 
 def non_mot? ; false end
+def mot? ; true end
+def ponctuation?; false end
+
 end #/Mot < TexteItem
