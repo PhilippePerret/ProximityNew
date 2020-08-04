@@ -66,7 +66,7 @@ end #/ initialize
 
 # Pour info, le content/index/offset
 def cio
-  "#{content}/#{index}/#{offset}"
+  "#{content.gsub(/\n/,'\n').inspect}/#{index}/#{offset}"
 end #/ cio
 
 def to_s
@@ -179,7 +179,13 @@ def f_proximities
 end #/ f_proximities
 
 def calcule_longueurs
+
   # Longueur occupée par le mot
+  if index.nil?
+    raise("index du mot #{cio} est nil… impossible normalement")
+  elsif Runner.iextrait.from_item.nil?
+    raise("Runner.iextrait.from_item est nil (dans le calcul des longueurs de #{cio})… Impossible normalement")
+  end
   long_index  = (index - Runner.iextrait.from_item).to_s.length
 
   if !proximizable? || ( prox_avant.nil? && prox_apres.nil? )

@@ -49,7 +49,7 @@ def recompte(params = nil)
     # Si le décalage du mot change et que son canon n'est pas encore à
     # actualiser, il faut l'enregistrer pour l'actualiser
     if titem.mot? && titem.offset != offset && !canons_to_update.key?(titem.canon)
-      raise "Le canon de #{titem.inspect} n'est pas défini" if titem.canon.nil? || titem.icanon.nil?
+      raise "Le canon de #{titem.inspect} n'est pas défini (il devrait l'être)" if titem.canon.nil? || titem.icanon.nil?
       canons_to_update.merge!(titem.canon => titem.icanon)
     end
     titem.offset = offset
@@ -82,8 +82,7 @@ end #/ recompte
 # On doit forcer la ré-analyse du texte
 def reproximitize
   CWindow.logWind.write('Ré-analyse du texte…')
-  File.delete(data_path) if File.exists?(data_path)
-  parse || return
+  reprepare
   CWindow.logWind.write('Texte analysé avec succès.')
   return true
 end #/ reproximitize
@@ -191,14 +190,16 @@ end
 # ATTENTION : Cette procédure détruit toutes les transformations déjà
 # opérées
 def reprepare
+  log("-> reprepare")
   [data_path, main_file_txt, only_mots_path].each do |fpath|
     File.delete(fpath) if File.exists?(fpath)
   end
   parse
+  log("<- reprepare")
+  return true
 end #/ reprepare
 
 def prepare
-
   # Préparation d'un fichier "full-texte" contenant tout le texte à corriger
   if projet_scrivener?
     prepare_as_projet_scrivener || return

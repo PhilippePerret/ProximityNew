@@ -22,29 +22,37 @@ class << self
     when 'debug'
       what = cmd.shift
       case what
+      when 'item', 'mot'
+        item_index = cmd.shift.to_i
+        item = Runner.itexte.items[item_index]
+        msg = "DEBUG item #{item_index} : #{item.cio} (canon: #{item.canon.inspect})".freeze
+        debug(msg)
+        CWindow.log(msg)
+      when 'mots'
+        debug("#{RC*2}Débuggage des mots du texte".freeze)
+        Runner.itexte.items.each do |titem|
+          debug("#{titem.index.to_s.ljust(7)}#{titem.cio}")
+        end
+        debug("#{RC*2}".freeze)
+        CWindow.log("Mots débuggués dans debug.log.")
       when 'canon'
         canon = cmd.shift
-        log("-- canon #{canon} --")
+        debug("#{RC*2}-- canon #{canon} --")
         icanon = Canon.items_as_hash[canon]
         if icanon.nil?
           CWindow.log("Aucune information canonique pour #{canon.inspect}")
         else
-          icanon.items.each {|item| log(item.cio) }
-          CWindow.log("Canon de #{canon} écrits dans le journal. Quitter et l'ouvrir.")
+          icanon.items.each {|item| debug(item.cio) }
+          CWindow.log("Canon de #{canon} écrits dans debug.log.")
         end
       when 'canons'
         # Pour écrire les canons en log
-        log(RC*3)
+        debug(RC*3)
         Canon.items_as_hash.each do |can, ican|
-          log("-- canon #{can} --")
-          ican.items.each {|item| log(item.cio) }
+          debug("-- canon #{can} --")
+          ican.items.each {|item| debug(item.cio) }
         end
-        CWindow.log("Canons écrits dans le journal. Quitter et l'ouvrir.")
-      when 'item', 'mot'
-        item_index = cmd.shift.to_i
-        item = Runner.itexte.items[item_index]
-        log("DEBUG item #{item_index} : #{item.cio} (canon: #{item.canon.inspect})")
-        CWindow.log("DEBUG item #{item_index} : #{item.cio} (canon: #{item.canon.inspect})")
+        CWindow.log("Canons écrits dans debug.log.")
       end
     when 'open' # ouvrir un nouveau texte avec son path
       what = cmd.shift
@@ -63,8 +71,8 @@ class << self
 
     when 'reprepare', 'update' # pour forcer la repréparation du texte
       confirmation = cmd.shift
-      if confirmation == '--confirmed'
-        Runner.itexte.reprepare
+      if confirmation == '--confirmed' || confirmation == '--force'
+        Runner.itexte.reproximitize
         CWindow.textWind.write(Runner.iextrait.output)
       else
         CWindow.log("Ajouter --confirmed à la commande pour confirmer l'opération, qui va DÉTRUIRE TOUTES LES TRANSFORMATIONS déjà opérées pour repartir du texte initial.")

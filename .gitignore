@@ -3,6 +3,9 @@
 # Used by dotenv library to load environment variables.
 # .env
 
+debug.log
+journal.log
+
 # Ignore Byebug command history file.
 .byebug_history
 

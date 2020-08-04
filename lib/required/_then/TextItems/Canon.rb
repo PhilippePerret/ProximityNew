@@ -2,7 +2,11 @@
 class Canon
 class << self
   attr_accessor :items_as_hash
+
   def init
+    unless items_as_hash.nil?
+      items_as_hash.each { |k, v| v = nil}
+    end
     self.items_as_hash = {}
   end #/ init
 
@@ -25,6 +29,11 @@ class << self
     self.items_as_hash[canon].add(mot)
   end #/ add
 
+  # Retire le mot +mot+ de son canon
+  def remove(mot)
+    mot.icanon.remove(mot)
+  end #/ remove
+
 end # /<< self
 # ---------------------------------------------------------------------
 #
@@ -45,6 +54,12 @@ def add(mot)
   @items << mot
   @offsets << mot.offset unless mot.offset.nil?
 end #/ add
+
+def remove(mot)
+  idx = items.find_index { |m| m.index == mot.index }
+  items.slice!(idx)
+  offsets.slice!(idx)
+end #/ remove
 
 def count
   @items.count
