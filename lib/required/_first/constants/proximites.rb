@@ -12,7 +12,15 @@ MOTS_APOSTROPHE = {
 
 MOTS_TIRETS = {
   'peut-être'     => true,
-  'grand-chose'   => true
+  'grand-chose'   => true,
+  'grand-père'    => true,
+  'grand-papa'    => true,
+  'grand-mère'    => true,
+  'grand-maman'   => true,
+  'arrière-grand-père'  => true,
+  'arrière-grand-papa'  => true,
+  'arrière-grand-mère'  => true,
+  'arrière-grand-maman' => true,
 }
 
 LOCUTIONS = {

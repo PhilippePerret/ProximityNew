@@ -6,37 +6,32 @@ module ScrivenerModule
 require 'rexml/document'
 class Scrivener
 class Projet
-class << self
-  def open(path)
-    new(path)
-  end #/ open
-end # /<< self
 # ---------------------------------------------------------------------
 #
 #   INSTANCE Scrivener::Projet
 #
 # ---------------------------------------------------------------------
-attr_reader :path, :fichier, :docxml
-attr_reader :files # tous les paths des fichiers texte du manuscrit
-def initialize(path)
+
+attr_reader :itexte
+
+# Le chemin d'accès au fichier .scriv du projet Scrivener
+attr_reader :path
+# Concernant le fichier .scrivx
+attr_reader :pathx, :fichierx, :docxml
+
+# Instanciation
+def initialize(path, itexte = nil)
   @path     = path
-  @fichier  = File.new(path)
-  @docxml   = REXML::Document.new(fichier)
+  @pathx    = File.join(path, "#{File.basename(path)}x".freeze)
+  @fichierx = File.new(pathx)
+  @docxml   = REXML::Document.new(fichierx)
+  @itexte   = itexte
 end #/ initialize
 
-# Méthode qui va prendre tous les fichiers du manuscrit du projet pour
-# en faire un unique fichier texte qui sera mis dans le dossier prox
-def produit_fichier_full_text
-  get_all_files || return
-  files.each do |sfile| # instances ScrivFile
-    log("Traitement du content.rtf de #{sfile.uuid}")
-    sfile.add_to_main_file
-  end
-  return true
-rescue Exception => e
-  erreur(e)
-  return false
-end #/ produit_fichier_full_text
+def files
+  @files || get_all_files
+  @files
+end #/ files
 
 # Méthode qui va mettre, dans l'ordre, tous les fichiers content.rtf du
 # manuscrit
@@ -47,6 +42,10 @@ def get_all_files
   end
 end #/ get_all_files
 
+# Traitement le binder +binder+ et ajoute ses fichiers et sous-fichiers
+# à la liste +liste_fichiers+ (qui servira plus tard à nourrir @files)
+# +pref+ est un préfixe qui permet d'afficher la liste des fichiers avec
+# une indentation.
 def traite_binder(binder, pref)
   binder_uuid   = binder.attributes["UUID"]
   binder_type   = binder.attributes["Type"]
@@ -58,7 +57,9 @@ def traite_binder(binder, pref)
     end
   else # C'est un texte
     fpath = File.join(files_folder, binder_uuid, 'content.rtf')
-    @files << ScrivFile.new(self, fpath) if File.exists?(fpath)
+    if File.exists?(fpath)
+      @files << ScrivFile.new(self, fpath)
+    end
   end
 end #/ fouille_binder
 
@@ -66,11 +67,15 @@ def draft_folder_binder
   @draft_folder_binder ||= REXML::XPath.first(docxml, "//Binder/BinderItem")
 end #/ draft_folder_binder
 
+def name
+  @name ||= File.basename(folder) # pour le moment
+end #/ name
+
 def files_folder
   @files_folder ||= File.join(folder, 'Files', 'Data')
 end #/ files_folder
 def folder
-  @folder ||= File.dirname(path)
+  @folder ||= path # File.dirname(path)
 end #/ folder
 end #/Projet
 end #/Scrivener

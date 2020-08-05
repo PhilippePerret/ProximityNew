@@ -35,7 +35,7 @@ class << self
 
   def save(sfile)
     begin
-      db.execute("INSERT INTO scrivener_files (Id, Path, Uuid) VALUES (#{sfile.id}, #{sfile.path.inspect}, #{sfile.uuid.inspect})")
+      db.execute("INSERT INTO scrivener_files (Id, Path, Uuid) VALUES (#{sfile.id}, #{sfile.path.inspect}, #{sfile.uuid.inspect})".freeze)
     rescue SQLite3::Exception => e
       erreur(e)
     end
@@ -69,40 +69,47 @@ def initialize(projet, path)
   save
 end #/ initialize
 
-# On enregistre les données du fichier dans la base
+# On enregistre les données du fichier dans la base, c'est-à-dire,
+# principalement, la relation entre l'identifiant court (incrémentation à
+# partir de 1) et l'UUID dans Scrivener.
 def save
   self.class.save(self)
 end #/ save
 
-# = Main =
-#
-# Méthode principale pour ajouter le texte de ce fichier au fichier principal
-# qui sera traité.
-#
-def add_to_main_file
+# Le fichier RTF doit être "préparé", c'est-à-dire transformé en un
+# fichier simple texte qui pourra être traité par NewProximity
+def prepare
   build_txt_file || return
-  begin
-    refmainfile = File.open(itexte.main_file_txt,'a')
-    File.foreach(txt_file_path) do |line|
-      refmainfile.write line
-    end
-    return true
-  rescue Exception => e
-    erreur(e)
-    return false
-  ensure
-    refmainfile.close
+  remplace_balises_styles
+  return true
+end #/ prepare
+
+# Méthode qui remplace les balises <$Scr_Cs([0-9]+)> par une marque
+# XSCRIVxxx<mot> pour le traitement dans New Proximity
+def remplace_balises_styles
+  temp = "#{txt_file_path}.prov"
+  FileUtils.move(txt_file_path, temp)
+  ref = File.open(txt_file_path,'a')
+  File.foreach(temp) do |line|
+    line.gsub!(/<\$Scr_Cs::([0-9]+)>(.*?)<\!\$Scr_Cs::(\1)>/){
+      nomb    = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
+      mots    = $2.freeze
+      balIN   = "XSCRIVSTART#{nomb}".freeze
+      balOUT  = "XSCRIVEND#{nomb}".freeze
+      balIN + mots + SPACE + balOUT # pas d'espace pour le premier !
+    }
+    ref.puts(line)
   end
-end #/ add_to_main_file
+  File.delete(temp)
+ensure
+  ref.close if ref
+end #/ remplace_balises_styles
 
 
 # On fabrique le code TXT du fichier
 def build_txt_file
-  File.open(txt_file_path,'wb'){|f| f.write("[#{balise}/]#{RC}".freeze)}
   # `textutil -format rtf -convert txt -stdout "#{path}"`
   `textutil -format rtf -convert txt -stdout "#{path}" >> "#{txt_file_path}"`
-  # Un pied de page pour connaitre le fichier
-  File.open(txt_file_path,'a'){|f| f.write "#{RC}[/#{balise}]#{RC}".freeze}
   return true
 rescue Exception => e
   erreur(e)
@@ -148,6 +155,18 @@ end #/ backup_old_rtf_file
 def txt_file_path
   @txt_file_path ||= File.join(folder,'content_txt_for_prox.txt'.freeze)
 end #/ txt_file_path
+alias :main_file_txt :txt_file_path # pour la concordance de nom dans NewProx
+
+# Chemin d'accès au fichier corrigé (quelques corrections comme les apostrophes
+# courbes) pour un traitement optimum dans NewProximity
+def corrected_text_path
+  @corrected_text_path ||= File.join(folder,'content_txt_for_prox_c.txt'.freeze)
+end #/ corrected_text_path
+
+# Chemin d'accès au fichier qui ne va contenir que les mots du texte
+def only_mots_path
+  @only_mots_path ||= File.join(folder,'only_mots.txt'.freeze)
+end #/ only_mots_path
 
 def new_txt_file_path
   @new_txt_file_path ||= File.join(folder,'new_txt_from_prox.txt'.freeze)

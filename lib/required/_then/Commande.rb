@@ -8,9 +8,16 @@ class << self
     cmd_init = cmd.dup.freeze
     cmd = cmd.split(SPACE)
     cmd_name = cmd.shift
+
+    # *** Analyse de la commande ***
+
     case cmd_name
+
+
     when 'rebuild' # reconstruire le texte final
       Runner.itexte.rebuild
+
+
     when 'eval'
       code = cmd.join(SPACE)
       begin
@@ -19,7 +26,11 @@ class << self
         CWindow.error(e.message)
         log("ERROR EVAL: #{e.message}#{RC}#{e.backtrace.join(RC)}")
       end
+
+
     when 'debug'
+      # La commande 'debug' permet de débugger beaucoup de choses dans
+      # le programme.
       what = cmd.shift
       case what
       when 'item', 'mot'
@@ -54,6 +65,8 @@ class << self
         end
         CWindow.log("Canons écrits dans debug.log.")
       end
+
+
     when 'open' # ouvrir un nouveau texte avec son path
       what = cmd.shift
       if what.nil?
@@ -61,13 +74,15 @@ class << self
         # courant
         `open -a Finder "#{Runner.itexte.folder}"`
       else
-        # Si un argument est passé, c'est le chemin d'accès au nouveau
+        # Si un argument est fourni, c'est le chemin d'accès au nouveau
         # texte à ouvrir.
         Runner.open_texte(what, cmd)
       end
 
+
     when 'recompte' # Recompte tout le texte (fait automatiquement, normalement)
       Runner.itexte.recompte
+
 
     when 'reprepare', 'update' # pour forcer la repréparation du texte
       confirmation = cmd.shift
@@ -77,6 +92,17 @@ class << self
       else
         CWindow.log("Ajouter --confirmed à la commande pour confirmer l'opération, qui va DÉTRUIRE TOUTES LES TRANSFORMATIONS déjà opérées pour repartir du texte initial.")
       end
+
+    when 'reprox'
+      if cmd.shift == '--force'
+        # On peut le faire puisque ça a été confirmé
+        Runner.itexte.reproximitize
+        log("Commande : reprox (relancer le calcul de proximité)")
+      else
+        CWindow.uiWind.write("Attention, cette opération va détruire tous les changements opérés à tout jamais. Ajouter `--force` à la commande pour confirmer que vous voulez tout perdre et repartir à zéro.")
+      end
+
+
     when 'ref', 'refresh'
       # Pour rafraichir l'affichage
       CWindow.textWind.write(Runner.iextrait.output)
@@ -84,22 +110,28 @@ class << self
 
       # *** Toutes les méthodes de modification du texte ***
 
+
     when 'sup', 'del', 'delete', 'rem', 'remove'
       index_ref = cmd.shift
       Runner.iextrait.remove(at:index_ref)
+
     when 'ins', 'insert'
       index_ref = cmd.shift
       texte = cmd.join(SPACE)
       Runner.iextrait.insert(content:texte, at:index_ref)
+
     when 'rep', 'replace'
       index_ref = cmd.shift
       texte = cmd.join(SPACE)
       Runner.iextrait.replace(content:texte, at:index_ref)
+
       # *** Méthodes d'affichage ***
+
     when 'show'
       from = cmd.shift.to_i
       Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
       Runner.iextrait.output
+
     when 'next'
       what = cmd.shift
       case what
@@ -108,6 +140,7 @@ class << self
         Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
         Runner.iextrait.output
       end
+
     when 'prev'
       what = cmd.shift
       case what
@@ -116,6 +149,9 @@ class << self
         from = 0 if from < 0
         Runner.show_extrait(from)
       end
+
+      # *** Commandes d'information ***
+
     when 'get'
       what = cmd.shift
       case what
@@ -124,6 +160,7 @@ class << self
       else
         CWindow.error("Je ne comprends pas la valeur '#{what}'")
       end
+
     when 'set'
       what = cmd.shift
       val  = cmd.join(SPACE)
@@ -139,14 +176,7 @@ class << self
       else
         CWindow.error("Je ne sais pas régler '#{what}'")
       end
-    when 'reprox'
-      if cmd.shift == '--force'
-        # On peut le faire puisque ça a été confirmé
-        Runner.itexte.reproximitize
-        log("Commande : reprox (relancer le calcul de proximité)")
-      else
-        CWindow.uiWind.write("Attention, cette opération va détruire tous les changements opérés à tout jamais. Ajouter `--force` à la commande pour confirmer que vous voulez tout perdre et repartir à zéro.")
-      end
+
     when 'help'
       Runner.display_help
     else

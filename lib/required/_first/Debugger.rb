@@ -29,3 +29,18 @@ class << self
 
 end # /<< self
 end #/Debugger
+
+class Errorer
+class << self
+
+  def add(msg)
+    str = "#{Time.now.to_s}-- #{msg}"
+    File.open(path,'a'){|f|f.write(str.freeze + RC)}
+  end #/ add
+  alias :<< :add
+
+  def path
+    @path ||= File.join(APP_FOLDER,'error.log')
+  end #/ path
+end # /<< self
+end #/Errorer

@@ -16,22 +16,10 @@ class << self
     return item
   end #/ create
 
-  # # Transforme une ligne lemmatisée (par exemple mot TAB PRP TAB mot) en
-  # # instance Mot ou NonMot
-  # def lemma_to_instance(line, cur_offset = nil, cur_index = nil)
-  #   mot, type, canon = line.strip.split(TAB)
-  #   if mot == PARAGRAPHE
-  #     # Marque de nouveau paragraphe
-  #     # On crée un nouveau paragraphe avec les éléments
-  #     NonMot.create([RC, 'paragraphe'], cur_offset, cur_index)
-  #   elsif type == 'SENT' || type == 'PUN'
-  #     # Est-ce une fin de phrase ?
-  #     NonMot.create([mot,type], cur_offset, cur_index)
-  #   else
-  #     Mot.create([mot,type,canon], cur_offset, cur_index)
-  #   end
-  # end #/ lemma_to_instance
-
+  # Ça sert simplement pour la correspondance entre l'item Mot ici
+  # et le mot dans le fichier lemmatisé (même index). Cette liste est
+  # remise à zéro chaque fois qu'on traite le texte, donc il ne faut
+  # vraiment pas s'appuyer dessus.
   def add(titem)
     @items ||= []
     if titem.is_a?(Array)
@@ -52,6 +40,19 @@ end # /<< self
 attr_reader :content
 attr_accessor :type, :index, :offset, :canon
 attr_accessor :icanon
+attr_accessor :file_id # pour les projets Scrivener
+
+# Utile pendant le parsing, pour savoir que dans "m'appelle" par exemple,
+# le "m'" doit être "collé" à "appelle" pour que tree-tagger fasse
+# son boulot correctement.
+attr_accessor :is_colled
+
+# Pour les marques de style des documents Scrivener
+# Si le mot possède la marque :mark_scrivener_start, la balise
+# <$Scr_Cs::<:mark_scrivener_start>> sera ajouté avant de l'écrire,
+# collé à lui, si :mark_scrivener_end est défini, la balise
+# <!$Scr_Cs::<:mark_scrivener_end>> sera ajouté après lui, collée à lui
+attr_accessor :mark_scrivener_start, :mark_scrivener_end
 
 # +params+ Table de données. Permet d'envoyer des valeurs. L'argument a
 # été inauguré pour ajouter des NonMot's fin de paragraphe au cours du
@@ -188,7 +189,11 @@ def calcule_longueurs
   end
   long_index  = (index - Runner.iextrait.from_item).to_s.length
 
-  if !proximizable? || ( prox_avant.nil? && prox_apres.nil? )
+  if non_mot?
+    @f_length = length
+  elsif is_colled === true
+    @f_length = [length, long_index].max + 1
+  elsif !proximizable? || ( prox_avant.nil? && prox_apres.nil? )
     # Si ce n'est pas un mot proximizable ou qu'il n'y a pas de proximité
     # on compare juste la longueur de l'index et la longueur du mot
     @f_length = [length, long_index].max

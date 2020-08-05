@@ -8,7 +8,7 @@ include ConfigModule
 #   INSTANCE
 #
 # ---------------------------------------------------------------------
-attr_reader :path, :lemmatized_file_path
+attr_reader :path
 attr_reader :items
 # Le premier mot (ou non mot) courant
 attr_accessor :current_first_item
@@ -32,9 +32,13 @@ end #/ reset
 
 # Reconstruction totale du texte.
 def rebuild
-  File.delete(rebuild_file_path) if File.exists?(rebuild_file_path)
-  File.open(rebuild_file_path,'wb') do |f|
-    items.each { |titem| f.write(titem.content) }
+  if projet_scrivener?
+    raise("La procédure doit être implémentée.")
+  else
+    File.delete(rebuild_file_path) if File.exists?(rebuild_file_path)
+    File.open(rebuild_file_path,'wb') do |f|
+      items.each { |titem| f.write(titem.content) }
+    end
   end
   CWindow.log("Texte reconstitué avec succès.".freeze)
 end #/ rebuild
@@ -128,7 +132,7 @@ end #/ distance_minimale_commune
 #
 # ---------------------------------------------------------------------
 def projet_scrivener?
-  extension == '.scriv' || extension == '.scrivx'
+  extension == '.scriv'
 end #/ projet_scrivener?
 
 # ---------------------------------------------------------------------
@@ -137,7 +141,8 @@ end #/ projet_scrivener?
 #
 # ---------------------------------------------------------------------
 
-# Chemin d'accès au fichier principal contenant tout le texte.
+# Chemin d'accès au fichier principal contenant tout le texte (sauf
+# pour projet scrivener)
 # C'est lui qui servira à relever tous les mots et qui sera
 # modifié à la fin pour refléter des changements.
 def main_file_txt
