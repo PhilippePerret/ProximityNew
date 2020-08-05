@@ -6,6 +6,7 @@
 TEST_LIB_FOLDER = File.dirname(__FILE__)
 TESTS_FOLDER    = File.dirname(TEST_LIB_FOLDER)
 TEST_APP_FOLDER = File.dirname(TESTS_FOLDER)
+TEST_FOLDER_TESTS = File.join(TESTS_FOLDER,'___')
 
 Dir["#{TEST_LIB_FOLDER}/required/_first/**/*.rb"].each{|m|require(m)}
 Dir["#{TEST_LIB_FOLDER}/required/_then/**/*.rb"].each{|m|require(m)}
@@ -21,5 +22,3 @@ require File.join(TEST_APP_FOLDER,'lib','required')
 # Requérir toutes les librairies qui écrasent les librairies
 # d'origine, au niveau de l'affichage principalement.
 Dir["#{TEST_LIB_FOLDER}/required/_mocks/**/*.rb"].each{|m|require(m)}
-
-CWindow.init_curses

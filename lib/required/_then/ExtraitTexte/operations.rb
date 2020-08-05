@@ -11,9 +11,19 @@ class ExtraitTexte
 # nouvel élément à la place (ou *les* nouveaux éléments)
 def replace(params)
   CWindow.log("Remplacement du/des mot/s #{params[:at]} par “#{params[:content]}”")
-  params.merge!(real_at: AtStructure.new(params[:at], from_item))
-  simulation(params, 'replace') || return
-  params.merge!(nosim:true)
+  params.merge!({
+    real_at: AtStructure.new(params[:at], from_item),
+    operation: 'replace'
+  })
+  if params[:content] == '_space_' || params[:content] == '_return_'
+    # Pas besoin de simulation pour ajouter une espace ou un retour chariot
+    params.merge!(nosim: true)
+    params.merge!(is_balise: true)
+  end
+  unless params[:nosim]
+    simulation(params) || return
+    params.merge!(nosim:true)
+  end
   remove(params.merge(noupdate: true))
   insert(params.merge)
 end #/ replace
@@ -23,8 +33,9 @@ def remove(params)
   params[:real_at] ||= begin
     AtStructure.new(params[:at], from_item).tap { |at| params.merge!(real_at: at) }
   end
+  params.merge!(operation: 'remove')
   unless params[:nosim]
-    simulation(params, 'remove') || return
+    simulation(params) || return
   end
   at = params[:real_at]
   # Dans tous les cas il faut retirer les mots de leur canon (si ce sont
@@ -48,51 +59,66 @@ end #/ remove
 # Insert un ou plusieurs mots
 def insert(params)
   params[:real_at] ||= AtStructure.new(params[:at], from_item)
+  params.merge!(operation: 'insert') unless params.key?(:operation)
   unless params[:nosim]
-    simulation(params, 'insert') || return
+    simulation(params) || return
+  end
+  if params[:content] == '_space_' || params[:content] == '_return_'
+    params.merge!(is_balise: true)
   end
   msg = "Insertion de “#{params[:content]}” #{params[:real_at].to_s} (avant “#{Runner.itexte.items[params[:real_at].at].content}”)"
   log(msg)
   CWindow.log(msg)
-  # Ici, il faut appliquer le nouveau découpage. Noter que l'insertion ne
-  # peut pas comporter des retours charriot, c'est déjà un repère.
-  # new_mots = Lemma.parse_str(params[:content], format: :instances)
-  tempfile = Tempfile.new('getmots')
-  Mot.init # remet la liste à vide, juste pour le contrôle des lemma
-  begin
-    refvirtualfile = File.open(tempfile, 'a')
-    # NB Il faut toujours ajouter une espace après params[:content] pour
-    # être sûr que l'expression régulière de traite_line_of_texte, qui cherche
-    # un mot + un non-mot, trouve son bonheur. Si params[:content] termine
-    # déjà par un non-mot, ça n'est pas grave, puisque l'espace ne sera pas
-    # pris en compte.
-    content_pour_reg = "#{params[:content]} "
-    new_items = itexte.traite_line_of_texte(content_pour_reg, refvirtualfile)
-    # On retire le dernier item qui est l'espace
-    # Non, on la garde, maintenant que tout est serré. Il suffira de faire
-    # une recherche finale sur les doubles espaces pour supprimer celles qui
-    # sont éventuellement de trop.
-    # new_items.pop
-    # Et on ajoute les autres si ce sont des mots
-    new_items.each { |titem| Mot.add(titem) if titem.mot? }
-  ensure
-    refvirtualfile.close
-  end
 
+  unless params[:is_balise]
+    # Ici, il faut appliquer le nouveau découpage. Noter que l'insertion ne
+    # peut pas comporter des retours charriot, c'est déjà un repère.
+    # new_mots = Lemma.parse_str(params[:content], format: :instances)
+    tempfile = Tempfile.new('getmots')
+    Mot.init # remet la liste à vide, juste pour le contrôle des lemma
+    begin
+      refvirtualfile = File.open(tempfile, 'a')
+      # NB Il faut toujours ajouter une espace après params[:content] pour
+      # être sûr que l'expression régulière de traite_line_of_texte, qui cherche
+      # un mot + un non-mot, trouve son bonheur. Si params[:content] termine
+      # déjà par un non-mot, ça n'est pas grave, puisque l'espace ne sera pas
+      # pris en compte.
+      content_pour_reg = "#{params[:content]} "
+      new_items = itexte.traite_line_of_texte(content_pour_reg, refvirtualfile)
+      # Quand c'est une pure insertion, il faut ajouter une espace après
+      # le mot inséré. Mais si c'est un remplacement, cette espace existe
+      # déjà.
+      new_items.pop if params[:operation] == 'replace'
+      # Et on ajoute les autres si ce sont des mots
+      new_items.each { |titem| Mot.add(titem) if titem.mot? }
+    ensure
+      refvirtualfile.close
+    end
+  else
+    new_item = case params[:content]
+    when '_space_'  then NonMot.new(SPACE, type:'space')
+    when '_return_' then NonMot.new(RC, type:'paragraphe')
+    end
+    new_items = [new_item]
+  end
   log("Nouveaux items ajoutés (#{new_items.count}) : ")
   log(new_items.inspect)
   Runner.itexte.items.insert(params[:real_at].at, *new_items)
   # Il faut traiter ces items qui n'ont été qu'instanciés pour le moment
 
-  begin
-    Lemma.parse_str(File.read(tempfile)).split(RC).each_with_index do |line, idx|
-      log("Lemma line : #{line.inspect} (index : #{idx.inspect})")
-      index_mot = idx # + first_index_in_mots
-      itexte.traite_lemma_line(line, index_mot)
+  unless params[:is_balise]
+    # Si c'est une balise (_space_ ou _return_) on n'a pas besoin
+    # de faire ce travail.
+    begin
+      Lemma.parse_str(File.read(tempfile)).split(RC).each_with_index do |line, idx|
+        log("Lemma line : #{line.inspect} (index : #{idx.inspect})")
+        index_mot = idx # + first_index_in_mots
+        itexte.traite_lemma_line(line, index_mot)
+      end
+    ensure
+      tempfile.delete
     end
-  ensure
-    tempfile.delete
-  end
+  end #/sauf si c'est une balise
 
   unless params[:noupdate]
     update(params[:real_at].at)
@@ -103,7 +129,13 @@ end #/ insert
 # Crée une simulation de l'opération pour s'assurer qu'elle est possible
 # sans générer de proximités. Le cas échéant on demande à l'utilisateur
 # de confirmer l'opération.
-def simulation(params, operation)
+# +params+
+#   :real_at        Objet At qui permet de savoir où insérer
+#   :content        Le contenu à insérer
+#   :operation      Opération ('insert','replace' ou 'insert')
+def simulation(params)
+  # Si on a besoin de connaitre l'opération, elle se trouve dans
+  # params[:operation]
   tempfile = Tempfile.new('getmots')
   Mot.init # remet la liste à vide, juste pour le contrôle des lemma
   begin

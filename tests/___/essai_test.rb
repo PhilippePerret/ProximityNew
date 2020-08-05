@@ -2,11 +2,14 @@
 =begin
   Essai de test
 =end
-require_relative './lib/required'
-
 # On joue une commande
 CLAVIER = ['q']
-run(':help')
+class Help
+  def self.on_quit; return true end
+end
+run_commande(':help')
+ecran.contient('=== AIDE DU PROGRAMME PROXIMITÉS ===')
+
 # # *** contrôle du contenu des fenêtre ***
 # expect(CWindow.textWind).to contain("AIDE DU PROGRAMME PROXIMITÉS")
 # expect_ui(le_texte_dans_uiWind)
