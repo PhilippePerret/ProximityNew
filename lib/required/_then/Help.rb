@@ -5,6 +5,97 @@
   L'aide a son propre attente interactive.
 =end
 class Help
+AIDE_STRING = <<-EOT
+=== AIDE DU PROGRAMME PROXIMITÉS ===
+
+'q'[ENTER] pour quitter et revenir au texte. Les flèches ⇅ pour monter
+et descendre dans l'aide.
+
+Pour ouvrir un fichier (fichier texte ou projet scrivener), utiliser la
+commande :
+
+    :open /path/to/the/file.txt
+
+Pour forcer le recalcul complet du texte (donc en perdant toutes les
+modifications qui ont été faites jusque-là), utiliser :
+
+    :update --confirmed
+
+Pour reconstruire le texte complet à partir des modifications
+opérées.
+
+    :rebuild
+
+    Note : si c'est un projet Scrivener, tous les fichiers sont
+    reconstruits.
+
+
+MODIFCATION DU TEXTE
+====================
+
+  Toutes les commandes de modification de texte ressemblent à :
+
+      :<cmd> <index> <nouveau texte>
+
+  <cmd> s'exprime toujours sur trois lettres, même si son équivalent
+  existe en longueur normale :
+    :ins/insert     Insérer un ou des mots
+    :rep/replace    Remplacer un ou des mots par un ou des mots
+    :rem/remove
+    :del/delete     Effacer un ou des mots
+    :mov            Déplacer le ou les mots. Exceptionnellement,
+                    l'argument suivant définit l'index d'arrivée.
+
+  <index> est l'index du mot dans la fenêtre affichée. Il peut être :
+
+    * un unique index     12        Le mot indexé 12 à l'écran
+    * un rang             12-14     Les mots de 12 à 14 compris
+    * une liste           12,14,23  Les mots 12, 14 et 23
+
+  <nouveau texte> est le nouveau texte donc les mots.
+
+  On peut ajouter des CARACTÈRES SPÉCIAUX à l'aide de :
+
+    _space_         Une espace
+    _return_        Un retour chariot
+
+  Par exemple
+  -----------
+      :ins 12 le nouveau mot      Insert "le nouveau mot" à l'index 12
+      :mov 12-14 6                Déplacer les mots 12,13 et 14 avant le
+                                  mot 6
+      :rem 13,34,100              Supprimer les mots 12, 34 et 100
+      :rep 6-8 rien               Remplacer les mots 6 à 8 par "rien"
+
+      :ins 32 _space_             Insérer une espace à l'index 32.
+
+
+ AUTRES COMMANDES UTILES
+ -----------------------
+
+    :show <index>             Pour afficher le texte à partir de cet
+                              index de mot.
+
+    :next page                Pour passer à la page suivante
+    (flèche droite)
+    :prev page                Pour passer à la page précédente
+    (flèche gauche)
+
+    :set <what> <value>       Permet de définir une valeur
+    :get <what>               Permet de connaitre la valeur
+
+        <what> peut être :
+          distance_minimale_commune         valeur : un nombre
+
+    :debug <what>[ <value>]   Permet d'obtenir des valeurs du
+                              programme dans le journal.log
+        <what> peut être :
+          canon         valeur : le mot canonique
+          canons        Tous les canons.
+          mot/item      valeur : index du mot dont il faut voir les
+                        infos
+EOT
+
 class << self
   attr_accessor :first_line, :last_line
   def show(options = nil)
@@ -74,87 +165,4 @@ class << self
 
 end # /<< self
 
-AIDE_STRING = <<-EOT
-=== AIDE DU PROGRAMME PROXIMITÉS ===
-
-'q'[ENTER] pour quitter et revenir au texte. Les flèches ⇅ pour monter
-et descendre dans l'aide.
-
-Pour ouvrir un fichier (fichier texte ou projet scrivener), utiliser la
-commande :
-
-    :open /path/to/the/file.txt
-
-Pour forcer le recalcul complet du texte (donc en perdant toutes les
-modifications qui ont été faites jusque-là), utiliser :
-
-    :update --confirmed
-
-Pour reconstruire le texte complet à partir des modifications
-opérées.
-
-    :rebuild
-
-    Note : si c'est un projet Scrivener, tous les fichiers sont
-    reconstruits.
-
-
-MODIFCATION DU TEXTE
-====================
-
-  Toutes les commandes de modification de texte ressemblent à :
-
-      :<cmd> <index> <nouveau texte>
-
-  <cmd> s'exprime toujours sur trois lettres, même si son équivalent
-  existe en longueur normale :
-    :ins/insert     Insérer un ou des mots
-    :rep/replace    Remplacer un ou des mots par un ou des mots
-    :rem/remove
-    :del/delete     Effacer un ou des mots
-    :mov            Déplacer le ou les mots. Exceptionnellement,
-                    l'argument suivant définit l'index d'arrivée.
-
-  <index> est l'index du mot dans la fenêtre affichée. Il peut être :
-
-    * un unique index     12        Le mot indexé 12 à l'écran
-    * un rang             12-14     Les mots de 12 à 14 compris
-    * une liste           12,14,23  Les mots 12, 14 et 23
-
-  <nouveau texte> est le nouveau texte donc les mots.
-
-  Par exemple
-  -----------
-      :ins 12 le nouveau mot      Insert "le nouveau mot" à l'index 12
-      :mov 12-14 6                Déplacer les mots 12,13 et 14 avant le
-                                  mot 6
-      :rem 13,34,100              Supprimer les mots 12, 34 et 100
-      :rep 6-8 rien               Remplacer les mots 6 à 8 par "rien"
-
-
- AUTRES COMMANDES UTILES
- -----------------------
-
-    :show <index>             Pour afficher le texte à partir de cet
-                              index de mot.
-
-    :next page                Pour passer à la page suivante
-    (flèche droite)
-    :prev page                Pour passer à la page précédente
-    (flèche gauche)
-
-    :set <what> <value>       Permet de définir une valeur
-    :get <what>               Permet de connaitre la valeur
-
-        <what> peut être :
-          distance_minimale_commune         valeur : un nombre
-
-    :debug <what>[ <value>]   Permet d'obtenir des valeurs du
-                              programme dans le journal.log
-        <what> peut être :
-          canon         valeur : le mot canonique
-          canons        Tous les canons.
-          mot/item      valeur : index du mot dont il faut voir les
-                        infos
-EOT
 end #/Help

@@ -70,6 +70,11 @@ def cio
   "#{content.gsub(/\n/,'\n').inspect}/#{index}/#{offset}"
 end #/ cio
 
+# Pour débugguer le texte item
+def debug
+  " #{index.to_s.ljust(7)}#{content.inspect.ljust(15)}#{offset.to_s.ljust(8)}#{file_id.to_s.ljust(7)}"
+end #/ debug
+
 def to_s
   "Content:'#{content}'/offset:#{offset.inspect}/length:#{length.inspect}/index:#{index.inspect}"
 end #/ to_s
@@ -130,6 +135,20 @@ def f_content
   c << content
   c.ljust(f_length)
 end #/ f_content
+
+# Retourne le contenu à inscrire dans le fichier reconstitué
+# En général, c'est le contenu normal. Mais s'il y a des marques
+# de style Scrivener, c'est différent
+def content_rebuilt
+  c = content
+  if mark_scrivener_start
+    c.prepend("<$Scr_Cs::#{mark_scrivener_start}>".freeze)
+  end
+  if mark_scrivener_end
+    c << "<!$Scr_Cs::#{mark_scrivener_start}>".freeze
+  end
+  return c
+end #/ content_rebuilt
 
 # Méthode qui retourne les proximités formatées
 # La méthode permet aussi de connaitre la vraie longueur que le mot va

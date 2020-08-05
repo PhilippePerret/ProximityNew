@@ -62,7 +62,7 @@ def output
     # Si la ligne, avec ce titem, dépasse la valeur maximale, on
     # passe à la ligne suivante
     if (offset + titem.f_length > max_line_length) || titem.new_paragraphe?
-      manque = (' ' * (max_line_length - offset)).freeze
+      manque = (SPACE * (max_line_length - offset)).freeze
       write3lines([manque,manque,manque], top_line_index, offset)
       # On passe à la ligne (seulement si on n'est pas sur le dernier titem)
       unless itexte.items[idx + 1].nil?
@@ -90,6 +90,21 @@ def output
     # Pour voir chaque titem s'afficher l'un après l'autre
     # break if CWindow.textWind.curse.getch.to_s == 'q'
   end #/loop sur les mots à voir
+
+  # Si on n'est pas arrivé au bout de la ligne, on ajoute ce
+  # qu'il faut.
+  if offset < max_line_length
+    manque = (SPACE * (max_line_length - offset)).freeze
+    write3lines([manque,manque,manque], top_line_index, offset)
+    # Et on ajoute quelques lignes si on est trop haut
+    if top_line_index < 4
+      manque = (SPACE * max_line_length).freeze
+      (top_line_index+1..4).each do |line_index|
+        top_line_index = line_index * 3
+        write3lines([manque,manque,manque], top_line_index, 0)
+      end
+    end
+  end
 
   @to_item = real_last_idx
   msg = "From #{@from_item} to #{@to_item}"

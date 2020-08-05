@@ -33,6 +33,16 @@ class << self
     end
   end #/ create_table_base_for
 
+  # Reçoit l'identifiant fichier et retourne le path complet
+  def get_path_by_file_id(fileId)
+    begin
+      res = db.execute("SELECT Path FROM scrivener_files WHERE Id = #{fileId}")
+      res[0][0]
+    rescue SQLite3::Exception => e
+      erreur(e)
+    end
+  end #/ get_by_file_id
+
   def save(sfile)
     begin
       db.execute("INSERT INTO scrivener_files (Id, Path, Uuid) VALUES (#{sfile.id}, #{sfile.path.inspect}, #{sfile.uuid.inspect})".freeze)
@@ -80,7 +90,8 @@ end #/ save
 # fichier simple texte qui pourra être traité par NewProximity
 def prepare
   build_txt_file || return
-  remplace_balises_styles
+  remplace_balises_styles || return
+  save_header
   return true
 end #/ prepare
 
@@ -101,6 +112,10 @@ def remplace_balises_styles
     ref.puts(line)
   end
   File.delete(temp)
+  return true
+rescue Exception => e
+  erreur(e)
+  return false
 ensure
   ref.close if ref
 end #/ remplace_balises_styles
@@ -116,70 +131,88 @@ rescue Exception => e
   return false
 end #/ build_txt_file
 
-# Balise pour mettre avant et après le texte dans le fichier contenant tout
-# le texte. Elle a une longueur fixe "[-File-XXXX-/]" et "[/-File-XXXX-]"
-# Donc de 14 caractères
-#
-def balise
-  @balise ||= "-File-#{id.to_s.rjust(4,'0')}-".freeze
-end #/ balise
-
-# Construction du nouveau fichier de text qui devra servir pour
-# la reconstruction du fichier RTF
-def build_new_txt_file
-  # Je pense que c'est le traitement du fichier principal qui va faire
-  # ça en redirigeant sa sortie vers le fichier new_txt_file_path
-  raise("La méthode build_new_txt_file est à implémenter (#{__FILE__}:#{__LINE__})")
-end #/ build_new_txt_file
-
 # Pour reconstruire le fichier RTF
 def rebuild_rtf_file
   # On transforme le nouveau fichier texte en fichier RTF
-  `textutil -format txt -convert rtf -output "#{rtf_new_file_path}" "#{new_txt_file_path}" > `
-  raise("La méthode rebuild_rtf_file est à implémenter (#{__FILE__}:#{__LINE__})")
+  `textutil -format txt -convert rtf -output "#{rtf_new_file_path}" "#{new_txt_file_path}"`
+
+  # On remet l'entête original
+  rtf_new_file_prov = "#{rtf_new_file_path}.prov".freeze
+  FileUtils.mv(rtf_new_file_path, rtf_new_file_prov)
+  fileref = File.open(rtf_new_file_path, 'a')
+
   # On retire l'entête actuel
-  # TODO
-  # On remet d'entête original
-  # TODO
-  # On corrige les balise <::[0-9]>> et <!::[0-9]>
-  # TODO
+  is_header = true
+  File.foreach(rtf_new_file_prov) do |line|
+    if line.strip.empty?
+      # fin de l'entete
+      is_header = false
+      # Il faut ajouter l'entête précédent
+      File.foreach(original_header_path) do |hline|
+        fileref.write(hline)
+      end
+      # On peut passer à la suite
+    end
+    next if is_header
+    fileref.write(line)
+  end
+  # Destruction du fichier provisoire
+  File.delete(rtf_new_file_prov)
+rescue Exception => e
+  erreur(e)
+  return false
+ensure
+  fileref.close if fileref
 end #/ rebuild_rtf_file
 
 # Méthode permettant de mettre de côté le fichier RTF Scrivener courant
 def backup_old_rtf_file
-  FileUtil.move(path, original_backup_path)
+  unless File.exists?(path)
+    retrieve_old_rtf_file || return
+  end
+  log("Backup de #{path}")
+  FileUtils.mv(path, original_backup_path)
 end #/ backup_old_rtf_file
+
+# Pour récupérer un vieux backup quand le fichier content.rtf fait défaut
+def retrieve_old_rtf_file
+  backupfile = Dir["#{opes_folder}/content-backup-*.rtf"].first
+  backupfile || return
+  FileUtils.mv(backupfile, path)
+  return true
+end #/ retrieve_old_rtf_file
 
 # Chemin d'accès au fichier TXT contenant le texte du fichier courant
 # seulement (qui sera assemblé ensuite aux autres)
 def txt_file_path
-  @txt_file_path ||= File.join(folder,'content_txt_for_prox.txt'.freeze)
+  @txt_file_path ||= File.join(opes_folder,'content_txt_for_prox.txt'.freeze)
 end #/ txt_file_path
 alias :main_file_txt :txt_file_path # pour la concordance de nom dans NewProx
 
 # Chemin d'accès au fichier corrigé (quelques corrections comme les apostrophes
 # courbes) pour un traitement optimum dans NewProximity
 def corrected_text_path
-  @corrected_text_path ||= File.join(folder,'content_txt_for_prox_c.txt'.freeze)
+  @corrected_text_path ||= File.join(opes_folder,'content_txt_for_prox_c.txt'.freeze)
 end #/ corrected_text_path
 
 # Chemin d'accès au fichier qui ne va contenir que les mots du texte
 def only_mots_path
-  @only_mots_path ||= File.join(folder,'only_mots.txt'.freeze)
+  @only_mots_path ||= File.join(opes_folder,'only_mots.txt'.freeze)
 end #/ only_mots_path
 
 def new_txt_file_path
-  @new_txt_file_path ||= File.join(folder,'new_txt_from_prox.txt'.freeze)
+  @new_txt_file_path ||= File.join(opes_folder,'new_txt_from_prox.txt'.freeze)
 end #/ new_txt_file_path
 
 # Chemin d'accès au fichier RTF reconstruit d'après le fichier TXT
 # travaillé dans ProximityNew
 def rtf_new_file_path
-  @rtf_new_file_path ||= File.join(folder,'new_rtf_from_prox.txt'.freeze)
+  @rtf_new_file_path ||= File.join(folder,'content.rtf'.freeze)
 end #/ rtf_new_file_path
 
 # Récupération de l'entête et enregistrement dans la base
 def save_header
+  File.delete(original_header_path) if File.exists?(original_header_path)
   headerref = File.open(original_header_path,'a')
   File.foreach(path) do |line|
     headerref.puts(line)
@@ -189,20 +222,15 @@ ensure
   headerref.close
 end #/ save_header
 
-# On récupère l'entête enregistrée
-def load_header
-  File.read(original_header_path)
-end #/ load_header
-
 def original_header_path
-  @original_header_path ||= File.join(folder, 'original-header.txt')
+  @original_header_path ||= File.join(opes_folder, 'original-header.txt')
 end #/ original_header_path
 
 # Chemin d'accès au fichier RTF original, celui qui sert dans le projet
 # Scrivener. Il sera conservé sous ce nom, dans son dossier original, pour
 # pouvoir éventuellement le recouvrer.
 def original_backup_path
-  @original_backup_path ||= File.join(folder,"#{affixe}-backup-#{Time.now.strftime('%d-%m-%Y')}.rtf")
+  @original_backup_path ||= File.join(opes_folder,"#{affixe}-backup-#{Time.now.strftime('%d-%m-%Y')}.rtf".freeze)
 end #/ original_backup_path
 
 
@@ -211,12 +239,19 @@ def uuid
   @uuid ||= File.basename(folder)
 end #/ uuid
 
+# Dossier où sont placés tous les fichiers utiles
+def opes_folder
+  @opes_folder ||= begin
+    File.join(itexte.prox_folder,'scrivener', uuid).tap {|d| `mkdir -p "#{d}"`}
+  end
+end #/ opes_folder
+
 # Dossier du fichier dans le projet Scrivener
 def folder
   @folder ||= File.dirname(path)
 end #/ folder
 
-# Affixe du fichier (mais en fait, c'est toujours 'content.rtf')
+# Affixe du fichier (mais en fait, c'est toujours 'content' de 'content.rtf')
 def affixe
   @affixe ||= File.basename(path, File.extname(path))
 end #/ affixe

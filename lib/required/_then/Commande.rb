@@ -41,8 +41,11 @@ class << self
         CWindow.log(msg)
       when 'mots'
         debug("#{RC*2}Débuggage des mots du texte".freeze)
+        entete = "#{RC} #{'index'.ljust(7)}#{'Contenu'.ljust(15)}#{'Offset'.ljust(8)}#{'FileId'.ljust(7)}".freeze
+        debug(entete)
+        debug(('-'*entete.length).freeze)
         Runner.itexte.items.each do |titem|
-          debug("#{titem.index.to_s.ljust(7)}#{titem.cio}")
+          debug(titem.debug)
         end
         debug("#{RC*2}".freeze)
         CWindow.log("Mots débuggués dans debug.log.")

@@ -30,19 +30,6 @@ end #/ reset
 #   @db ||= TextSQLite.new(self)
 # end #/ db
 
-# Reconstruction totale du texte.
-def rebuild
-  if projet_scrivener?
-    raise("La procédure doit être implémentée.")
-  else
-    File.delete(rebuild_file_path) if File.exists?(rebuild_file_path)
-    File.open(rebuild_file_path,'wb') do |f|
-      items.each { |titem| f.write(titem.content) }
-    end
-  end
-  CWindow.log("Texte reconstitué avec succès.".freeze)
-end #/ rebuild
-
 # Essai de recomptage de tout pour voir le temps que ça prend
 def recompte(params = nil)
   params ||= {}
@@ -135,6 +122,11 @@ def projet_scrivener?
   extension == '.scriv'
 end #/ projet_scrivener?
 
+def projet_scrivener
+  @projet_scrivener ||= begin
+    Scrivener::Projet.new(path,self) if projet_scrivener?
+  end
+end #/ projet_scrivener
 # ---------------------------------------------------------------------
 #
 #   CHEMINS

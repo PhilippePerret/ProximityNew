@@ -20,6 +20,23 @@ class Texte
 #
 # ---------------------------------------------------------------------
 
+# Méthode générale de parsing, pour n'importe quel document, Scrivener ou
+# pas.
+def parse
+  # Initialisations
+  self.init
+  Canon.init
+  # Parser en fonction du type du document
+  if projet_scrivener?
+    projscriv = Scrivener::Projet.new(path, self)
+    parse_projet_scrivener(projscriv)
+  else
+    parse_simple_texte
+  end
+end #/ parse
+
+
+
 # = main =
 #
 # Méthode principale qui traite le fichier
@@ -29,15 +46,11 @@ class Texte
 # pour permettre le traitement par l'application.
 # Le traitement se fait par stream donc le fichier peut avoir une taille
 # conséquente sans problème
-def parse
+def parse_simple_texte
 
   # Pour savoir le temps que ça prend
   start = Time.now.to_f
   log("*** Parsing du texte #{path}")
-
-  # Initialisations
-  self.init
-  Canon.init
 
   # Préparation du texte
   # --------------------
@@ -115,6 +128,11 @@ def parse_projet_scrivener(projet)
     # fichier original avec la marque 'c' est il sera normalement détruit à
     # la fin du processus.
     prepare(scrivfile) || return
+
+    # Pour bien séparer les fichiers, on ajoute deux retours charriot
+    # entre chaque fichier
+    @items << NonMot.new(RC, type:'paragraphe')
+    @items << NonMot.new(RC, type:'paragraphe')
 
   end #/ fin de boucle sur chaque fichier du projet Scrivener
 
