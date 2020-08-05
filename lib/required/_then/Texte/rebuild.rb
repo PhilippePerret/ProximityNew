@@ -67,7 +67,7 @@ def rebuild_as_simple_texte
   File.open(rebuild_file_path,'wb') do |f|
     items.each { |titem| f.write(titem.content_rebuilt) }
   end
-  CWindow.log("Texte reconstitué avec succès.".freeze)
+  CWindow.log("Texte reconstitué avec succès dans #{rebuild_file_path}.".freeze)
 end #/ rebuild_as_simple_texte
 
 end #/Texte

@@ -34,7 +34,12 @@ class << self
   attr_reader :textWind, :statusWind, :uiWind, :logWind
   attr_reader :top_ligne_texte_max
   attr_accessor :hauteur_texte
-  def prepare_windows
+
+  HAUTEUR_LOG     = 3
+  HAUTEUR_STATUS  = 2
+  HAUTEUR_UI      = 1
+
+  def init_curses
     Curses.init_screen
     Curses.curs_set(0)  # Invisible cursor
     # Window.keypad(true) # pour que les clés soient Curses::KEY::RETURN
@@ -53,22 +58,24 @@ class << self
     Curses.init_pair(ORANGE_COLOR,  Curses::COLOR_ORANGE, Curses::COLOR_WHITE)
     Curses.init_pair(BLUE_COLOR,    Curses::COLOR_BLUE,   Curses::COLOR_WHITE)
     Curses.init_pair(GREEN_COLOR,   Curses::COLOR_BLUE,   Curses::COLOR_WHITE)
+  end #/ init_curses
 
-    hauteur_log     = 2
-    hauteur_status  = 2
-    hauteur_ui      = 1
-    self.hauteur_texte   = Curses.lines - (hauteur_status + hauteur_ui + hauteur_log)
+  def prepare_windows
+
+    init_curses
+    
+    self.hauteur_texte   = Curses.lines - (HAUTEUR_STATUS + HAUTEUR_UI + HAUTEUR_LOG)
 
     @textWind   = new([hauteur_texte, Curses.cols-2, 0,0])
-    @logWind    = new([hauteur_log,   Curses.cols, hauteur_texte, 0])
-    @statusWind = new([hauteur_status, Curses.cols, hauteur_texte+hauteur_log,0])
-    @uiWind     = new([hauteur_ui,    Curses.cols, hauteur_texte+hauteur_log+hauteur_status, 0])
+    @logWind    = new([HAUTEUR_LOG,   Curses.cols, hauteur_texte, 0])
+    @statusWind = new([HAUTEUR_STATUS, Curses.cols, hauteur_texte+HAUTEUR_LOG,0])
+    @uiWind     = new([HAUTEUR_UI,    Curses.cols, hauteur_texte+HAUTEUR_LOG+HAUTEUR_STATUS, 0])
 
     @top_ligne_texte_max = hauteur_texte - 1
 
     # @textWind   = create(WindParams.new(hauteur_texte,0))
-    # @statusWind = create(WindParams.new(hauteur_status, hauteur_texte))
-    # @uiWind     = create(WindParams.new(hauteur_ui, hauteur_texte))
+    # @statusWind = create(WindParams.new(HAUTEUR_STATUS, hauteur_texte))
+    # @uiWind     = create(WindParams.new(HAUTEUR_UI, hauteur_texte))
   end #/ prepare_windows
 
   # Pour écrire dans la fenêtre de log
@@ -117,4 +124,7 @@ alias :reset :resetpos
 def clear
   curse.clear
 end #/ clear
+def wait_for_char
+  curse.getch.to_s
+end #/ wait_for_char
 end #/CWindow

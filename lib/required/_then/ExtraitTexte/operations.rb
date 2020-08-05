@@ -12,14 +12,19 @@ class ExtraitTexte
 def replace(params)
   CWindow.log("Remplacement du/des mot/s #{params[:at]} par “#{params[:content]}”")
   params.merge!(real_at: AtStructure.new(params[:at], from_item))
+  simulation(params, 'replace') || return
+  params.merge!(nosim:true)
   remove(params.merge(noupdate: true))
-  insert(params)
+  insert(params.merge)
 end #/ replace
 
 # Suppression d'un ou plusieurs mots
 def remove(params)
   params[:real_at] ||= begin
     AtStructure.new(params[:at], from_item).tap { |at| params.merge!(real_at: at) }
+  end
+  unless params[:nosim]
+    simulation(params, 'remove') || return
   end
   at = params[:real_at]
   # Dans tous les cas il faut retirer les mots de leur canon (si ce sont
@@ -43,6 +48,9 @@ end #/ remove
 # Insert un ou plusieurs mots
 def insert(params)
   params[:real_at] ||= AtStructure.new(params[:at], from_item)
+  unless params[:nosim]
+    simulation(params, 'insert') || return
+  end
   msg = "Insertion de “#{params[:content]}” #{params[:real_at].to_s} (avant “#{Runner.itexte.items[params[:real_at].at].content}”)"
   log(msg)
   CWindow.log(msg)
@@ -61,9 +69,12 @@ def insert(params)
     content_pour_reg = "#{params[:content]} "
     new_items = itexte.traite_line_of_texte(content_pour_reg, refvirtualfile)
     # On retire le dernier item qui est l'espace
-    new_items.pop
-    # Et on ajoute les autres
-    Mot.add(new_items)
+    # Non, on la garde, maintenant que tout est serré. Il suffira de faire
+    # une recherche finale sur les doubles espaces pour supprimer celles qui
+    # sont éventuellement de trop.
+    # new_items.pop
+    # Et on ajoute les autres si ce sont des mots
+    new_items.each { |titem| Mot.add(titem) if titem.mot? }
   ensure
     refvirtualfile.close
   end
@@ -88,5 +99,91 @@ def insert(params)
     Runner.itexte.save
   end
 end #/ insert
+
+# Crée une simulation de l'opération pour s'assurer qu'elle est possible
+# sans générer de proximités. Le cas échéant on demande à l'utilisateur
+# de confirmer l'opération.
+def simulation(params, operation)
+  tempfile = Tempfile.new('getmots')
+  Mot.init # remet la liste à vide, juste pour le contrôle des lemma
+  begin
+    refvirtualfile = File.open(tempfile, 'a')
+    content_pour_reg = "#{params[:content]}#{SPACE}"
+    new_items = itexte.traite_line_of_texte(content_pour_reg, refvirtualfile)
+    new_items.pop # retirer l'espace
+  ensure
+    refvirtualfile.close
+  end
+
+  # On prend seulement les mots
+  new_mots = new_items.select{ |titem| titem.mot? }
+
+  begin
+    Lemma.parse_str(File.read(tempfile)).split(RC).each_with_index do |line, idx|
+      mot, type, canon = line.strip.split(TAB)
+      # Traitement de quelques cas <unknown> connus… (sic)
+      if canon == LEMMA_UNKNOWN
+        type, canon = case mot
+        when 't' then ['PRO:PER', 'te']
+        else [type, canon]
+        end
+      end
+      new_mot = new_mots[idx]
+      new_mot.type = type
+      new_mot.canon = canon
+      new_mot.icanon = Canon.items_as_hash[canon] # peut être nil
+    end
+  ensure
+    tempfile.delete
+  end
+
+  # *** ON peut vérifier ***
+
+  confirmations = []
+
+  # Position à laquelle les mots doivent être insérés
+  inserted_at = params[:real_at].at
+
+  # On regarde s'il y a des risques de proximité
+  new_mots.each do |new_mot|
+    # Si new_mot n'a pas de canon, c'est qu'aucun autre mot de sa
+    # famille n'existe dans le texte. Il ne peut pas avoir de proximités. On
+    # peut passer directement au suivant.
+    new_mot.icanon || next
+    # Distance minimale pour que deux mots ne soient pas en proximité
+    min_distance = new_mot.icanon.distance_minimale
+    # Principe : si un offset du canon est à moins de cette distance, c'est
+    # que le mot risque d'entrer en proximité
+    new_mot.icanon.offsets.each_with_index do |offset, idx|
+      distance = (offset - (inserted_at + new_mot.length / 2)).abs
+      if distance < min_distance
+        # Proximité trouvée !
+        mot_proche = new_mot.icanon.items[idx]
+        confirmations << "#{new_mot.content}”⬅︎ ~#{distance} ➡︎“#{mot_proche.content}”"
+      end
+    end
+    inserted_at += new_mot.length + 1 # approximation
+  end
+
+  unless confirmations.empty?
+    CWindow.log("Cette opération va occasionner de nouvelles proximités : #{confirmations.join(VGE)}.#{RC}Taper 'o' ou 'y' ou ENTRÉE pour confirmer ou 'z' ou 'n' pour renoncer.")
+    while true
+      s = CWindow.uiWind.wait_for_char
+      case s
+      when 'y', 'o', 27
+        CWindow.log("Confirmation.")
+        return true
+      when 'z', 'n' then
+        CWindow.log("Annulation.")
+        return false
+      else
+        CWindow.log(s)
+      end
+    end
+  else
+    # Aucune proximité
+    return true
+  end
+end #/ simulation
 
 end #/ExtraitTexte

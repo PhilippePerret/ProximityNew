@@ -129,8 +129,14 @@ end #/ write3lines
 #     différents (par exemple, on ne peut pas se contenter de traiter les
 #     proximités depuis le mot changé, car il peut y avoir des modifications
 #     avant aussi)
-def update(from_item = 0)
+#
+# +from_item+ n'est pas le @from_item de l'instance extrait mais l'index
+# du mot à partir duquel on devrait recompter si on voulait vraiment
+# économiser le travail.
+#
+def update(first_modified_item = 0)
   Runner.itexte.recompte(from: 0) # [1]
+  @to_item += 10 # au cas où il y ait un ajout de 10 mots
   output
 end #/ update
 end #/ExtraitTexte

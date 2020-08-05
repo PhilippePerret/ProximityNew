@@ -88,3 +88,13 @@ XSCRIV000Le XSCRIV000où XSCRIV000les XSCRIV000mots sont longs
 
 Ensuite, dans le traitement des lignes, on repère les mots qui commencent par `XSCRIV`, on relève leur nombre — toujours sur trois chiffres — et on l’enregistre dans l’instance du mot. Le remettre à le reconstitution du texte est un jeu d’enfant.
 
+
+
+## Tests
+
+### Fonctionnement
+
+Dans l’idée, on donne un texte, on effectue une opération, on récupère le texte qui devrait être écrit dans la fenêtre et on le vérifie. Donc principalement :
+
+* simulation d’une commande jouée,
+* récupération du texte à afficher (et de tous les messages)

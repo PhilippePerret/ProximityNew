@@ -159,9 +159,8 @@ class << self
   end #/ interact_with_user
 
   def on_quit
-    Runner.iextrait.output
+    Runner.iextrait&.output
   end #/ on_quit
-
 
 end # /<< self
 

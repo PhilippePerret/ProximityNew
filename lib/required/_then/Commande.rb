@@ -182,9 +182,12 @@ class << self
 
     when 'help'
       Runner.display_help
+
     else
-      CWindow.log("Command inconnue : “#{cmd_init}”")
+
+      CWindow.log("Command inconnue : “#{cmd_init}”".freeze)
       @historique.pop # on la supprime de l'historique
+
     end
   end #/ run
 
