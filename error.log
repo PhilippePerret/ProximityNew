@@ -16,3 +16,200 @@
 2020-08-06 11:04:13 +0200-- ### Le mot "to'tue'té" est à ajouter à la liste des mots spéciaux avec apostrophe
 ### avec la commande :add mot_apostrophe to'tue'té
 ### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 11:19:12 +0200-- ### Le mot "to'tue'té" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue'té
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 11:22:24 +0200-- ### Le mot "to'tue'té" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue'té
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 11:28:28 +0200-- ### Le mot "to'tue'té" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue'té
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 11:51:21 +0200-- ### Le mot "to'tue" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 11:57:28 +0200-- ### Le mot "to'tuté" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tuté
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 11:59:32 +0200-- ### Le mot "p'u" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe p'u
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 12:01:16 +0200-- ### Le mot "p'u" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe p'u
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 12:03:03 +0200-- ### Le mot "p'u" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe p'u
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 12:04:35 +0200-- ### Le mot "pou'quoi" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe pou'quoi
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 12:05:11 +0200-- ### Le mot "souhait'vous" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe souhait'vous
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 13:04:30 +0200-- ### Le mot "d'" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe d'
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+2020-08-06 13:14:01 +0200-- Problème avec le mot d'index 9958 "qu'" (dans Mot.items) différent de "ce" (dans le fichier des mots seulement) dans l'extrait "…vous poser Vania éclate de rire Ce petit Puz est incroyable Depuis combien de temps comprend il aussi bien ce qu' elle lui raconte Non je ne veux pas Réponds moi juste de la tête Mais cette fois ce n' est…".
+2020-08-06 13:43:19 +0200-- Problème avec le mot d'index 9958 "qu'" (dans Mot.items) différent de "ce" (dans le fichier des mots seulement) dans l'extrait :
+"…vous poser Vania éclate de rire Ce petit Puz est incroyable Depuis combien de temps comprend il aussi bien ce qu' elle lui raconte Non je ne veux pas Réponds moi juste de la tête Mais cette fois ce n' est…".
+Extrait dans le fichier des mots seuls :
+' vous poser vania éclate de rire ce petit puz est incroyable depuis combien de temps comprend il aussi bien ce qu' elle lui raconte non je ne veux pas réponds moi juste de la tête mais cette fois ce n'
+2020-08-06 13:56:10 +0200-- Problème avec le mot d'index 9958 "qu'" (dans Mot.items) différent de "ce" (dans le fichier des mots seulement) dans l'extrait :
+"…vous poser Vania éclate de rire Ce petit Puz est incroyable Depuis combien de temps comprend il aussi bien ce qu' elle lui raconte Non je ne veux pas Réponds moi juste de la tête Mais cette fois ce n' est…".
+Extrait dans le fichier des mots seuls :
+' vous poser vania éclate de rire ce petit puz est incroyable depuis combien de temps comprend il aussi bien ce qu' elle lui raconte non je ne veux pas réponds moi juste de la tête mais cette fois ce n'
+idx:9948 - lemma:est - mot:Content:'incroyable'/offset:nil/length:10/index:nil
+idx:9949 - lemma:incroyable - mot:Content:'Depuis'/offset:nil/length:6/index:nil
+idx:9950 - lemma:depuis - mot:Content:'combien'/offset:nil/length:7/index:nil
+idx:9951 - lemma:combien - mot:Content:'de'/offset:nil/length:2/index:nil
+idx:9952 - lemma:de - mot:Content:'temps'/offset:nil/length:5/index:nil
+idx:9953 - lemma:temps - mot:Content:'comprend'/offset:nil/length:8/index:nil
+idx:9954 - lemma:comprend - mot:Content:'il'/offset:nil/length:2/index:nil
+idx:9955 - lemma:il - mot:Content:'aussi'/offset:nil/length:5/index:nil
+idx:9956 - lemma:aussi - mot:Content:'bien'/offset:nil/length:4/index:nil
+idx:9957 - lemma:bien - mot:Content:'ce'/offset:nil/length:2/index:nil
+idx:9958 - lemma:ce - mot:Content:'qu''/offset:nil/length:3/index:nil
+idx:9959 - lemma:qu' - mot:Content:'elle'/offset:nil/length:4/index:nil
+idx:9960 - lemma:elle - mot:Content:'lui'/offset:nil/length:3/index:nil
+idx:9961 - lemma:lui - mot:Content:'raconte'/offset:nil/length:7/index:nil
+idx:9962 - lemma:raconte - mot:Content:'Non'/offset:nil/length:3/index:nil
+idx:9963 - lemma:non - mot:Content:'je'/offset:nil/length:2/index:nil
+idx:9964 - lemma:je - mot:Content:'ne'/offset:nil/length:2/index:nil
+idx:9965 - lemma:ne - mot:Content:'veux'/offset:nil/length:4/index:nil
+idx:9966 - lemma:veux - mot:Content:'pas'/offset:nil/length:3/index:nil
+idx:9967 - lemma:pas - mot:Content:'Réponds'/offset:nil/length:7/index:nil
+idx:9968 - lemma:réponds - mot:Content:'moi'/offset:nil/length:3/index:nil
+idx:9969 - lemma:moi - mot:Content:'juste'/offset:nil/length:5/index:nil
+idx:9970 - lemma:juste - mot:Content:'de'/offset:nil/length:2/index:nil
+idx:9971 - lemma:de - mot:Content:'la'/offset:nil/length:2/index:nil
+idx:9972 - lemma:la - mot:Content:'tête'/offset:nil/length:4/index:nil
+idx:9973 - lemma:tête - mot:Content:'Mais'/offset:nil/length:4/index:nil
+idx:9974 - lemma:mais - mot:Content:'cette'/offset:nil/length:5/index:nil
+idx:9975 - lemma:cette - mot:Content:'fois'/offset:nil/length:4/index:nil
+idx:9976 - lemma:fois - mot:Content:'ce'/offset:nil/length:2/index:nil
+idx:9977 - lemma:ce - mot:Content:'n''/offset:nil/length:2/index:nil
+idx:9978 - lemma:n' - mot:Content:'est'/offset:nil/length:3/index:nil
+
+
+2020-08-06 13:57:30 +0200-- Problème avec le mot d'index 9958 "qu'" (dans Mot.items) différent de "ce" (dans le fichier des mots seulement) dans l'extrait :
+"…vous poser Vania éclate de rire Ce petit Puz est incroyable Depuis combien de temps comprend il aussi bien ce qu' elle lui raconte Non je ne veux pas Réponds moi juste de la tête Mais cette fois ce n' est…".
+Extrait dans le fichier des mots seuls :
+' vous poser vania éclate de rire ce petit puz est incroyable depuis combien de temps comprend il aussi bien ce qu' elle lui raconte non je ne veux pas réponds moi juste de la tête mais cette fois ce n'
+idx:9938 - lemma:' - mot:vous
+idx:9939 - lemma:vous - mot:poser
+idx:9940 - lemma:poser - mot:Vania
+idx:9941 - lemma:vania - mot:éclate
+idx:9942 - lemma:éclate - mot:de
+idx:9943 - lemma:de - mot:rire
+idx:9944 - lemma:rire - mot:Ce
+idx:9945 - lemma:ce - mot:petit
+idx:9946 - lemma:petit - mot:Puz
+idx:9947 - lemma:puz - mot:est
+idx:9948 - lemma:est - mot:incroyable
+idx:9949 - lemma:incroyable - mot:Depuis
+idx:9950 - lemma:depuis - mot:combien
+idx:9951 - lemma:combien - mot:de
+idx:9952 - lemma:de - mot:temps
+idx:9953 - lemma:temps - mot:comprend
+idx:9954 - lemma:comprend - mot:il
+idx:9955 - lemma:il - mot:aussi
+idx:9956 - lemma:aussi - mot:bien
+idx:9957 - lemma:bien - mot:ce
+idx:9958 - lemma:ce - mot:qu'
+idx:9959 - lemma:qu' - mot:elle
+idx:9960 - lemma:elle - mot:lui
+idx:9961 - lemma:lui - mot:raconte
+idx:9962 - lemma:raconte - mot:Non
+idx:9963 - lemma:non - mot:je
+idx:9964 - lemma:je - mot:ne
+idx:9965 - lemma:ne - mot:veux
+idx:9966 - lemma:veux - mot:pas
+idx:9967 - lemma:pas - mot:Réponds
+idx:9968 - lemma:réponds - mot:moi
+idx:9969 - lemma:moi - mot:juste
+idx:9970 - lemma:juste - mot:de
+idx:9971 - lemma:de - mot:la
+idx:9972 - lemma:la - mot:tête
+idx:9973 - lemma:tête - mot:Mais
+idx:9974 - lemma:mais - mot:cette
+idx:9975 - lemma:cette - mot:fois
+idx:9976 - lemma:fois - mot:ce
+idx:9977 - lemma:ce - mot:n'
+idx:9978 - lemma:n' - mot:est
+
+
+2020-08-06 14:00:38 +0200-- Problème avec le mot d'index 9958 "qu'" (dans Mot.items) différent de "ce" (dans le fichier des mots seulement) dans l'extrait :
+"…vous poser Vania éclate de rire Ce petit Puz est incroyable Depuis combien de temps comprend il aussi bien ce qu' elle lui raconte Non je ne veux pas Réponds moi juste de la tête Mais cette fois ce n' est…".
+Extrait dans le fichier des mots seuls :
+' vous poser vania éclate de rire ce petit puz est incroyable depuis combien de temps comprend il aussi bien ce qu' elle lui raconte non je ne veux pas réponds moi juste de la tête mais cette fois ce n'
+Voir dans le fichier journal le détail
+
+
+2020-08-06 14:19:30 +0200-- Problème avec le mot d'index 9937 "Souhait'" (dans Mot.items) différent de "souhait" (dans le fichier des mots seulement) dans l'extrait :
+"…te pose une question et que tu connais la réponse tu dois dire Souhaitez vous poser cette question Tu comprends Souhait' vous poser Vania éclate de rire Ce petit Puz est incroyable Depuis combien de temps comprend il aussi bien ce…".
+Extrait dans le fichier des mots seuls :
+te pose une question et que tu connais la réponse tu dois dire souhaitez vous poser cette question tu comprends souhait ' vous poser vania éclate de rire ce petit puz est incroyable depuis combien de temps comprend il aussi bien
+Voir dans le fichier journal le détail
+
+
+2020-08-06 14:23:42 +0200-- Problème avec le mot d'index 9937 "Souhait'" (dans Mot.items) différent de "souhait" (dans le fichier des mots seulement) dans l'extrait :
+"…te pose une question et que tu connais la réponse tu dois dire Souhaitez vous poser cette question Tu comprends Souhait' vous poser Vania éclate de rire Ce petit Puz est incroyable Depuis combien de temps comprend il aussi bien ce…".
+Extrait dans le fichier des mots seuls :
+te pose une question et que tu connais la réponse tu dois dire souhaitez vous poser cette question tu comprends souhait ' vous poser vania éclate de rire ce petit puz est incroyable depuis combien de temps comprend il aussi bien
+Voir dans le fichier journal le détail
+
+
+2020-08-06 14:28:24 +0200-- Problème avec le mot d'index 10794 "" (dans Mot.items) différent de "po" (dans le fichier des mots seulement) dans l'extrait :
+"…que otto voilà Et puis shàki bé la plus jeune des filles et finit en désignant le plus petit Et  po pour le plus petit Puz po lâche alors Puz Oui Puz C' est tout à fait ça s' exclame…".
+Extrait dans le fichier des mots seuls :
+que otto voilà et puis shàki bé la plus jeune des filles et finit en désignant le plus petit et po pour le plus petit puz po lâche alors puz oui puz c' est tout à fait ça s' exclame t
+MAIS ça correspond à l'imot suivant d'index 10795.
+Voir dans le fichier journal le détail
+
+
+2020-08-06 14:36:32 +0200-- Problème avec le mot d'index 11860 "" (dans Mot.items) différent de "souhaitez" (dans le fichier des mots seulement) dans l'extrait :
+"…nettement que Puz lui parle Suffisamment proche elle finit même par l' entendre Pou'quoi demande Puz d' une voix innocente  Souhaitez vous poser cette question répond l' interface Pou'quoi  Souhaitez vous poser cette question redemande la voix sortant de…".
+Extrait dans le fichier des mots seuls :
+nettement que puz lui parle suffisamment proche elle finit même par l' entendre pou'quoi demande puz d' une voix innocente souhaitez vous poser cette question répond l' interface pou'quoi souhaitez vous poser cette question redemande la voix sortant de la borne
+MAIS ça correspond à l'imot suivant d'index 11861.
+Voir dans le fichier journal le détail
+
+
+2020-08-06 14:40:39 +0200-- Problème avec le mot d'index 11860 "" (dans Mot.items) différent de "souhaitez" (dans le fichier des mots seulement) dans l'extrait :
+"…nettement que Puz lui parle Suffisamment proche elle finit même par l' entendre Pou'quoi demande Puz d' une voix innocente  Souhaitez vous poser cette question répond l' interface Pou'quoi  Souhaitez vous poser cette question redemande la voix sortant de…".
+Extrait dans le fichier des mots seuls :
+nettement que puz lui parle suffisamment proche elle finit même par l' entendre pou'quoi demande puz d' une voix innocente souhaitez vous poser cette question répond l' interface pou'quoi souhaitez vous poser cette question redemande la voix sortant de la borne
+MAIS ça correspond à l'imot suivant d'index 11861.
+Voir dans le fichier journal le détail
+
+
+2020-08-06 14:55:31 +0200-- ### Le mot "d'ailleurs" est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe d'ailleurs
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-06 14:58:09 +0200-- ### Le mot "tot'ue" (index 13044) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe tot'ue
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-06 15:00:06 +0200-- ### Le mot "pa'ties" (index 25169) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe pa'ties
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-06 15:00:47 +0200-- ### Le mot "d'autant" (index 26972) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe d'autant
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-06 15:01:47 +0200-- ### Le mot "quelqu'il" (index 29978) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe quelqu'il
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-06 15:03:11 +0200-- ### Le mot "d'accord" (index 39042) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe d'accord
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+

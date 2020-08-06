@@ -102,7 +102,7 @@ def remplace_balises_styles
   FileUtils.move(txt_file_path, temp)
   ref = File.open(txt_file_path,'a')
   File.foreach(temp) do |line|
-    line.gsub!(/<\$Scr_Cs::([0-9]+)>(.*?)<\!\$Scr_Cs::(\1)>/){
+    line.gsub!(/<\$Scr_Cs::([0-9]+)>(.*?)<\!\$Scr_Cs::(\1)>/m){
       nomb    = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
       mots    = $2.freeze
       balIN   = "XSCRIVSTART#{nomb}".freeze
@@ -238,6 +238,7 @@ end #/ original_backup_path
 def uuid
   @uuid ||= File.basename(folder)
 end #/ uuid
+alias :name :uuid
 
 # Dossier où sont placés tous les fichiers utiles
 def opes_folder

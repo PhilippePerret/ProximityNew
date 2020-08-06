@@ -41,7 +41,7 @@ class << self
 
   def init_curses
     Curses.init_screen
-    Curses.curs_set(0)  # Invisible cursor
+    # Curses.curs_set(0)  # Invisible cursor
     # Window.keypad(true) # pour que les clés soient Curses::KEY::RETURN
     # Curses.nodelay= false # getch doit attendre
     Curses.start_color # pour la couleur
@@ -63,7 +63,7 @@ class << self
   def prepare_windows
 
     init_curses
-    
+
     self.hauteur_texte   = Curses.lines - (HAUTEUR_STATUS + HAUTEUR_UI + HAUTEUR_LOG)
 
     @textWind   = new([hauteur_texte, Curses.cols-2, 0,0])
@@ -82,18 +82,32 @@ class << self
   def log(str)
     @logWind.resetpos
     @logWind.write(str)
+    cursor_waits
   end #/ log
 
   # Pour écrire une erreur
   def error(msg)
     @logWind.reset
     @logWind.write(msg,RED_ON_BLACK_COLOR)
+    cursor_waits
   end #/ error
 
   def status(msg)
     @statusWind.reset
     @statusWind.write(msg+RC, BLUE_COLOR)
+    cursor_waits
   end #/ status
+
+  def set_mode_clavier(adata = nil)
+    adata ||= ['  NORMAL  ', CWindow::TEXT_COLOR]
+    @statusWind.writepos([0, 20], *adata)
+    # cursor_waits # NON ! SINON BOUCLE
+  end #/ set_mode_clavier
+
+  def init_status_and_cursor
+    set_mod_clavier
+    uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
+  end #/ cursor_waits
 
 end #/<< self
 # ---------------------------------------------------------------------
@@ -108,8 +122,11 @@ def initialize(params)
   @curse.keypad = true
 end #/ initialize
 def write(str, color = nil)
-  curse.attrset(Curses.color_pair(color)) unless color.nil?
-  curse.addstr(str.to_s)
+  if color.nil?
+    curse.addstr(str.to_s)
+  else
+    curse.attron(Curses.color_pair(color)) { curse.addstr(str.to_s) }
+  end
   curse.refresh
 end #/ puts
 def writepos(pos, str, color = nil)

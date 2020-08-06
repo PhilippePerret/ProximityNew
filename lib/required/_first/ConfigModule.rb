@@ -30,7 +30,12 @@ module ConfigModule
     end #/
     def load
       if File.exists?(path)
-        JSON.parse(File.read(path), symbolize_names:true)
+        hfin = {}
+        # Il ne faut symboliser QUE les clés de premier niveau
+        JSON.parse(File.read(path)).each do |k,v|
+          hfin.merge!(k.to_sym => v)
+        end
+        return hfin
       end
     end #/ load
     def save(hdata = nil)

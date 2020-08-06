@@ -10,9 +10,12 @@ MOTS_APOSTROPHE = {
   'prud\'hommes'.freeze => true,
   'd\'abord'.freeze => true,
   'quelqu\'un'.freeze => true,
+  'd\'ailleurs'.freeze => true,
+  'd\'autant'.freeze => true,
+  'd\'accord'.freeze => true,
 }
 
-MOTS_TIRETS = {
+MOTS_TIRET = {
   'peut-être'     => true,
   'grand-chose'   => true,
   'grand-père'    => true,

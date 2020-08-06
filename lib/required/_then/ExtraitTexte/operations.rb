@@ -71,28 +71,26 @@ def insert(params)
   CWindow.log(msg)
 
   unless params[:is_balise]
-    # Ici, il faut appliquer le nouveau découpage. Noter que l'insertion ne
-    # peut pas comporter des retours charriot, c'est déjà un repère.
-    # new_mots = Lemma.parse_str(params[:content], format: :instances)
-    tempfile = Tempfile.new('getmots')
-    Mot.init # remet la liste à vide, juste pour le contrôle des lemma
     begin
-      refvirtualfile = File.open(tempfile, 'a')
+      tempfile = Tempfile.new('getmots')
+      refonlymots = File.open(tempfile, 'a')
+      # Ici, il faut appliquer le nouveau découpage. Noter que l'insertion ne
+      # peut pas comporter des retours charriot, c'est déjà un repère.
+      # new_mots = Lemma.parse_str(params[:content], format: :instances)
+      Mot.init # remet la liste à vide, juste pour le contrôle des lemma
       # NB Il faut toujours ajouter une espace après params[:content] pour
       # être sûr que l'expression régulière de traite_line_of_texte, qui cherche
       # un mot + un non-mot, trouve son bonheur. Si params[:content] termine
       # déjà par un non-mot, ça n'est pas grave, puisque l'espace ne sera pas
       # pris en compte.
       content_pour_reg = "#{params[:content]} "
-      new_items = itexte.traite_line_of_texte(content_pour_reg, refvirtualfile)
+      new_items = itexte.traite_line_of_texte(content_pour_reg, refonlymots)
       # Quand c'est une pure insertion, il faut ajouter une espace après
       # le mot inséré. Mais si c'est un remplacement, cette espace existe
       # déjà.
       new_items.pop if params[:operation] == 'replace'
-      # Et on ajoute les autres si ce sont des mots
-      new_items.each { |titem| Mot.add(titem) if titem.mot? }
     ensure
-      refvirtualfile.close
+      refonlymots.close
     end
   else
     new_item = case params[:content]
@@ -136,15 +134,16 @@ end #/ insert
 def simulation(params)
   # Si on a besoin de connaitre l'opération, elle se trouve dans
   # params[:operation]
-  tempfile = Tempfile.new('getmots')
   Mot.init # remet la liste à vide, juste pour le contrôle des lemma
+  content_pour_reg = "#{params[:content]}#{SPACE}"
   begin
-    refvirtualfile = File.open(tempfile, 'a')
-    content_pour_reg = "#{params[:content]}#{SPACE}"
-    new_items = itexte.traite_line_of_texte(content_pour_reg, refvirtualfile)
-    new_items.pop # retirer l'espace
+    tempfile = Tempfile.new('getmots')
+    refonlymots = File.open(tempfile, 'a')
+    new_items = itexte.traite_line_of_texte(content_pour_reg, refonlymots)
+    # Cf. l'explication dans l'opération réelle elle-même
+    new_items.pop if params[:operation] == 'replace'
   ensure
-    refvirtualfile.close
+    refonlymots.close
   end
 
   # On prend seulement les mots
