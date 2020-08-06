@@ -78,8 +78,11 @@ def debug(options = nil)
     proxs = []
     proxs << prox_avant if prox_avant
     proxs << prox_apres if prox_apres
-    deb = "#{content.inspect} | index absolu : #{index} | offset absolu : #{offset} | canon : #{canon} | proximités : #{proxs.count}".freeze
+    deb = "#{content.inspect} | index absolu : #{index} | offset absolu : #{offset} | canon : #{canon} | proximités : #{proxs.count}"
     deb << " | fichier : #{file_id}" unless file_id.nil?
+    deb = deb.freeze
+    Debugger.add(deb)
+    return deb
   else
     # Sortie pour fichier, formatée pour tenir dans un tableau avec d'autres
     # valeurs
