@@ -82,32 +82,32 @@ class << self
   def log(str)
     @logWind.resetpos
     @logWind.write(str)
-    cursor_waits
+    init_status_and_cursor
   end #/ log
 
   # Pour écrire une erreur
   def error(msg)
     @logWind.reset
     @logWind.write(msg,RED_ON_BLACK_COLOR)
-    cursor_waits
+    init_status_and_cursor
   end #/ error
 
   def status(msg)
     @statusWind.reset
     @statusWind.write(msg+RC, BLUE_COLOR)
-    cursor_waits
+    init_status_and_cursor
   end #/ status
 
   def set_mode_clavier(adata = nil)
     adata ||= ['  NORMAL  ', CWindow::TEXT_COLOR]
     @statusWind.writepos([0, 20], *adata)
-    # cursor_waits # NON ! SINON BOUCLE
+    # init_status_and_cursor # NON ! SINON BOUCLE
   end #/ set_mode_clavier
 
-  def init_status_and_cursor
-    set_mod_clavier
+  def init_status_and_cursor(data_mode_clavier = nil)
+    set_mode_clavier(data_mode_clavier)
     uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
-  end #/ cursor_waits
+  end #/ init_status_and_cursor
 
 end #/<< self
 # ---------------------------------------------------------------------

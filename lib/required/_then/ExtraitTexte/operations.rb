@@ -132,6 +132,7 @@ end #/ insert
 #   :content        Le contenu à insérer
 #   :operation      Opération ('insert','replace' ou 'insert')
 def simulation(params)
+  debug("-> simulation avec paramètres : #{params.inspect}")
   # Si on a besoin de connaitre l'opération, elle se trouve dans
   # params[:operation]
   Mot.init # remet la liste à vide, juste pour le contrôle des lemma
@@ -146,8 +147,12 @@ def simulation(params)
     refonlymots.close
   end
 
+  debug("[Simulation] new_items = #{new_items.inspect}")
+
   # On prend seulement les mots
   new_mots = new_items.select{ |titem| titem.mot? }
+
+  debug("[Simulation] les mots gardés : #{new_mots.inspect}")
 
   begin
     Lemma.parse_str(File.read(tempfile)).split(RC).each_with_index do |line, idx|
@@ -163,6 +168,9 @@ def simulation(params)
       new_mot.type = type
       new_mot.canon = canon
       new_mot.icanon = Canon.items_as_hash[canon] # peut être nil
+      debug("[Simulation] Réglage de #{new_mot.cio}")
+      debug("             Type: #{new_mot.type}")
+      debug("             Canon: #{canon} #{new_mot.icanon.inspect}")
     end
   ensure
     tempfile.delete
@@ -173,31 +181,48 @@ def simulation(params)
   confirmations = []
 
   # Position à laquelle les mots doivent être insérés
-  inserted_at = params[:real_at].at
+  insert_at_index     = params[:real_at].at
+  debug("[Simulation] insert_at_index : #{insert_at_index.inspect}")
+  inserted_at_offset  = itexte.items[insert_at_index].offset
+  debug("[Simulation] inserted_at_offset : #{inserted_at_offset.inspect}")
 
   # On regarde s'il y a des risques de proximité
   new_mots.each do |new_mot|
+    debug("[Simulation] *** Étude du mot #{new_mot.cio}")
     # Si new_mot n'a pas de canon, c'est qu'aucun autre mot de sa
     # famille n'existe dans le texte. Il ne peut pas avoir de proximités. On
     # peut passer directement au suivant.
     new_mot.icanon || next
     # Distance minimale pour que deux mots ne soient pas en proximité
     min_distance = new_mot.icanon.distance_minimale
+    debug("= Distance minimale attendue : #{min_distance.inspect}")
     # Principe : si un offset du canon est à moins de cette distance, c'est
     # que le mot risque d'entrer en proximité
     new_mot.icanon.offsets.each_with_index do |offset, idx|
-      distance = (offset - (inserted_at + new_mot.length / 2)).abs
-      if distance < min_distance
-        # Proximité trouvée !
-        mot_proche = new_mot.icanon.items[idx]
-        confirmations << "#{new_mot.content}”⬅︎ ~#{distance} ➡︎“#{mot_proche.content}”"
+      distance = (offset - (inserted_at_offset + new_mot.length / 2))
+      distance_abs = distance.abs
+      debug("= Distance avec le mot #{idx} du canon : #{distance}")
+      # Si c'est un mot trop loin vers la droite
+      if distance_abs > min_distance
+        break if distance > 0
+        # Si le mot est trop loin vers la gauche, on passe au suivant
+        next if distance < 0
       end
+      # Si on passe ici, c'est que le mot est en proximité
+      # Pour la sémantique
+      is_mot_canon_avant = distance < 0
+      # Proximité trouvée !
+      debug("= Le mot #{idx} du canon crée une proximité !")
+      mot_en_prox = new_mot.icanon.items[idx]
+      confirmations << "#{new_mot.content.inspect} avec mot #{is_mot_canon_avant ? '<-' : '->'} #{mot_en_prox.content.inspect} (idx #{mot_en_prox.index - from_item} à #{distance_abs})."
     end
-    inserted_at += new_mot.length + 1 # approximation
+    # Le décalage du mot suivant s'il y en a plusieurs à insérer
+    # C'est une approximation
+    inserted_at_offset += new_mot.length + 1
   end
 
   unless confirmations.empty?
-    CWindow.log("Cette opération va occasionner de nouvelles proximités : #{confirmations.join(VGE)}.#{RC}Taper 'o' ou 'y' ou ENTRÉE pour confirmer ou 'z' ou 'n' pour renoncer.")
+    CWindow.log("Risque proximités : #{confirmations.join(VGE)}.#{RC}'o' ou 'y' ou ENTRÉE => confirmer / 'z' ou 'n' => renoncer.")
     while true
       s = CWindow.uiWind.wait_for_char
       case s

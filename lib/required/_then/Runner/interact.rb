@@ -22,9 +22,9 @@ MODES_CLAVIER = {
   chiffres_simples: {
     dim: ['  NUMBER  ', CWindow::RED_ON_BLACK_COLOR], # pour l'affichage dans la fenêtre de statut
     exclusif: true, # aucune autre touche que celles définies ci-dessous
-    fin: /[0-9]+ $/, # on sort de ce mode quand on obtient ça
+    fin: /[0-9]+ $/, # on sort de ce mode quand on obtient ça pour la commande
     'q'=>'1', 's'=>'2', 'd'=>'3', 'f'=>'4', 'g'=>'5', 'h'=>'6', 'j'=>'7', 'k'=>'8', 'l'=>'9', 'm'=>'0',
-    ' ' => :end,
+    ' ' => ' ',
     # Puisque le mode est exclusif, il faut indiquer toutes les touches qui
     # doivent pouvoir passer.
     27=>27, 127=>127, 10=>10,
@@ -33,17 +33,11 @@ MODES_CLAVIER = {
 
 module Runner
 class << self
-# def mode_interactif
-#   @mode_interactif ||= :normal
-# end #/ mode_interactif
-# def mode_interactif=(valeur)
-#   @mode_interactif = valeur.to_sym
-# end #/ mode_interactif=
 
 # Pour revenir au mode de clavier normal
 def reset_mode_clavier
   @mode_clavier = nil
-  init_status_and_cursor
+  CWindow.init_status_and_cursor
 end #/ reset_mode_clavier
 
 def interact_with_user
@@ -55,6 +49,11 @@ def interact_with_user
   reset_mode_clavier
   while true
     # On attend sur la touche de l'utilisateur
+    unless @mode_clavier.nil?
+      if @mode_clavier[:fin] && command.match?(@mode_clavier[:fin])
+        reset_mode_clavier
+      end
+    end
     s = curse.getch
     unless @mode_clavier.nil?
       s = @mode_clavier[s]
@@ -135,7 +134,7 @@ def interact_with_user
     # Faut-il passer dans un mode clavier particulier ?
     if start_command && COMMANDS_TO_MODE[command]
       @mode_clavier = MODES_CLAVIER[COMMANDS_TO_MODE[command][:mode]]
-      CWindow.set_mode_clavier(@mode_clavier[:dim])
+      CWindow.init_status_and_cursor(@mode_clavier[:dim])
     end
   end #/ tanq que rien ne sort
 end #/ interact_with_user
