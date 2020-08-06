@@ -12,6 +12,16 @@ MOT_NONMOT_REG = /([#{WORD_DELIMITERS}]+)?([^#{WORD_DELIMITERS}]+)([#{WORD_DELIM
 
 # Pour les erreurs à enregistrer
 ParsingError = Struct.new(:message, :where)
+# Pour ajouter une erreur au cours du parsing
+# @usage
+#   add_parsing_error(ParsingError.new(<message>))
+#
+def add_parsing_error(error)
+  error = ParsingError.new(error) if error.is_a?(String)
+  Errorer << error.message
+  log("ERREUR PARSING: #{error.message}")
+  @parsing_errors << error
+end #/ add_parsing_error
 
 class Texte
 # ---------------------------------------------------------------------
@@ -29,10 +39,11 @@ def parse
   # Parser en fonction du type du document
   if projet_scrivener?
     projscriv = Scrivener::Projet.new(path, self)
-    parse_projet_scrivener(projscriv)
+    parse_projet_scrivener(projscriv) || return
   else
-    parse_simple_texte
+    parse_simple_texte || return
   end
+  return true # en cas de succès du parsing
 end #/ parse
 
 
@@ -59,15 +70,24 @@ def parse_simple_texte
   # Le texte corrigé est mis dans un fichier portant le même nom que le
   # fichier original avec la marque 'c' est il sera normalement détruit à
   # la fin du processus.
-  prepare || return
+  prepare || begin
+    log("# Interruption du parsing au niveau de préparation…".freeze, true)
+    return false
+  end
 
   # On lemmatise la liste de tous les mots, on ajoutant chaque
   # mot à son canon.
-  lemmatize || return
+  lemmatize || begin
+    log("# Interruption du parsing au niveau de la lemmatisation…".freeze, true)
+    return false
+  end
 
   # On doit recalculer tout le texte. C'est-à-dire définir les
   # offsets de tous les éléments
-  recompte || return
+  recompte || begin
+    log("# Interruption du parsing au niveau du recomptage…".freeze, true)
+    return false
+  end
 
   # On termine en enregistrant la donnée finale. Cette donnée, ce
   # sont tous les mots, les canons, ainsi que les préférences sur
@@ -83,6 +103,7 @@ def parse_simple_texte
 rescue Exception => e
   log("PROBLÈME EN PARSANT le texte #{path} : #{e.message}#{RC}#{e.backtrace.join(RC)}")
   CWindow.error("Une erreur est survenue : #{e.message} (quitter et consulter le journal)")
+  return false
 ensure
   File.delete(corrected_text_path) if File.exists?(corrected_text_path)
 end
@@ -114,7 +135,7 @@ def parse_projet_scrivener(projet)
   log("Nombre de fichiers à traiter : #{projet.files.count}")
   projet.files.each do |scrivfile| # instance ScrivFile
 
-    log("** Traitement du fichier scrivener #{scrivfile.uuid}")
+    log("** Traitement du fichier scrivener #{scrivfile.uuid}", true)
 
     # Effacement des fichiers qui se trouvent peut-être dans le
     # dossier du fichier Scrivener courant à traiter.
@@ -127,7 +148,10 @@ def parse_projet_scrivener(projet)
     # Le texte corrigé est mis dans un fichier portant le même nom que le
     # fichier original avec la marque 'c' est il sera normalement détruit à
     # la fin du processus.
-    prepare(scrivfile) || return
+    prepare(scrivfile) || begin
+      log("# Interruption du parsing au niveau de la préparation de #{scrivfile.name}…".freeze, true)
+      return false
+    end
 
     # Pour bien séparer les fichiers, on ajoute deux retours charriot
     # entre chaque fichier
@@ -138,11 +162,17 @@ def parse_projet_scrivener(projet)
 
   # On lemmatise la liste de tous les mots, on ajoutant chaque
   # mot à son canon.
-  lemmatize || return
+  lemmatize || begin
+    log("# Interruption du parsing au niveau de la lemmatisation…".freeze, true)
+    return false
+  end
 
   # On doit recalculer tout le texte. C'est-à-dire définir les
   # offsets de tous les éléments
-  recompte || return
+  recompte || begin
+    log("# Interruption du parsing au niveau du comptage…".freeze, true)
+    return false
+  end
 
   # On termine en enregistrant la donnée finale. Cette donnée, ce
   # sont tous les mots, les canons, ainsi que les préférences sur
@@ -157,7 +187,8 @@ def parse_projet_scrivener(projet)
 
 rescue Exception => e
   log("PROBLÈME EN PARSANT le projet scrivener #{projet.path} : #{e.message}#{RC}#{e.backtrace.join(RC)}")
-  CWindow.error("Une erreur est survenue : #{e.message} (quitter et consulter le journal)")
+  erreur("Une erreur est survenue : #{e.message} (quitter et consulter le journal)")
+  return false
 end #/ parse_projet_scrivener
 
 def init
@@ -167,15 +198,18 @@ def init
   erase_parsing_files
 end #/ init
 
-def add_parsing_error(error)
-  Errorer << error.message
-  log("ERREUR PARSING: #{error.message}")
-  @parsing_errors << error
-end #/ add_parsing_error
+def show_parsing_errors
+  msg = "Des erreurs sont survenues (#{@parsing_errors.count})"
+  @parsing_errors.each do |err|
+    msg << "#{RC}#{err.message}"
+  end
+  msg << "Ces problèmes doivent être réglés pour pouvoir déproximiser ce texte."
+  CWindow.textWind.write(msg.freeze)
+end #/ show_parsing_errors
 
 def fin_parsing(what, duration)
   unless @parsing_errors.empty?
-    erreur("Des erreurs sont survenues (#{@parsing_errors.count}). Consulter le fichier errors.log")
+    show_parsing_errors
   else
     log("👍 PARSING DU #{what} OPÉRÉ AVEC SUCCÈS".freeze)
     log("   (durée de l'opération : #{duration})#{RC*2}".freeze)
@@ -207,18 +241,12 @@ end #/ erase_parsing_files
 # si le fichier d'analyse n'existe pas ou s'il est plus vieux que le
 # nouveau texte.
 def parse_if_necessary(projetscriv = nil)
-  log("-> parse_if_necessary")
   if out_of_date? # Le fichier doit être actualisé
-    log("= Le fichier doit être actualisé#{" (c'est un projet Scrivener)" if projet_scrivener?}")
-    if projet_scrivener?
-      parse_projet_scrivener(projetscriv)
-    else
-      parse
-    end || return
+    log("= Le fichier doit être actualisé")
+    return parse
   else # quand le fichier est à jour
-    load
+    return load
   end
-  return true
 end #/ parse_if_necessary
 
 
@@ -249,17 +277,18 @@ end #/ prepare
 def decoupe_fichier_corriged(scrivfile = nil)
   proprio = scrivfile || self
   file_corrected = proprio.corrected_text_path
-  refonlymots = File.open(only_mots_path,'a')
+  @refonlymots = File.open(only_mots_path,'a') # a été détruit avant
   # On le fait par paragraphe pour ne pas avoir trop à traiter d'un coup
   File.foreach(file_corrected) do |line|
     next if line.strip.empty?
-    new_items = traite_line_of_texte(line.strip, refonlymots)
-    if new_items.empty?
-      log("# Aucun item ajouté avec la line #{line.inspect}".freeze)
-      next
-    else
-      log("Items ajoutés à itexte.items : #{new_items.count}".freeze)
-    end
+    new_items = traite_line_of_texte(line.strip)
+    next if new_items.empty?
+    # if new_items.empty?
+    #   log("[Découpe fichier] # Aucun item ajouté avec la line #{line.inspect}".freeze)
+    #   next
+    # else
+    #   log("[Découpe fichier] Items ajoutés à itexte.items : #{new_items.count}".freeze)
+    # end
     new_items.each { |titem| titem.file_id = scrivfile.id } unless scrivfile.nil?
     @items += new_items
     # À la fin de chaque “ligne”, il faut mettre une fin de paragraphe
@@ -272,90 +301,160 @@ rescue Exception => e
   erreur(e)
   return false
 ensure
-  refonlymots.close
+  @refonlymots.close
 end #/ decoupe_fichier_corriged
+
+# Pour écrire dans le fichier qui ne contient que les mots, séparés par
+# des espaces (pour lemmatisation)
+def write_in_only_mots(str)
+  @refonlymots.write(str)
+end #/ write_in_only_mots
 
 # +refmotscontainer+ Référence au fichier contenant tous les mots,
 # dans le mode normal et un fichier virtuel pour les insertions et
 # remplacement.
-def traite_line_of_texte(line, refmotscontainer)
+def traite_line_of_texte(line)
   new_items = []
   mark_style = nil # pour les projets Scrivener
+  # C'est ici qu'on va faire la découpe du texte en :
+  #     [AMORCE ]MOT NON-MOT
+  # Entendu qu'on part du principe qu'un texte est un enchainement
+  # entièrement de mot et de non-mot (les non-mots les plus utilisés
+  # étant les espaces et ensuite les ponctuations). L'amorce est aussi
+  # un non-mot, elle sert par exemple pour les dialogues ou tout texte
+  # ou ligne qui commencerait par une apostrophe ou un chevron.
   line.scan(MOT_NONMOT_REG).to_a.each_with_index do |item, idx|
     # next if item.nil? # pas de premier délimiteur par exemple
     amorce, mot, nonmot = item # amorce : le tiret, par exemple, pour dialogue
+    # S'il y a une amorce, on l'ajoute
     new_items << NonMot.new(amorce) unless amorce.nil?
+    # On traite le mot, qui peut être plus ou moins complexe
+    new_items = traite_mot(mot, nonmot, new_items)
+    # log("État de new_items : #{new_items.inspect}")
+  end #/scan
 
-    if mot.start_with?('XSCRIVSTART')
-      # C'est le début d'une marque de style dans un projet Scrivener
-      # Note : cette marque est collé au mot, il faut donc poursuivre
-      # le traitement
-      mark_style = mot[11...14].gsub(/O/,'').to_i
-      mot = mot[14..-1]
-    elsif mot.start_with?('XSCRIVEND')
-      # Cette marque n'est pas collé au dernier mot, il faut
-      # arrêter le traitement après son enregistrement dans le
-      # dernier mot traité.
-      new_items.last.mark_scrivener_end = mot[9...12].gsub(/O/,'').to_i
-      next # rien à faire par la suite, on passe au suivant
-    end
+  # Maintenant qu'on a tous les text-items de la phrase, on peut
+  # ajouter les mots dans le fichier des mots seulement
+  new_items.each do |titem|
+    next unless titem.is_a?(Mot)
+    write_in_only_mots("#{titem.content.downcase}#{titem.is_colled ? EMPTY_STRING : SPACE}".freeze)
+  end
 
-    if mot.match?(/#{TIRET}/) || mot.match?(/#{APO}/)
-      traite_mot_special(mot).each do |titem|
-        # log("Mot spécial ajouté : #{titem.inspect}")
-        if mark_style
-          titem.mark_scrivener_start = mark_style
-          mark_style = nil
-        end
-        new_items << titem
-        if titem.is_a?(Mot)
-          sep = titem.is_colled ? EMPTY_STRING : SPACE
-          refmotscontainer.write("#{titem.content.downcase}#{sep}".freeze)
-        end
-      end
+  return new_items
+end #/ traite_line_of_texte
+
+# Traitement général du mot
+# -------------------------
+# La méthode a été "isolée" car elle peut être appelée aussi bien
+# par la méthode `traite_line_of_texte` que la méthode `traite_mot_special`
+# Elle retourne systématiquement un Array, même si le mot est unique (entendu
+# que justement cette méthode va chercher à analyser un mot rendu complexe à
+# cause des apostrophes et des tirets — et autre chose ?)
+# @Return {Array of NonMot/Mot}
+#
+# +mot+   {String} Le mot à traiter
+# +nonmot+  {String} Le non-mot relevé après le mot, mais seulement avec la
+#     phrase.
+# +new_items+   {Array|Nil}   La liste des mots actuels de la phrase traitée
+#     lorsque la méthode est appelée par `traite_line_of_texte`. Sinon Nil
+#     lorsque la méthode est appelée par `traite_mot_special`
+def traite_mot(mot, nonmot = nil, new_items = nil)
+  # Pour mettre les mots qui seront ajoutés pour le mot fourni. Entendu
+  # qu'un mot unique — p.e. << qu'est-ce >> — peut générer plusieurs mots
+  #  — p.e. "qu'", "est" et "ce" —. Mais seulement si new_items n'est pas
+  # fourni à la méthode (noter que new_items concerne seulement les mots
+  # d'une phrase, pas du texte complet)
+  mot_items = []
+  # Pour une marque éventuelle de style, avec un projet Scrivener
+  mark_style = nil
+  if mot.start_with?('XSCRIVSTART')
+    # C'est le début d'une marque de style dans un projet Scrivener
+    # Note : cette marque est collé au mot, il faut donc poursuivre
+    # le traitement
+    mark_style = mot[11...14].gsub(/O/,'').to_i
+    mot = mot[14..-1]
+  elsif mot.start_with?('XSCRIVEND')
+    # Cette marque n'est pas collé au dernier mot, il faut
+    # arrêter le traitement après son enregistrement dans le
+    # dernier mot traité.
+    # QUESTION Que se passera-t-il ici si new_items n'est pas défini,
+    # c'est-à-dire qu'on se trouve dans le cadre d'un mot complexe avec
+    # un mot comportant un style dans Scrivener (ce qui peut très bien
+    # arriver avec "rosa-bleu" et "bleu" dans un style particulier)
+    if new_items.nil?
+      mot_items.last.mark_scrivener_end = mot[9...12].gsub(/O/,'').to_i
     else
-      titem = Mot.new(mot)
+      new_items.last.mark_scrivener_end = mot[9...12].gsub(/O/,'').to_i
+    end
+    return (new_items || []) + mot_items # rien à faire par la suite
+  end
+
+  if mot.match?(/#{TIRET}/) || mot.match?(/#{APO}/)
+    traite_mot_special(mot).each do |titem|
+      # log("Mot spécial ajouté : #{titem.inspect}")
       if mark_style
         titem.mark_scrivener_start = mark_style
         mark_style = nil
       end
-      new_items << titem
-      refmotscontainer.write("#{mot.downcase}#{SPACE}".freeze)
+      mot_items << titem
     end
-    titem = NonMot.new(nonmot)
-    if mark_style
-      titem.mark_scrivener_start = mark_style
-      mark_style = nil
+  else
+    titem = Mot.new(mot).tap do |inst|
+      if mark_style
+        inst.mark_scrivener_start = mark_style
+        mark_style = nil
+      end
     end
-    new_items << titem
-  end #/scan
-  return new_items
-end #/ traite_line_of_texte
+    mot_items << titem
+  end
+  unless nonmot.nil?
+    titem = NonMot.new(nonmot).tap do |inst|
+      if mark_style
+        inst.mark_scrivener_start = mark_style
+        mark_style = nil
+      end
+    end
+    mot_items << titem
+  end
+  return (new_items || []) + mot_items
+end #/ traite_mot
 
 def traite_mot_special(mot)
   mots = []
   if mot.match?(/#{APO}/)
-    if MOTS_APOSTROPHE.key?(mot.downcase)
+    if is_mot_apostrophe?(mot)
       return [Mot.new(mot)]
     else
       # Ce n'est pas un mot comme aujourd'hui, connu pour avoir une
       # apostrophe. S'il n'y qu'une seule apostrophe, on retourne deux
+      # Ça peut être quelque chose comme :
+      #   qu'aujourd'hui
+      #   qu'est-ce
+      #   qu'un
+      #   d'avant
       bouts = mot.split(APO)
       bouts_debugged = bouts.inspect
+      # On met forcément le premier mot comme ça dans la liste des items
+      # Par exemple, c'est "qu'" ou "d'". On indique que ce mot doit être
+      # collé au suivant, ce qui est toujours le cas (*).
+      # (*) Cette "collure" n'est valable que pour constituer le fichier qui
+      # sera lemmatisé car pour le fichier normal reconstitué, toutes les
+      # espaces et autres ponctuations sont enregistrées entant que text-item
       firstmot = Mot.new(bouts[0] << APO).tap { |m| m.is_colled = true }
       if bouts.count == 1
         # Ça arrive par exemple avec le "L" dans "L’« autre monde »" à
-        # cause des chevrons. Dans ce cas, bouts = ["L"]
+        # cause des chevrons. Dans ce cas, bouts = ["L"]. On peut donc
+        # s'arrêter là en retournant simplement le mot apostrophé.
         return [firstmot]
       elsif bouts.count == 2
-        return [firstmot, Mot.new(bouts[1])]
+        return [firstmot] + traite_mot(bouts[1])
       end
       # S'il y a deux apostrophe (maximum) on regarde si le second
       # mot est un mot connu, comme dans "plus qu'aujourd'hui"
       # Sinon, on renvoie les trois mots
       bouts.shift
       deuxi = bouts.join(APO)
-      if MOTS_APOSTROPHE.key?(deuxi.downcase)
+      if is_mot_apostrophe?(deuxi)
         return [firstmot, Mot.new(deuxi)]
       else
         motsuiv = if bouts[0].nil?
@@ -365,13 +464,13 @@ def traite_mot_special(mot)
           Mot.new(bouts[0] << APO)
         end
         motsuiv.is_colled = true
-        return [firstmot, motsuiv, Mot.new(bouts[1])]
+        return [firstmot, motsuiv] + traite_mot(bouts[1])
       end
     end
   end
 
   if mot.match?(/#{TIRET}/)
-    if MOTS_TIRETS.key?(mot.downcase)
+    if is_mot_tiret?(mot)
       # Un mot tiret connu, comme "peut-être" ou "grand-chose"
       # cf. la liste dans constantes/proximites.rb
       return [Mot.new(mot)]
@@ -381,7 +480,7 @@ def traite_mot_special(mot)
       # mots avec un tiret ajouté en non mot
       bouts = mot.split(TIRET)
       if bouts.count == 2
-        return [Mot.new(bouts[0]), NonMot.new(TIRET, type:'PUN'), Mot.new(bouts[1])]
+        return [Mot.new(bouts[0]), NonMot.new(TIRET, type:'PUN')] + traite_mot(bouts[1])
       end
       # S'il y a deux tirets (maximum) on regarde si le second
       # mot est un mot-tiret connu, comme dans "arrière-grand-père" (c'est
@@ -389,109 +488,33 @@ def traite_mot_special(mot)
       # Sinon, on renvoie les trois mots en mettant entre un tiret
       first = bouts.shift
       deuxi = bouts.join(TIRET)
-      if MOTS_TIRETS.key?(deuxi.downcase)
-        return [Mot.new(first), NonMot.new(TIRET, type:'PUN'), Mot.new(deuxi)]
+      if is_mot_tiret?(deuxi)
+        return [Mot.new(first), NonMot.new(TIRET, type:'PUN')] + traite_mot(deuxi)
       else
-        return [
+        ary_mots = [
           Mot.new(first),
-          NonMot.new(TIRET, type:'PUN'),
-          Mot.new(bouts[0]),
-          NonMot.new(TIRET, type:'PUN'),
-          Mot.new(bouts[1])
+          NonMot.new(TIRET, type:'PUN')
         ]
+        ary_mots += traite_mot(bouts[0])
+        ary_mots << NonMot.new(TIRET, type:'PUN')
+        ary_mots += traite_mot(bouts[1])
+        return ary_mots
       end
     end
   end
-
-
-  # if mot.match?(/#{APO}/)
-  #   if MOTS_APOSTROPHE.key?(mot.downcase)
-  #     # mots << mot
-  #     mots << Mot.new(mot)
-  #   else
-  #     # log("MOT APOSTROPHE À DÉCOUPER : #{mot.inspect}")
-  #     bouts = mot.split(APO)
-  #     if bouts.count == 2
-  #       # <= OK, seulement une apostrophe
-  #       # => on prend les deux mots séparément (en remettant
-  #       #    l'apostrophe au premier mot)
-  #       # bouts[0] << APO
-  #       # mots = bouts
-  #       mots << Mot.new(bouts[0] << APO)
-  #       mots << Mot.new(bouts[1])
-  #     else # plus d'une apostrophe => chaque double doit être traité
-  #       i = 0
-  #       last_indice = bouts.count - 1
-  #       while i < last_indice
-  #         double = bouts[i]+APO+bouts[i+1]
-  #         if MOTS_APOSTROPHE.key?(double.downcase)
-  #           # mots << double
-  #           mots << Mot.new(double)
-  #           i += 1
-  #         else
-  #           # bouts[i] << APO unless i == last_indice
-  #           # mots << bouts[i]
-  #           mots << NonMot.new(APO, type: 'APO')
-  #           mots << Mot.new(bouts[i])
-  #         end
-  #         i += 1
-  #         if i == last_indice
-  #           # mots << bouts[i]
-  #           mots << NonMot.new(APO, type: 'APO')
-  #           mots << Mot.new(bouts[i])
-  #           break
-  #         end
-  #       end
-  #       log("mots apostrophes à la fin : #{mots.inspect}")
-  #     end
-  #   end
-  # end
-  if mot.match?(/#{TIRET}/)
-    if MOTS_TIRETS.key?(mot.downcase)
-      # mots << mot
-      mots << Mot.new(mot)
-    else
-      bouts = mot.split(TIRET)
-      if bouts.count == 2
-        # <= seulement un tiret
-        # => on prend les deux mots séparément (en remettant le tiret au
-        #    second mot)
-        # bouts[1].prepend(TIRET)
-        # mots = bouts
-        mots << Mot.new(bouts[0])
-        mots << NonMot.new(TIRET, type:'TIRET')
-        mots << Mot.new(bouts[1])
-      else
-        # Plus d'un tiret
-        # => on teste par paire
-        i = 0
-        last_indice = bouts.count - 1
-        while i < last_indice
-          double = bouts[i]+TIRET+bouts[i+1]
-          if MOTS_TIRETS.key?(double.downcase)
-            # mots << double
-            mots << Mot.new(double)
-            i += 1
-          else
-            # bouts[i].prepend(TIRET) unless i == 0
-            # mots << bouts[i]
-            mots << NonMot.new(TIRET, type:'TIRET') unless i == 0
-            mots << Mot.new(bouts[i])
-          end
-          i += 1
-          if i == last_indice
-            # mots << bouts[i]
-            mots << NonMot.new(TIRET, type:'TIRET')
-            mots << Mot.new(bouts[i])
-            break
-          end
-        end
-        log("mots à la fin : #{mots.inspect}")
-      end
-    end
-  end
-  return mots
 end #/ traite_mot_special
+
+# Retourne TRUE si le mot +mot+, qui contient une apostrophe, est un
+# mot connu comme "aujourd'hui" ou un mot défini propre au projet.
+def is_mot_apostrophe?(mot)
+  motd = mot.downcase
+  MOTS_APOSTROPHE.key?(motd) || liste_mots_apostrophe.key?(motd)
+end #/ has_apostrophe?
+
+def is_mot_tiret?(mot)
+  motd = mot.downcase
+  MOTS_TIRET.key?(motd) || liste_mots_tiret.key?(motd)
+end #/ is_mot_tiret?
 
 # On prend le fichier texte (contenant tout le texte initial ou le texte
 # du fichier d'un projet Scrivener) et on le corrige pour qu'il puisse être
@@ -531,11 +554,12 @@ end #/ prepare_as_projet_scrivener
 # Pour savoir de quel mot il s'agit, on se sert de l'index dans Mot.items
 # et de l'index dans le fichier only_mots_path. Cet index correspond.
 def lemmatize
+  log("*** Lemmatisation du fichier", true)
   lemma_file_path = Lemma.parse(only_mots_path)
   # log("Contenu du fichier lemma_file_path : #{File.read(lemma_file_path)}")
   File.foreach(lemma_file_path).with_index do |line, mot_idx_in_lemma|
     next if line.strip.empty?
-    traite_lemma_line(line, mot_idx_in_lemma) || break
+    traite_lemma_line(line, mot_idx_in_lemma) || return
   end # Fin de boucle sur chaque ligne du fichier de lemmatisation
   return true
 end #/ lemmatize
@@ -554,9 +578,18 @@ def traite_lemma_line(line, idx)
   end
   Mot.items[idx].type = type
   if mot != Mot.items[idx].content.downcase
-    erreur("ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS :")
+    erreur("### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS :".freeze)
     imot = Mot.items[idx]
-    log("mot:#{mot.inspect}, dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
+    log("### mot:#{mot.inspect}, dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
+    if mot.match?(/[\-\']/)
+      liste_prog, liste_perso, chose = mot.match?(/'/) ? ['MOTS_APOSTROPHE', 'avec apostrophe', 'mot_apostrophe'] : ['MOTS_TIRETS', 'avec tirets', 'mot_tiret']
+      msg = "### Le mot #{mot.inspect} est à ajouter à la liste des mots spéciaux #{liste_perso}"
+      msg << "#{RC}### avec la commande :add #{chose} #{mot}"
+      msg << "#{RC}### Si c'est un mot commun, l'ajouter à #{liste_prog} dans lib/required/_first/contants/proximites.rb"
+      add_parsing_error(msg)
+      log(msg, true)
+    end
+    log("Je retourne false")
     return false
   else # quand tout est normal
     Canon.add(Mot.items[idx], canon)

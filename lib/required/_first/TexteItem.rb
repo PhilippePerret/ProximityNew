@@ -67,12 +67,24 @@ end #/ initialize
 
 # Pour info, le content/index/offset
 def cio
-  "#{content.gsub(/\n/,'\n').inspect}/#{index}/#{offset}"
+  "#{content.gsub(/\n/,'\n').inspect}/#{index}/#{offset}#{"/#{file_id}"unless file_id.nil?}"
 end #/ cio
 
 # Pour débugguer le texte item
-def debug
-  " #{index.to_s.ljust(7)}#{content.inspect.ljust(15)}#{offset.to_s.ljust(8)}#{file_id.to_s.ljust(7)}"
+def debug(options = nil)
+  options ||= {}
+  if options[:output] == :console
+    # Sortie pour la console NewProx
+    proxs = []
+    proxs << prox_avant if prox_avant
+    proxs << prox_apres if prox_apres
+    deb = "#{content.inspect} | index absolu : #{index} | offset absolu : #{offset} | canon : #{canon} | proximités : #{proxs.count}".freeze
+    deb << " | fichier : #{file_id}" unless file_id.nil?
+  else
+    # Sortie pour fichier, formatée pour tenir dans un tableau avec d'autres
+    # valeurs
+    " #{index.to_s.ljust(7)}#{content.inspect.ljust(15)}#{offset.to_s.ljust(8)}#{file_id.to_s.ljust(7)}"
+  end
 end #/ debug
 
 def to_s

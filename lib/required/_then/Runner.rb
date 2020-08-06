@@ -8,6 +8,68 @@ class << self
 
   include ConfigModule
 
+
+  # = main =
+  #
+  # Lancement de l'application
+  #
+  def run
+    # On prépare les fenêtres
+    prepare_screen
+    # On regarde le précédent texte édité, s'il existe
+    config.load
+    # Le chemin du fichier texte (ou projet Scrivener) à ouvrir
+    fpath_to_open = nil
+    if ARGV[0]
+      fpath_to_open = ARGV[0]
+      # Un premier argument définit le texte à ouvrir
+      unless File.exists?(fpath_to_open)
+        erreur("Le fichier #{fpath.inspect} est introuvable. Utiliser la commande ':open /path/to/file.txt' pour ouvrir un fichier existant.".freeze)
+        return
+      end
+    end
+    open_texte(fpath_to_open || config[:last_text_path] || File.join(APP_FOLDER,'asset','exemples','simple_text.txt'))
+  rescue Exception => e
+    log("Je dois exiter à cause de : #{e.message}")
+    Curses.close_screen
+    puts "#{e.message}#{RC}#{e.backtrace.join(RC)}".rouge
+  end #/ run
+
+
+
+  # Pour ouvrir le texte de chemin d'accès +text_path+
+  def open_texte text_path, commands = nil
+    log("-> open_texte (text_path:#{text_path.inspect})")
+    if File.exists?(text_path)
+      @itexte = Texte.new(text_path)
+      if File.extname(text_path) == '.scriv' # Projet Scrivener
+        log("-- Projet Scrivener --")
+        extend ScrivenerModule
+        projetscriv = Scrivener::Projet.new(text_path, @itexte)
+        log("Projet Scrivener instancié.")
+      else
+        projetscriv = nil
+      end
+      config.data.merge!(last_text_path: text_path)
+      log("Configuration enregistrée (:last_text_path)")
+      if itexte.parse_if_necessary(projetscriv)
+        # Tout s'est bien passé
+        config.save
+        show_extrait_and_wait_for_user
+      else
+        # Le parsing a rencontré des erreurs, on ne peut pas ouvrir
+        # le texte.
+        itexte.show_parsing_errors
+        interact_with_user
+      end
+      config.save # à la toute fin
+    else
+      erreur("Le fichier “#{text_path}” est introuvable.")
+      return false
+    end
+    return true
+  end #/ open_texte
+
   # Retourne et conserve l'instance Texte du texte courant
   # Ce texte courant peut être soit un texte seul, soit un projet Scrivener
   def itexte
@@ -36,76 +98,22 @@ class << self
     Help.show(options)
   end #/ display_help
 
-  # Pour ouvrir le texte de chemin d'accès +text_path+
-  def open_texte text_path, commands = nil
-    log("-> open_texte (text_path:#{text_path.inspect})")
-    if File.exists?(text_path)
-      log("Le fichier existe.")
-      @itexte = Texte.new(text_path)
-      if File.extname(text_path) == '.scriv' # Projet Scrivener
-        log("C'est un projet Scrivener")
-        extend ScrivenerModule
-        projetscriv = Scrivener::Projet.new(text_path, @itexte)
-        log("Projet Scrivener instancié.")
-      else
-        projetscriv = nil
-      end
-      config.data.merge!(last_text_path: text_path)
-      log("Configuration enregistrée (:last_text_path)")
-      itexte.parse_if_necessary(projetscriv) || return
-      config.save
-      open_and_wait_for_user
-      config.save # à la toute fin
-    else
-      erreur("Le fichier “#{text_path}” est introuvable.")
-      return false
-    end
-
-  end #/ open_texte
-
-  # = main =
-  #
-  # Lancement de l'application
-  #
-  def run
-
-    # On prépare les fenêtres
-    prepare_screen
-
-    # On regarde le précédent texte édité, s'il existe
-    config.load
-
-    fpath_to_open = nil
-
-    if ARGV[0]
-      fpath_to_open = ARGV[0]
-      # Un premier argument définit le texte à ouvrir
-      unless File.exists?(fpath_to_open)
-        erreur("Le fichier #{fpath.inspect} est introuvable. J'ouvre le texte par défaut. Utiliser la commande ':open /path/to/file.txt' pour ouvrir un fichier existant.".freeze)
-        return
-      end
-    end
-
-    open_texte(fpath_to_open || config[:last_text_path] || File.join(APP_FOLDER,'asset','exemples','simple_text.txt'))
-
-  end #/ run
-
-  def open_and_wait_for_user
+  def show_extrait_and_wait_for_user
     begin
       # On affiche l'extrait courant du texte
-      iextrait.output rescue nil
-      CWindow.uiWind.write("Taper “:help” pour obtenir de l’aide. Pour quitter : “:q”")
-      Runner.interact_with_user
+      iextrait.output
+      interact_with_user
     rescue Exception => e
       Curses.close_screen
       erreur("ERROR: #{e.message}#{RC}#{e.backtrace.join(RC)}")
     else
       Curses.close_screen
     end
-  end #/ open_and_wait_for_user
+  end #/ show_extrait_and_wait_for_user
 
   def interact_with_user
     wind  = CWindow.uiWind
+    wind.write("Taper “:help” pour obtenir de l’aide. Pour quitter : “:q”")
     curse = wind.curse # raccourci
     start_command = false # mis à true quand il tape ':'
     command = nil

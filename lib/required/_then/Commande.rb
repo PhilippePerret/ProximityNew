@@ -36,7 +36,7 @@ class << self
       when 'item', 'mot'
         item_index = cmd.shift.to_i
         item = Runner.itexte.items[item_index]
-        msg = "DEBUG item #{item_index} : #{item.cio} (canon: #{item.canon.inspect})".freeze
+        msg = "DEBUG item #{item_index} : #{item.debug(output: :console)}".freeze
         debug(msg)
         CWindow.log(msg)
       when 'mots'
@@ -87,11 +87,13 @@ class << self
       Runner.itexte.recompte
 
 
-    when 'reprepare', 'update' # pour forcer la repréparation du texte
+    when 'update', 'reprepare' # pour forcer la repréparation du texte
       confirmation = cmd.shift
       if confirmation == '--confirmed' || confirmation == '--force'
-        Runner.itexte.parse # maintenant, reprend tout
-        CWindow.textWind.write(Runner.iextrait.output)
+        if Runner.itexte.parse # maintenant, reprend tout
+          # On ne passe à l'affichage que si le parsing s'est bien déroulé
+          CWindow.textWind.write(Runner.iextrait.output)
+        end
       else
         CWindow.log("Ajouter --confirmed à la commande pour confirmer l'opération, qui va DÉTRUIRE TOUTES LES TRANSFORMATIONS déjà opérées pour repartir du texte initial.")
       end
@@ -179,6 +181,22 @@ class << self
       else
         CWindow.error("Je ne sais pas régler '#{what}'")
       end
+
+
+    when 'add'
+      # Pour ajouter un item à une liste prorpre, le plus souvent, comme
+      # la liste des mots apostrophes.
+      what  = cmd.shift
+      value = cmd.join(SPACE)
+      case what
+      when 'mot_tiret' # ajouter un mot tiret
+        Runner.itexte.add_mot_tiret(value)
+      when 'mot_apostrophe' # ajouter un mot apostrophe
+        Runner.itexte.add_mot_apostrophe(value)
+      else
+        erreur("Je ne sais pas comment ajouter un/e #{what}")
+      end
+
 
     when 'help'
       Runner.display_help

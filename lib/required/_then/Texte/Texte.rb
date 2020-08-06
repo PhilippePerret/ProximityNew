@@ -44,8 +44,25 @@ def recompte(params = nil)
     # Si le décalage du mot change et que son canon n'est pas encore à
     # actualiser, il faut l'enregistrer pour l'actualiser
     if titem.mot? && titem.offset != offset && !canons_to_update.key?(titem.canon)
-      raise "Le canon de #{titem.inspect} n'est pas défini (il devrait l'être)" if titem.canon.nil? || titem.icanon.nil?
-      canons_to_update.merge!(titem.canon => titem.icanon)
+      if titem.canon.nil? || titem.icanon.nil?
+        err_msg = "[Erreur Recomptage] Le canon de #{titem.inspect} n'est pas défini (il devrait l'être)"
+        environ = ''
+        ((idx - 10)..(idx + 10)).each do |idx2|
+          next if idx2 < 0
+          break if Runner.itexte.items[idx2].nil?
+          environ << Runner.itexte.items[idx2].content
+        end
+        err_msg << " (environnement : #{environ})"
+        unless titem.file_id.nil?
+          err_msg << ". Le mot se trouve dans le fichier #{titem.file_id} (#{ScrivFile.get_path_by_file_id(titem.file_id)})"
+        end
+        err_msg = err_msg.freeze
+        add_parsing_error(ParsingError.new(err_msg))
+        log(err_msg)
+      else
+        # On ajoute un canon à calculer
+        canons_to_update.merge!(titem.canon => titem.icanon)
+      end
     end
     titem.offset = offset
     titem.index  = idx
@@ -69,9 +86,9 @@ def recompte(params = nil)
   end
 
   end_time = Time.now.to_f
-  CWindow.log("Fin du recalcul. Quitter et pour voir le temps.")
+  CWindow.log("Fin du recalcul (la durée se trouve dans debug.log).")
 
-  log("Durée du recomptage de #{nb} items : #{end_time - start_time}")
+  debug("Durée du recomptage de #{nb} items : #{end_time - start_time}")
 end #/ recompte
 
 # On doit forcer la ré-analyse du texte
@@ -98,6 +115,10 @@ def load
   @items = @data[:items]
   @current_first_item = config[:last_first_index]
   Canon.items_as_hash = @data[:canons]
+  return true
+rescue Exception => e
+  erreur(e)
+  return false
 end #/ load
 
 
@@ -106,8 +127,6 @@ def out_of_date?
   return true unless File.exists?(data_path)
   return File.stat(data_path).mtime < File.stat(path).mtime
 end #/ out_of_date?
-
-
 
 def distance_minimale_commune
   @distance_minimale_commune ||= config[:distance_minimale_commune] || DISTANCE_MINIMALE_COMMUNE

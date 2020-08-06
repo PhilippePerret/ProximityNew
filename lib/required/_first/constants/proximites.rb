@@ -8,6 +8,8 @@ DISTANCE_MINIMALE_COMMUNE = 1000
 MOTS_APOSTROPHE = {
   'aujourd\'hui'.freeze => true,
   'prud\'hommes'.freeze => true,
+  'd\'abord'.freeze => true,
+  'quelqu\'un'.freeze => true,
 }
 
 MOTS_TIRETS = {

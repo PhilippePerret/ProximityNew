@@ -86,3 +86,15 @@ Pour obtenir une valeur, utiliser `get` :
 # => Écrit la valeur en retour
 ~~~
 
+
+
+## Messages
+
+De nombreux moyens existent d’envoyer des messages (trop ?). On peut les envoyer dans trois fichiers différents (journal.log, debug.log, error.log) et dans trois fenêtres différentes : la fenêtre affichant normalement le texte, la fenêtre de log, la fenêtre de statut ou la fenêtre d’interaction.
+
+Pour les messages courants, on peut utiliser la méthode `log` (qui normalement envoie le message à enregistrer dans le fichier `journal.log`) qui avec `true` en second argument affiche le message en plus dans la fenêtre de log (`CWindow.logWind`).
+
+~~~ruby
+log("le message", true)
+~~~
+

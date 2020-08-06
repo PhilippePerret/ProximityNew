@@ -17,6 +17,7 @@ end # /<< self
 end #/Log
 
 
-def log(str)
+def log(str, window_too = false)
   Log.log(str)
+  CWindow.log(str) if window_too
 end #/ log
