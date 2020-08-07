@@ -128,7 +128,7 @@ class << self
   end #/ status
 
   def set_statut_extrait
-    str = " Mots: #{Runner.iextrait.from_item}-#{Runner.iextrait.to_item}"
+    str = " Items:#{Runner.iextrait.from_item}-#{Runner.iextrait.to_item}".freeze
     @statusWind.writepos([0,EXTRAIT_INFOS_START,EXTRAIT_INFOS_WIDTH], str, TEXT_COLOR)
   end #/ set_statut_extrait
 
@@ -156,7 +156,7 @@ end #/<< self
 attr_reader :curse
 def initialize(params)
   @curse = Curses.stdscr.subwin(*params)
-  @curse.box(SPACE,SPACE) # pour voir des "hirondelles"
+  # @curse.box(SPACE,SPACE) # pour voir des "hirondelles" (pour réglage)
   @curse.keypad = true
 end #/ initialize
 def write(str, color = nil)
