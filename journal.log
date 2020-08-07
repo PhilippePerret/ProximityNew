@@ -1,31 +1,303 @@
-2020-08-07 16:32:22 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples/traits_dunion.txt")
-2020-08-07 16:32:22 +0200 Configuration enregistrée (:last_text_path)
-2020-08-07 16:32:22 +0200 Instanciation @extrait (à partir de l'item 1)
-2020-08-07 16:32:22 +0200 -> ExtraitTexte#output
-2020-08-07 16:32:22 +0200 On doit afficher les items de 1 à 401 (nombre total : 92)
-2020-08-07 16:32:22 +0200 <- ExtraitTexte#output
-2020-08-07 16:32:34 +0200 Soumission de la commande "rep 87 homme"
-2020-08-07 16:32:34 +0200 🔨 Commande jouée : "rep 87 homme"
-2020-08-07 16:32:35 +0200 Insertion de “homme” pour l’index 88 (avant “ ”)
-2020-08-07 16:32:35 +0200 Nouveaux items ajoutés (1) : 
-2020-08-07 16:32:35 +0200 [#<Mot:0x00007fbc3413e820 @content="homme", @lemma="homme">]
-2020-08-07 16:32:37 +0200 Lemma line : "homme\tNOM\thomme" (index : 0)
-2020-08-07 16:32:37 +0200 -> ExtraitTexte#output
-2020-08-07 16:32:37 +0200 On doit afficher les items de 1 à 101 (nombre total : 92)
-2020-08-07 16:32:37 +0200 <- ExtraitTexte#output
-2020-08-07 16:32:44 +0200 Soumission de la commande "cancel"
-2020-08-07 16:32:44 +0200 🔨 Commande jouée : "cancel"
-2020-08-07 16:32:50 +0200 -> ExtraitTexte#output
-2020-08-07 16:32:50 +0200 On doit afficher les items de 1 à 101 (nombre total : 90)
-2020-08-07 16:32:50 +0200 <- ExtraitTexte#output
-2020-08-07 16:32:51 +0200 Insertion de “apostrophes” pour l’index 88 (avant “homme”)
-2020-08-07 16:32:51 +0200 Nouveaux items ajoutés (2) : 
-2020-08-07 16:32:51 +0200 [#<Mot:0x00007fbc3409d858 @content="apostrophes", @lemma="apostrophes">, #<NonMot:0x00007fbc3409d808 @content=" ">]
-2020-08-07 16:32:53 +0200 Lemma line : "apostrophes\tNOM\tapostrophe" (index : 0)
-2020-08-07 16:32:53 +0200 -> ExtraitTexte#output
-2020-08-07 16:32:53 +0200 On doit afficher les items de 1 à 99 (nombre total : 92)
-2020-08-07 16:32:53 +0200 <- ExtraitTexte#output
-2020-08-07 16:32:53 +0200 -> ExtraitTexte#output
-2020-08-07 16:32:53 +0200 On doit afficher les items de 1 à 101 (nombre total : 92)
-2020-08-07 16:32:53 +0200 <- ExtraitTexte#output
-2020-08-07 16:33:09 +0200 Soumission de la commande "q"
+2020-08-07 16:40:08 +0200 -> open_texte (text_path:"/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv")
+2020-08-07 16:40:08 +0200 -- Projet Scrivener --
+2020-08-07 16:40:08 +0200 Projet Scrivener instancié.
+2020-08-07 16:40:08 +0200 Configuration enregistrée (:last_text_path)
+2020-08-07 16:40:08 +0200 = Le fichier doit être actualisé
+2020-08-07 16:40:08 +0200 *** Parsing du projet scrivener /Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv
+2020-08-07 16:40:08 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-07 16:40:08 +0200 -> prepare_as_projet_scrivener
+2020-08-07 16:40:08 +0200 -> create_table_base_for
+2020-08-07 16:40:09 +0200 Nombre de fichiers à traiter : 64
+2020-08-07 16:40:09 +0200 ** Traitement du fichier scrivener 8946C485-313A-4CA7-8370-EC9E81803661
+2020-08-07 16:40:09 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:09 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:09 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:09 +0200 ** Traitement du fichier scrivener FF661791-B6D0-44B4-9114-5433404EBA5E
+2020-08-07 16:40:09 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:09 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:09 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:09 +0200 ** Traitement du fichier scrivener 23551D8B-7E79-41D4-A9B7-A4682C0E8864
+2020-08-07 16:40:09 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:09 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:09 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:09 +0200 ** Traitement du fichier scrivener DC4A2E32-9347-49E8-B526-4F40B8E201FF
+2020-08-07 16:40:09 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:09 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:09 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:09 +0200 ** Traitement du fichier scrivener 7922B1FF-9EC7-4837-AC19-5FA96AAD067D
+2020-08-07 16:40:09 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:09 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:09 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:09 +0200 ** Traitement du fichier scrivener 98416EF6-B22B-45ED-A3BF-E7961397999D
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener D03F0977-15D7-4F8F-920F-08514C8D8A1A
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener 161EB343-BF96-4FD3-BC36-8CAF1C2B9280
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener 22DFE9CB-51D9-4851-BD91-5AE26BC2DD28
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 Un mot avec apostrophe à la fin : "L" (lemma: nil)
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener 83F5358A-72E9-4A51-AEC5-578A3A273738
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener 7985DAC1-C6C8-46FE-932A-C4E09E044258
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener 74B46C75-344E-4882-A04E-4C55A27BE364
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener 233307CD-1ABF-49E0-8320-9D0ECB15980E
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener 0BA8A33D-0AEE-4806-B6C5-C3E6EF74C130
+2020-08-07 16:40:10 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:10 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:10 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:10 +0200 Un mot avec apostrophe à la fin : "l" (lemma: nil)
+2020-08-07 16:40:10 +0200 Un mot avec apostrophe à la fin : "Souhait" (lemma: "souhait")
+2020-08-07 16:40:10 +0200 ** Traitement du fichier scrivener DA989CC9-4BE4-43EC-94EC-FABF5A0798A0
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener 29731D23-8924-4096-8B6B-EDD0B97B8DD6
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener 4548D9E5-660B-4ADA-8973-F588D6207A57
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener C8BBF4CF-C951-43BD-BA67-D05BB12EE2AA
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener D4C76910-9F76-4AE4-AD33-3D0A9F94155A
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener 4A633A9D-6016-4A89-821D-AD23E9DC7643
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener 1CD56DBA-6CB7-41D2-A88C-2FC9B267276F
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener 9EC860DB-2886-4D16-ABE0-4A31EF61706D
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener 93CDE652-EB27-4D82-A130-6AB99118C24B
+2020-08-07 16:40:11 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:11 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:11 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:11 +0200 ** Traitement du fichier scrivener E6FA9FE9-B46D-4AE7-90AB-CD4ADF0B6B30
+2020-08-07 16:40:12 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:12 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:12 +0200 ** Traitement du fichier scrivener 27A5A558-A4A9-4B95-9148-C0C62C2DA148
+2020-08-07 16:40:12 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:12 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:12 +0200 ** Traitement du fichier scrivener B2F7F049-8EBF-4653-8887-9244B0579FDB
+2020-08-07 16:40:12 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:12 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:12 +0200 ** Traitement du fichier scrivener B2026484-33DE-4B20-9734-FC1058134790
+2020-08-07 16:40:12 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:12 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:12 +0200 ** Traitement du fichier scrivener 6AF14F67-F62F-4E80-8C69-915C0ABAE7A4
+2020-08-07 16:40:12 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:12 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:12 +0200 ** Traitement du fichier scrivener 25F3E9D6-12D1-4827-AA57-CFF2D1092B92
+2020-08-07 16:40:12 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:12 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:12 +0200 ** Traitement du fichier scrivener C4DCEF82-DA33-4881-B182-EFB5DB9EF706
+2020-08-07 16:40:12 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:12 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:12 +0200 ** Traitement du fichier scrivener CFD619F0-2E79-47F6-BE96-0626E9B358A7
+2020-08-07 16:40:12 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:12 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:12 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:12 +0200 ** Traitement du fichier scrivener 374E1D6F-204C-4D55-A609-2430D6C0E54E
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:13 +0200 ** Traitement du fichier scrivener 191BB0AF-AA15-4F5B-80DB-63F6D2DA6A82
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:13 +0200 ** Traitement du fichier scrivener 1A5C9426-4079-42B4-A54A-2D2272DC99A7
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:13 +0200 ** Traitement du fichier scrivener 451A292F-A7AD-4656-8834-8A16A3AF8981
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:13 +0200 ** Traitement du fichier scrivener 0AF69B45-FBEE-436C-ACD6-98655F1C956A
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:13 +0200 ** Traitement du fichier scrivener 11AC5D20-C2B4-45C3-9C59-6E3F776F4D1F
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:13 +0200 ** Traitement du fichier scrivener 88E2487B-10C6-4DA1-89B3-E8EA2E53998E
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:13 +0200 ** Traitement du fichier scrivener 2EEBC174-3B27-4AA0-87CF-583E37102EA4
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:13 +0200 ** Traitement du fichier scrivener 7696D1E2-5099-4DEE-9297-6999F5A016BF
+2020-08-07 16:40:13 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:13 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:13 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:14 +0200 ** Traitement du fichier scrivener 791C91B1-A50F-4ED9-8FA5-7C41784DA8C8
+2020-08-07 16:40:14 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:14 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:14 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:14 +0200 ** Traitement du fichier scrivener 1722A905-E035-4BC8-81E6-1193A1B3EC62
+2020-08-07 16:40:14 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:14 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:14 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:14 +0200 ** Traitement du fichier scrivener A2DCCC70-89CB-486C-8059-1EAF932BD531
+2020-08-07 16:40:14 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:14 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:14 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:14 +0200 ** Traitement du fichier scrivener A3F6CE23-E7CF-4328-A6D5-299ECF3F0EC1
+2020-08-07 16:40:14 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:14 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:14 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:14 +0200 ** Traitement du fichier scrivener 27480D3A-469A-493F-A06E-5442D2C34200
+2020-08-07 16:40:14 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:14 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:14 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:14 +0200 ** Traitement du fichier scrivener 138A5211-6A85-40FF-8B40-34B7EFC27D3F
+2020-08-07 16:40:14 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:14 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:14 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:14 +0200 ** Traitement du fichier scrivener 9F69B5DA-B1E1-4535-9FB5-26F53983E36A
+2020-08-07 16:40:14 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:14 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:14 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:15 +0200 ** Traitement du fichier scrivener 1AF586BE-7DAD-4C68-A776-D081FB657FE8
+2020-08-07 16:40:15 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:15 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:15 +0200 ** Traitement du fichier scrivener 75367CB4-B1DD-409C-9919-2B4B5DAD06F8
+2020-08-07 16:40:15 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:15 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:15 +0200 ** Traitement du fichier scrivener CC512EC7-59C6-4E50-BFF1-EC73834F9094
+2020-08-07 16:40:15 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:15 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:15 +0200 ** Traitement du fichier scrivener 671E8E7F-D7B9-4BCB-A98D-F65F07C837C7
+2020-08-07 16:40:15 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:15 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:15 +0200 ** Traitement du fichier scrivener 57985C3B-F0C0-44F4-A34B-F43073A1754C
+2020-08-07 16:40:15 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:15 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:15 +0200 ** Traitement du fichier scrivener 87F66955-01EF-4A01-B466-49C0A0A3E40F
+2020-08-07 16:40:15 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:15 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:15 +0200 ** Traitement du fichier scrivener 65728140-EC05-43DC-9785-F6FDDACC66C2
+2020-08-07 16:40:15 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:15 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:15 +0200 ** Traitement du fichier scrivener 70CF5728-F4AE-4707-9F9D-04A5A07CE6DE
+2020-08-07 16:40:15 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:15 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:15 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:16 +0200 ** Traitement du fichier scrivener 256D7228-BC9D-45A9-B6B8-6D3B7E2EBBAE
+2020-08-07 16:40:16 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:16 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:16 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:16 +0200 ** Traitement du fichier scrivener FEC9429C-7AA9-4493-8A09-5F4E287431E4
+2020-08-07 16:40:16 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:16 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:16 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:16 +0200 ** Traitement du fichier scrivener 2243B91C-2CFE-4B2F-8D9C-5B9FD2E84620
+2020-08-07 16:40:16 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:16 +0200 has_apostrophes_courbes = false
+2020-08-07 16:40:16 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:16 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:16 +0200 ** Traitement du fichier scrivener D3FF487A-B7B0-4094-860F-6335B7EA1033
+2020-08-07 16:40:16 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:16 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:16 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:16 +0200 ** Traitement du fichier scrivener DB6FB649-9E09-47EF-9299-B86799B0CCE3
+2020-08-07 16:40:16 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:16 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:16 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:16 +0200 ** Traitement du fichier scrivener 8950BAF5-EBBE-4678-89B1-44204741834F
+2020-08-07 16:40:16 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:16 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:16 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:16 +0200 ** Traitement du fichier scrivener D85D172C-2E93-495A-9152-5C91862832EF
+2020-08-07 16:40:16 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:16 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:16 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:16 +0200 Un mot avec apostrophe à la fin : "d" (lemma: nil)
+2020-08-07 16:40:17 +0200 ** Traitement du fichier scrivener FE51410B-FC47-46D5-B0DD-590614A6AC5D
+2020-08-07 16:40:17 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:17 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:17 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:17 +0200 ** Traitement du fichier scrivener 8D1B8EA1-878E-465E-A672-179E774ADCA1
+2020-08-07 16:40:17 +0200 *** Préparation du fichier corrigé
+2020-08-07 16:40:17 +0200 has_apostrophes_courbes = true
+2020-08-07 16:40:17 +0200 Configuration enregistrée (apostrophes_courbes: true)
+2020-08-07 16:40:17 +0200 *** Lemmatisation du fichier
+2020-08-07 16:40:17 +0200 cmd lemmatisation : /usr/local/bin/tree-tagger-french < "/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie_prox/only_mots.txt" > "/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie_prox/only_mots.txt_lemma.data"
+2020-08-07 16:40:19 +0200 ### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS (index : idx) :
+2020-08-07 16:40:19 +0200 ### mot:"to'tue", index:2436 dans imot: "to'", type:"VER:pres", canon: "<unknown>"
+2020-08-07 16:40:19 +0200 ### file_id : titem.file_id / Path: /Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv/Files/Data/23551D8B-7E79-41D4-A9B7-A4682C0E8864/content.rtf
+2020-08-07 16:40:19 +0200 ERREUR PARSING: ### Le mot "to'tue" (index 2436) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-07 16:40:19 +0200 ### Le mot "to'tue" (index 2436) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-07 16:40:19 +0200 # Interruption du parsing au niveau de la lemmatisation…
+2020-08-07 16:40:32 +0200 Soumission de la commande "add mot_apostrophe to'tue"
+2020-08-07 16:40:32 +0200 🔨 Commande jouée : "add mot_apostrophe to'tue"
+2020-08-07 16:40:32 +0200 Le mot "to'tue" est déjà dans la liste des mots apostrophes du texte.
+2020-08-07 16:41:08 +0200 Soumission de la commande "q"

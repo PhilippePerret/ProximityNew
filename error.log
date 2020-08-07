@@ -20,3 +20,28 @@
 2020-08-07 12:54:26 +0200-- Le fichier “/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_deux_docs.scrivnewprox” est introuvable.
 2020-08-07 12:56:12 +0200-- Le fichier “/Users/philippeperret/Programmation/ProximityNew/asset/exemples/traits_dunion.txtnewprox” est introuvable.
 2020-08-07 13:02:33 +0200-- Le fichier “/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_Simple.scrivnewprox” est introuvable.
+2020-08-07 16:36:55 +0200-- ### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS (index : idx) :
+2020-08-07 16:36:55 +0200-- ### Le mot "to'tue" (index 2436) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-07 16:37:42 +0200-- ### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS (index : idx) :
+2020-08-07 16:37:42 +0200-- ### Le mot "to'tue" (index 2436) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-07 16:38:32 +0200-- ### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS (index : idx) :
+2020-08-07 16:38:32 +0200-- ### Le mot "to'tue" (index 2436) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-07 16:40:19 +0200-- ### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS (index : idx) :
+2020-08-07 16:40:19 +0200-- ### Le mot "to'tue" (index 2436) est à ajouter à la liste des mots spéciaux avec apostrophe
+### avec la commande :add mot_apostrophe to'tue
+### Si c'est un mot commun, l'ajouter à MOTS_APOSTROPHE dans lib/required/_first/contants/proximites.rb
+
+
+2020-08-07 16:40:32 +0200-- Le mot "to'tue" est déjà dans la liste des mots apostrophes du texte.
