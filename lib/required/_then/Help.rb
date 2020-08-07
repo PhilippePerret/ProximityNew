@@ -122,6 +122,7 @@ MODIFCATION DU TEXTE
           canons        Tous les canons.
           mot/item      valeur : index du mot dont il faut voir les
                         infos
+          mots          Tous les mots (dans debug.log)
 EOT
 
 class << self

@@ -77,6 +77,7 @@ def reset
   @prox_avant = nil
   @prox_apres_calculed  = nil
   @prox_apres = nil
+  @has_canon_exclu = nil
 end #/ reset
 
 # Pour info, le content/index/offset
@@ -264,7 +265,7 @@ end #/ calcule_longueurs
 # Retourne true si le text-item peut être étudié au niveau de ses proximités
 def proximizable?
   @is_not_proximizabe ||= begin
-    if non_mot? || length < 4 || main_type == 'PRO' || main_type == 'DET'
+    if non_mot? || length < 4 || main_type == 'PRO' || main_type == 'DET' || is_exclu?
       :false
     else
       :true
@@ -272,6 +273,13 @@ def proximizable?
   end
   @is_not_proximizabe === :true
 end #/ proximizable?
+
+def is_exclu?
+  @has_canon_exclu ||= begin
+    Runner.itexte.liste_mots_sans_prox.key?(canon) ? :true : :false
+  end
+  @has_canon_exclu == :true
+end #/ is_exclu?
 
 def new_paragraphe?
   content == RC

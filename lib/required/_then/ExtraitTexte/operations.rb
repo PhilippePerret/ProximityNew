@@ -261,6 +261,8 @@ def simulation(params)
     # famille n'existe dans le texte. Il ne peut pas avoir de proximités. On
     # peut passer directement au suivant.
     new_mot.icanon || next
+    # Si c'est un mot qui a un canon ignoré, on le passe
+    next if new_mot.icanon.ignored?
     # Distance minimale pour que deux mots ne soient pas en proximité
     min_distance = new_mot.icanon.distance_minimale
     debug("= Distance minimale attendue : #{min_distance.inspect}")

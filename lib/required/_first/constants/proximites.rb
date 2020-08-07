@@ -5,6 +5,13 @@
 
 DISTANCE_MINIMALE_COMMUNE = 1000
 
+# === Mots dont il faut ignorer les proximités ===
+# Note : ne pas mettre les mots de moins de 4 lettres, qui sont exclus
+# par défaut.
+MOTS_SANS_PROXIMITES = {
+
+}
+
 MOTS_APOSTROPHE = {
   'aujourd\'hui'.freeze => true,
   'prud\'hommes'.freeze => true,

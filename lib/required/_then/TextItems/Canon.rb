@@ -75,11 +75,21 @@ end #/ update
 # Appelé pour le moment uniquement quand on change la distance minimale pour
 # le texte
 def reset
-  @distance_minimale = nil
+  @distance_minimale  = nil
+  @is_canon_ignored   = nil
 end #/ reset
 
 def distance_minimale
   @distance_minimale ||= Runner.itexte.distance_minimale_commune
 end #/ distance_minimale
+
+# Retourne true si c'est un canon ignoré (soit par l'application soit par
+# le texte en particulier). Il faut calculer la valeur une bonne fois pour
+# toutes pour ne pas avoir à la recalculer pour chaque mot. Elle ne doit être
+# resettée que lorsqu'on ajoute ou enlève un nouveau mot sans proximité
+def ignored?
+  @is_canon_ignored = Runner.itexte.prox_ignored_for?(canon) if @is_canon_ignored.nil?
+  @is_canon_ignored
+end #/ ignored?
 
 end #/Canon

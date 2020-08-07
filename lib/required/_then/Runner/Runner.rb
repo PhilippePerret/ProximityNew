@@ -42,6 +42,8 @@ class << self
     log("-> open_texte (text_path:#{text_path.inspect})")
     if File.exists?(text_path)
       @itexte = Texte.new(text_path)
+      @iextrait = nil
+      CWindow.textWind.clear
       if File.extname(text_path) == '.scriv' # Projet Scrivener
         log("-- Projet Scrivener --")
         extend ScrivenerModule
