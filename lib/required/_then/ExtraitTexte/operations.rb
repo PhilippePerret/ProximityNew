@@ -136,6 +136,8 @@ def insert(params)
   log(msg)
   CWindow.log(msg)
 
+  # :is_balise est true quand on donne '_space_' ou '_return_' comme texte
+  # à utiliser pour l'opération.
   unless params[:is_balise]
     begin
       tempfile = Tempfile.new('getmots')

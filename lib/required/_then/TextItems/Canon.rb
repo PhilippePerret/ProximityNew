@@ -69,7 +69,7 @@ end #/ count
 # items et ses offsets
 def update
   @items.sort_by(&:offset)
-  @offsets = @items.collect{|i|i.offset}
+  @offsets = @items.collect { |i| i.offset }
 end #/ update
 
 # Appelé pour le moment uniquement quand on change la distance minimale pour

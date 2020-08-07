@@ -32,41 +32,31 @@ end #/ reset
 
 # Essai de recomptage de tout pour voir le temps que ça prend
 def recompte(params = nil)
-  params ||= {}
   start_time = Time.now.to_f
-  offset = 0
-  nb = 0
-  # Les canons qu'il faudra actualiser
-  canons_to_update = {}
+  params  ||= {}
   params.merge!(from: 0) unless params.key?(:from)
+  offset  = 0
+  nb      = 0 # pour connaitre le nombre de text-items traités
+  canons_to_update = {} # Les canons qu'il faudra actualiser
   idx = params[:from] - 1
-  while titem = self.items[idx += 1]
+
+  while titem = self.items[idx += 1] # tant qu'il y a un item
+
+    titem.reset # pour forcer les recalculs
+
     # Si le décalage du mot change et que son canon n'est pas encore à
     # actualiser, il faut l'enregistrer pour l'actualiser
     if titem.mot? && titem.offset != offset && !canons_to_update.key?(titem.canon)
       if titem.canon.nil? || titem.icanon.nil?
-        err_msg = "[Erreur Recomptage] Le canon de #{titem.inspect} n'est pas défini (il devrait l'être)"
-        environ = ''
-        ((idx - 10)..(idx + 10)).each do |idx2|
-          next if idx2 < 0
-          break if Runner.itexte.items[idx2].nil?
-          environ << Runner.itexte.items[idx2].content
-        end
-        err_msg << " (environnement : #{environ})"
-        unless titem.file_id.nil?
-          err_msg << ". Le mot se trouve dans le fichier #{titem.file_id} (#{ScrivFile.get_path_by_file_id(titem.file_id)})"
-        end
-        err_msg = err_msg.freeze
-        add_parsing_error(ParsingError.new(err_msg))
-        log(err_msg)
+        error_canon_inexistant(titem, idx)
       else
-        # On ajoute un canon à calculer
-        canons_to_update.merge!(titem.canon => titem.icanon)
+        canons_to_update.merge!(titem.canon => titem.icanon) # canon à calculer
       end
     end
     titem.offset = offset
     titem.index  = idx
-    offset += titem.length + 1 # approximatif car on n'ajoute pas toujours 1 espace
+    # offset += titem.length + 1 # approximatif car on n'ajoute pas toujours 1 espace
+    offset += titem.length
     nb += 1
   end
 
@@ -90,6 +80,23 @@ def recompte(params = nil)
 
   debug("Durée du recomptage de #{nb} items : #{end_time - start_time}")
 end #/ recompte
+
+def error_canon_inexistant
+  err_msg = "[Erreur Recomptage] Le canon de #{titem.inspect} n'est pas défini (il devrait l'être)"
+  environ = ''
+  ((idx - 10)..(idx + 10)).each do |idx2|
+    next if idx2 < 0
+    break if Runner.itexte.items[idx2].nil?
+    environ << Runner.itexte.items[idx2].content
+  end
+  err_msg << " (environnement : #{environ})"
+  unless titem.file_id.nil?
+    err_msg << ". Le mot se trouve dans le fichier #{titem.file_id} (#{ScrivFile.get_path_by_file_id(titem.file_id)})"
+  end
+  err_msg = err_msg.freeze
+  add_parsing_error(ParsingError.new(err_msg))
+  log(err_msg)
+end #/ error_canon_inexistant
 
 # On doit forcer la ré-analyse du texte
 def reproximitize

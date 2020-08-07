@@ -65,6 +65,20 @@ def initialize(content, params = nil)
   end
 end #/ initialize
 
+# Méthode appelée avant tout recomptage (donc dès qu'une opération est
+# exécutée sur le texte)
+# ATTENTION : cette méthode est appelée après la définition des :offset et
+# :index, il ne faut donc pas mettre ces propriétés dans cette liste. Ou
+# alors placer l'appel à reset autre part, pas dans le recomptage.
+def reset
+  @f_content  = nil
+  @is_not_proximizabe   = nil
+  @prox_avant_calculed  = nil
+  @prox_avant = nil
+  @prox_apres_calculed  = nil
+  @prox_apres = nil
+end #/ reset
+
 # Pour info, le content/index/offset
 def cio
   "#{content.gsub(/\n/,'\n').inspect}/#{index}/#{offset}#{"/#{file_id}"unless file_id.nil?}"
@@ -145,10 +159,12 @@ end #/ f_index
 
 # Pour la deuxième ligne contenant le texte
 def f_content
-  c = ''
-  c << SPACE if f_length - length > 4
-  c << content
-  c.ljust(f_length)
+  @f_content ||= begin
+    c = ''
+    c << SPACE if f_length - length > 4
+    c << content
+    c.ljust(f_length)
+  end
 end #/ f_content
 
 # Retourne le contenu à inscrire dans le fichier reconstitué

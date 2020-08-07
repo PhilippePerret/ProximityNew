@@ -3,10 +3,11 @@
 # Used by dotenv library to load environment variables.
 # .env
 
-/asset/exemples/
+/asset/exemples/**/*.*
 
 debug.log
 journal.log
+error.log
 
 # Ignore Byebug command history file.
 .byebug_history
