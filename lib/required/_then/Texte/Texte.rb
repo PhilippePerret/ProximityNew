@@ -128,6 +128,10 @@ rescue Exception => e
   return false
 end #/ load
 
+# L'instance annulateur
+def cancellor
+  @cancellor ||= Cancellor.new(self)
+end #/ cancellor
 
 # Retourne TRUE s'il faut procéder à l'analyse à nouveau
 def out_of_date?

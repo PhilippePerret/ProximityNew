@@ -35,8 +35,8 @@ class << self
   attr_reader :top_ligne_texte_max
   attr_accessor :hauteur_texte
 
-  HAUTEUR_LOG     = 3
-  HAUTEUR_STATUS  = 2
+  HAUTEUR_LOG     = 4
+  HAUTEUR_STATUS  = 1
   HAUTEUR_UI      = 1
 
   def init_curses
@@ -146,6 +146,32 @@ class << self
     @statusWind.writepos([0,DIST_MINIMAL_START,DIST_MINIMAL_WIDTH], valeur, TEXT_COLOR)
   end #/ set_distance_minimale_defaut
 
+  # Permet d'attendre une touche de l'utilisateur
+  # +params+
+  #   :window     La fenêtre dans laquelle le cursor doit attendre. Par défaut
+  #               c'est toujours la fenêtre ui
+  #   :message    Le message à afficher dans la fenêtre de log
+  #   :keys       Une liste des touches admises, qui produira le retour
+  #               de l'attente.
+  def wait_for_user(params)
+    params[:window] ||= @uiWind
+    logWind.write(params[:message])
+    uiWind.clear
+    uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
+    choix = nil
+    while true
+      s = uiWind.curse.getch
+      if params[:keys].include?(s)
+        choix = s
+        break
+      elsif s == 127 # annulation
+        break
+      end
+    end
+    logWind.clear
+    uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
+    return choix
+  end #/ wait_for_user
 
 end #/<< self
 # ---------------------------------------------------------------------
@@ -182,6 +208,7 @@ end #/ resetpos
 alias :reset :resetpos
 def clear
   curse.clear
+  curse.refresh
 end #/ clear
 def wait_for_char
   curse.getch.to_s

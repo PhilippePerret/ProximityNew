@@ -18,6 +18,11 @@ class << self
       Runner.itexte.rebuild
 
 
+    when 'cancel', 'annuler'
+
+      erreur("Pour le moment, on ne peut pas encore annuler.")
+      # Runner.itexte.cancellor.ask_for_cancel_last
+
     when 'eval'
       code = cmd.join(SPACE)
       begin
@@ -118,17 +123,23 @@ class << self
 
     when 'sup', 'del', 'delete', 'rem'
       index_ref = cmd.shift
-      Runner.iextrait.remove(at:index_ref)
+      @operation_cancellor = OpeCancellor.new(cmd_init)
+      Runner.iextrait.remove(at:index_ref, cancellor: @operation_cancellor)
+      Runner.itexte.cancellor.add_and_save(@operation_cancellor)
 
     when 'ins', 'insert'
       index_ref = cmd.shift
       texte = cmd.join(SPACE)
-      Runner.iextrait.insert(content:texte, at:index_ref)
+      @operation_cancellor = OpeCancellor.new(cmd_init)
+      Runner.iextrait.insert(content:texte, at:index_ref, cancellor:@operation_cancellor)
+      Runner.itexte.cancellor.add_and_save(@operation_cancellor)
 
     when 'rep', 'replace'
       index_ref = cmd.shift
       texte = cmd.join(SPACE)
-      Runner.iextrait.replace(content:texte, at:index_ref)
+      @operation_cancellor = OpeCancellor.new(cmd_init)
+      Runner.iextrait.replace(content:texte, at:index_ref, cancellor:@operation_cancellor)
+      Runner.itexte.cancellor.add_and_save(@operation_cancellor)
 
       # *** Méthodes d'affichage ***
 

@@ -13,7 +13,7 @@
 class AtStructure
   attr_reader :at, :from, :to, :nombre, :list, :at_init, :first_index, :last, :first
   def initialize(at_init, first_index)
-    @at_init = at_init
+    @at_init = at_init.to_s # quelquefois, on envoie un nombre (annulation)
     @first_index = first_index
     parse
   end #/ initialize

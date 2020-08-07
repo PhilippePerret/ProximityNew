@@ -1,0 +1,31 @@
+2020-08-07 16:32:22 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples/traits_dunion.txt")
+2020-08-07 16:32:22 +0200 Configuration enregistrée (:last_text_path)
+2020-08-07 16:32:22 +0200 Instanciation @extrait (à partir de l'item 1)
+2020-08-07 16:32:22 +0200 -> ExtraitTexte#output
+2020-08-07 16:32:22 +0200 On doit afficher les items de 1 à 401 (nombre total : 92)
+2020-08-07 16:32:22 +0200 <- ExtraitTexte#output
+2020-08-07 16:32:34 +0200 Soumission de la commande "rep 87 homme"
+2020-08-07 16:32:34 +0200 🔨 Commande jouée : "rep 87 homme"
+2020-08-07 16:32:35 +0200 Insertion de “homme” pour l’index 88 (avant “ ”)
+2020-08-07 16:32:35 +0200 Nouveaux items ajoutés (1) : 
+2020-08-07 16:32:35 +0200 [#<Mot:0x00007fbc3413e820 @content="homme", @lemma="homme">]
+2020-08-07 16:32:37 +0200 Lemma line : "homme\tNOM\thomme" (index : 0)
+2020-08-07 16:32:37 +0200 -> ExtraitTexte#output
+2020-08-07 16:32:37 +0200 On doit afficher les items de 1 à 101 (nombre total : 92)
+2020-08-07 16:32:37 +0200 <- ExtraitTexte#output
+2020-08-07 16:32:44 +0200 Soumission de la commande "cancel"
+2020-08-07 16:32:44 +0200 🔨 Commande jouée : "cancel"
+2020-08-07 16:32:50 +0200 -> ExtraitTexte#output
+2020-08-07 16:32:50 +0200 On doit afficher les items de 1 à 101 (nombre total : 90)
+2020-08-07 16:32:50 +0200 <- ExtraitTexte#output
+2020-08-07 16:32:51 +0200 Insertion de “apostrophes” pour l’index 88 (avant “homme”)
+2020-08-07 16:32:51 +0200 Nouveaux items ajoutés (2) : 
+2020-08-07 16:32:51 +0200 [#<Mot:0x00007fbc3409d858 @content="apostrophes", @lemma="apostrophes">, #<NonMot:0x00007fbc3409d808 @content=" ">]
+2020-08-07 16:32:53 +0200 Lemma line : "apostrophes\tNOM\tapostrophe" (index : 0)
+2020-08-07 16:32:53 +0200 -> ExtraitTexte#output
+2020-08-07 16:32:53 +0200 On doit afficher les items de 1 à 99 (nombre total : 92)
+2020-08-07 16:32:53 +0200 <- ExtraitTexte#output
+2020-08-07 16:32:53 +0200 -> ExtraitTexte#output
+2020-08-07 16:32:53 +0200 On doit afficher les items de 1 à 101 (nombre total : 92)
+2020-08-07 16:32:53 +0200 <- ExtraitTexte#output
+2020-08-07 16:33:09 +0200 Soumission de la commande "q"

@@ -10,11 +10,11 @@ class ExtraitTexte
 # Le remplacement consiste à supprimer l'élément courant et à insérer le
 # nouvel élément à la place (ou *les* nouveaux éléments)
 def replace(params)
-  CWindow.log("Remplacement du/des mot/s #{params[:at]} par “#{params[:content]}”")
   params.merge!({
     real_at: AtStructure.new(params[:at], from_item),
     operation: 'replace'
   })
+  CWindow.log("Remplacement du/des mot/s #{params[:at]||params[:real_at].at} par “#{params[:content]}”")
   if params[:content] == '_space_' || params[:content] == '_return_'
     # Pas besoin de simulation pour ajouter une espace ou un retour chariot
     # Ça se fait directement
@@ -106,6 +106,13 @@ def remove(params)
 
   end
 
+  # On mémorise l'opération pour pouvoir la refaire
+  if params.key?(:cancellor) # pas quand c'est une annulation
+    at.list.each do |idx|
+      params[:cancellor] << {operation: :insert, index: idx, content: itexte.items[idx].content}
+    end
+  end
+
   # On procède vraiment à la suppression des mots dans le texte
   # lui-même, avec une formule différente en fonction du fait que c'est
   # un rang ou une liste (note : un index unique a été mis dans une liste
@@ -169,9 +176,19 @@ def insert(params)
   end
   log("Nouveaux items ajoutés (#{new_items.count}) : ")
   log(new_items.inspect)
-  Runner.itexte.items.insert(params[:real_at].at, *new_items)
-  # Il faut traiter ces items qui n'ont été qu'instanciés pour le moment
 
+  Runner.itexte.items.insert(params[:real_at].at, *new_items)
+  # Pour l'annulation (sauf si c'est une annulation)
+  if params.key?(:cancellor)
+    idx = params[:real_at].at
+    new_items.each do |titem|
+      content = titem.space? ? '_space_' : titem.content
+      params[:cancellor] << {operation: :remove, index: idx, content: content}
+      # Note : le content, ci-dessus, ne servira que pour la vérification
+    end
+  end
+
+  # Il faut traiter ces items qui n'ont été qu'instanciés pour le moment
   unless params[:is_balise]
     # Si c'est une balise (_space_ ou _return_) on n'a pas besoin
     # de faire ce travail.
