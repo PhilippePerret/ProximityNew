@@ -1,0 +1,18 @@
+2020-08-07 09:22:40 +0200-- ERROR: wrong number of arguments (given 1, expected 2)
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_first/CWindow.rb:159:in `setpos'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_first/CWindow.rb:159:in `writepos'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/ExtraitTexte/ExtraitTexte.rb:121:in `write3lines'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/ExtraitTexte/ExtraitTexte.rb:42:in `output'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:104:in `show_extrait_and_wait_for_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:58:in `open_texte'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:31:in `run'
+/Users/philippeperret/Programmation/ProximityNew/run.rb:6:in `<main>'
+2020-08-07 09:23:02 +0200-- ERROR: wrong number of arguments (given 1, expected 2)
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_first/CWindow.rb:159:in `setpos'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_first/CWindow.rb:159:in `writepos'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/ExtraitTexte/ExtraitTexte.rb:121:in `write3lines'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/ExtraitTexte/ExtraitTexte.rb:42:in `output'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:104:in `show_extrait_and_wait_for_user'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:58:in `open_texte'
+/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:31:in `run'
+/Users/philippeperret/Programmation/ProximityNew/run.rb:6:in `<main>'

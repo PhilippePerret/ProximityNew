@@ -92,22 +92,60 @@ class << self
     init_status_and_cursor
   end #/ error
 
+  # *** Fenêtre statut ***
+
+  colonne_cur = 0
+  MODE_CLAVIER_START = colonne_cur   # colonne de départ pour l'affichage du mode clavier
+  MODE_CLAVIER_WIDTH = 14
+  colonne_cur += MODE_CLAVIER_WIDTH
+  DIST_MINIMAL_START = colonne_cur
+  DIST_MINIMAL_WIDTH = 11
+  colonne_cur += DIST_MINIMAL_WIDTH
+  EXTRAIT_INFOS_START = colonne_cur
+  EXTRAIT_INFOS_WIDTH = 19  # p.e. "Mots: 400000-410000"
+  colonne_cur += EXTRAIT_INFOS_WIDTH
+  MSG_STATUT_START = colonne_cur
+  MSG_STATUT_WIDTH = 30
+  colonne_cur += MSG_STATUT_WIDTH
+
+
+  # = main =
+  #
+  # Méthode principale qui actualise le statut affiché.
+  #
+  def init_status_and_cursor(data_mode_clavier = nil)
+    set_mode_clavier(data_mode_clavier)
+    set_distance_minimale_defaut
+    set_statut_extrait
+    # Pour remettre le curseur au bon endroit
+    uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
+  end #/ init_status_and_cursor
+
   def status(msg)
     @statusWind.reset
-    @statusWind.write(msg+RC, BLUE_COLOR)
+    @statusWind.writepos([0, MSG_STATUT_START], msg.ljust(MSG_STATUT_WIDTH), BLUE_COLOR)
     init_status_and_cursor
   end #/ status
 
+  def set_statut_extrait
+    str = " Mots: #{Runner.iextrait.from_item}-#{Runner.iextrait.to_item}"
+    @statusWind.writepos([0,EXTRAIT_INFOS_START,EXTRAIT_INFOS_WIDTH], str, TEXT_COLOR)
+  end #/ set_statut_extrait
+
   def set_mode_clavier(adata = nil)
-    adata ||= ['  NORMAL  ', CWindow::TEXT_COLOR]
-    @statusWind.writepos([0, 30], *adata)
+    adata ||= ['NORMAL', CWindow::TEXT_COLOR]
+    str, color = adata
+    str.prepend(" Clav:".freeze)
+    @statusWind.writepos([0, MODE_CLAVIER_START, MODE_CLAVIER_WIDTH], str, color)
     # init_status_and_cursor # NON ! SINON BOUCLE
   end #/ set_mode_clavier
+  def set_distance_minimale_defaut(valeur = nil)
+    valeur ||= Runner.itexte.distance_minimale_commune
+    valeur = valeur.to_s
+    valeur.prepend('Dist:')
+    @statusWind.writepos([0,DIST_MINIMAL_START,DIST_MINIMAL_WIDTH], valeur, TEXT_COLOR)
+  end #/ set_distance_minimale_defaut
 
-  def init_status_and_cursor(data_mode_clavier = nil)
-    set_mode_clavier(data_mode_clavier)
-    uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
-  end #/ init_status_and_cursor
 
 end #/<< self
 # ---------------------------------------------------------------------
@@ -130,6 +168,10 @@ def write(str, color = nil)
   curse.refresh
 end #/ puts
 def writepos(pos, str, color = nil)
+  if pos.count == 3
+    str_width = pos.pop
+    str = str.ljust(str_width) unless str_width.nil?
+  end
   curse.setpos(*pos)
   write(str, color)
 end #/ writepos

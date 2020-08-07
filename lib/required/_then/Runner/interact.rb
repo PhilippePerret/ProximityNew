@@ -21,7 +21,7 @@ COMMANDS_TO_MODE = {
 
 MODES_CLAVIER = {
   chiffres_simples: {
-    dim: ['  NUMBER  ', CWindow::RED_ON_BLACK_COLOR], # pour l'affichage dans la fenêtre de statut
+    dim: ['NUMBER', CWindow::BLUE_COLOR], # pour l'affichage dans la fenêtre de statut
     exclusif: true, # aucune autre touche que celles définies ci-dessous
     fin: /[0-9]+ $/, # on sort de ce mode quand on obtient ça pour la commande
     'q'=>'1', 's'=>'2', 'd'=>'3', 'f'=>'4', 'g'=>'5', 'h'=>'6', 'j'=>'7', 'k'=>'8', 'l'=>'9', 'm'=>'0',

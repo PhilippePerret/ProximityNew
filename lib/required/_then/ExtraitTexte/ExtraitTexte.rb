@@ -107,9 +107,6 @@ def output
   end
 
   @to_item = real_last_idx
-  msg = "From #{@from_item} to #{@to_item}"
-  msg << " (dernier)" if (@to_item + 1 >= itexte.items.count)
-  CWindow.status(msg)
 
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
