@@ -17,6 +17,7 @@ def replace(params)
   })
   if params[:content] == '_space_' || params[:content] == '_return_'
     # Pas besoin de simulation pour ajouter une espace ou un retour chariot
+    # Ça se fait directement
     params.merge!(nosim: true)
     params.merge!(is_balise: true)
   end
@@ -33,7 +34,9 @@ def remove(params)
   params[:real_at] ||= begin
     AtStructure.new(params[:at], from_item).tap { |at| params.merge!(real_at: at) }
   end
-  params.merge!(operation: 'remove')
+  params.merge!(operation: 'remove') unless params.key?(:operation)
+  # Il faut simuler la suppression si nécessaire (note : ça n'arrive pas
+  # pour une pure suppression — i.e. sans remplacement)
   unless params[:nosim]
     simulation(params) || return
   end
@@ -44,6 +47,69 @@ def remove(params)
     titem = Runner.itexte.items[idx]
     Canon.remove(titem) if titem.mot?
   end
+
+  # Si c'est une vraie suppression (i.e. pas un remplacement), il faut
+  # supprimer aussi l'espace après. S'il n'y a pas d'espace après, il faut
+  # supprimer l'espace avant s'il existe.
+  # La formulaire est différente en fonction du fait qu'on ait un rang ou
+  # un index seul et une liste discontinue d'index.
+  # ATTENTION AUSSI : l'espace supplémentaire à supprimer est peut-être
+  # dans la liste des index à supprimer.
+  if params[:operation] == 'remove'
+    if at.list?
+      # Pour une liste, on doit faire un traitement particulier : il faut
+      # vérifier les text-item après chaque "trou"
+      liste_finale = at.list.dup
+      at.list.each_with_index do |idx, idx_in_list|
+        # Les non-mots doivent être passés
+        next if itexte.items[idx].non_mot?
+        # On passe ce mot si le mot suivant appartient aussi à la liste
+        next if at.list[idx_in_list + 1] == idx + 1
+        # On passe ce mot si le mot précédent appartient aussi à la liste
+        next if at.list[idx_in_list - 1] == idx - 1
+        # On doit tester ce mot qui est "seul" dans la liste, c'est-à-dire
+        # que la liste ne contient ni son mot juste après ni son mot
+        # juste avant.
+        next_index = idx + 1
+        next_titem = itexte.items[next_index]
+        prev_index = idx - 1
+        prev_index = nil if prev_index < 0
+        prev_titem = prev_index.nil? ? nil : itexte.items[prev_index]
+        if next_titem && next_titem.space?
+          # On l'ajoute à la liste des items à supprimer
+          liste_finale.insert(idx_in_list + 1, next_index)
+        elsif prev_titem && prev_titem.space?
+          liste_finale.insert(idx_in_list, prev_index)
+        end
+      end #/ boucle sur la liste
+
+      # Si la liste finale a changé, il faut corrigé le at
+      if liste_finale != at.list
+        params[:real_at] = at = AtStructure.new(liste_finale.join(VG), from_item)
+      end
+
+    else
+      # Pour un rang et un index seul, le traitement est plus simple, il
+      # suffit de voir l'index après le dernier.
+      # Noter qu'on ne supprime pas les espaces ici, on modifie le rang
+      # ou on transforme l'index en range, ceci afin de ne pas provoquer
+      # de doubles suppressions
+      next_index = at.last + 1
+      prev_index = at.first - 1
+      prev_index = nil if prev_index < 0
+      if itexte.items[next_index].space?
+        params[:real_at] = at = AtStructure.new("#{at.first}-#{next_index}", from_item)
+      elsif prev_index && itexte.items[prev_index].space?
+        params[:real_at] = at = AtStructure.new("#{prev_index}-#{at.last}", from_item)
+      end
+    end
+
+  end
+
+  # On procède vraiment à la suppression des mots dans le texte
+  # lui-même, avec une formule différente en fonction du fait que c'est
+  # un rang ou une liste (note : un index unique a été mis dans une liste
+  # pour simplifier les opérations)
   if at.range?
     Runner.itexte.items.slice!(at.from, at.nombre)
   else

@@ -11,7 +11,7 @@
 #
 # En sachant aussi que l'index donné est l'index relatif à la fenêtre
 class AtStructure
-  attr_reader :at, :from, :to, :nombre, :list, :at_init, :first_index
+  attr_reader :at, :from, :to, :nombre, :list, :at_init, :first_index, :last, :first
   def initialize(at_init, first_index)
     @at_init = at_init
     @first_index = first_index
@@ -19,21 +19,39 @@ class AtStructure
   end #/ initialize
 
   # Analyse le 'at' fourni pour l'index.
-  # 
+  #
   # Noter que dans tous les cas @list est défini et contient les
   # éléments voulus.
+  #
+  # [1] On peut passer par ici, lorsque l'utilisateur a donné
+  #     une "fausse" liste, par exemple "12,12"
+  #
   def parse
+
+    # Traitement du cas particulier d'une liste
+    if at_init.match?(VG)
+      traite_as_liste
+    end
+
     if at_init.match?(TIRET) # => un rang
-      @from, @to = at_init.split(TIRET).collect{|i|i.to_i + first_index}
+      @from, @to = at_init.split(TIRET).collect do |i|
+        conforme?(i)
+        i.to_i + first_index
+      end
+      @last = @to
+      @first = @from
       @at = @from # par exemple pour replace
       @nombre = @to - @from + 1
       @is_a_range = true
       @list = (@from..@to).to_a
-    elsif at_init.match?(VG)
-      @list = at_init.split(VG).collect{|i|i.strip.to_i + first_index}
-      @is_a_list = true
-    else
+    elsif list?
+      @from = @first = list.first
+      @to   = @tlast = list.last
+      @nombre = list.count
+    elsif !list? # [1]
+      conforme?(at_init)
       @at = at_init.to_i + first_index
+      @last = @first = @from = @to = @at
       @list = [@at] # pour simplifier certaines méthodes
     end
   end #/ parse
@@ -56,4 +74,62 @@ class AtStructure
     end
   end #/ to_s
 
+private
+
+  # On traite la donnée fournie comme une liste, de façon séparée, car
+  # on peut réaliser que ce n'est pas vraiment une liste.
+  def traite_as_liste
+    # On découpe d'abord pour prendre chaque élément
+    @list = at_init.split(VG).collect do |i|
+      conforme?(i)
+      i.strip.to_i + first_index
+    end
+
+    # On met toujours la liste dans l'ordre et avec des valeurs uniques
+    @list = @list.uniq.sort
+
+    # Si la liste n'a plus qu'une valeur, ce n'est pas une liste
+    if @list.count == 1
+      @at_init = @list.first
+      @list = nil
+      return
+    end
+
+    # On s'assure que ce soit une vraie liste discontinue (sinon,
+    # c'est un range et on le traite comme tel)
+    last_idx = nil
+    @is_a_list = false # on part du principe qu'elle ne l'est pas
+    @list.each do |idx|
+      unless last_idx.nil?
+        if idx != last_idx + 1
+          # Si on trouve un seul élément qui n'est pas le suivi du
+          # précédent, c'est que la liste n'est pas continue
+          @is_a_list = true
+          break
+        end
+      end
+      last_idx = idx.dup
+    end
+    if false === @is_a_list
+      # Si ce n'est pas vraiment une liste, on la transforme en range
+      @at_init = "#{@list.first}-#{@list.last}"
+      log("Les index fournis (#{@list.inspect}) ne sont pas une liste, c'est un rang (#{@at_init}). Je la traite comme telle.".freeze)
+    end
+  end #/ traite_as_liste
+
+  # +i+ doit être un nombre correspondant à un index du texte
+  def conforme?(i)
+    @nombre_total_items ||= Runner.itexte.items.count - 1
+    raise(ERRORS[:entier_required] % i.inspect) unless i.integer?
+    i = i.to_i
+    raise(ERRORS[:index_too_high] % i) if i > @nombre_total_items
+    raise[ERRORS[:index_positif] % i.inspect] if i < 0
+    return true
+  end #/ conforme?
+
+ERRORS = {
+  entier_required: "L'index %s devrait être un entier.".freeze,
+  index_too_high: "L'index %i est trop grand.".freeze,
+  index_positif: "L'index %s devrait être un nombre positif.".freeze
+}
 end

@@ -261,6 +261,15 @@ def new_paragraphe?
   content == RC
 end #/ new_paragraphe?
 
+def space?
+  @is_space ||= (non_mot? && content == SPACE) ? :true : :false
+  @is_space === :true
+end #/ space
+
+def no_proximites?
+  prox_avant.nil? && prox_apres.nil?
+end #/ no_proximites?
+
 # Renvoie l'indice de couleur en fonction des proximités
 # Note : pour le moment, on prend la plus grosse mais il sera toujours
 # possible plus tard de changer ça et de mettre la couleur pour chaque
@@ -279,10 +288,6 @@ def prox_color
     end
   end
 end #/ prox_color
-
-def no_proximites?
-  prox_avant.nil? && prox_apres.nil?
-end #/ no_proximites?
 
 def prox_avant
   @prox_avant_calculed || begin

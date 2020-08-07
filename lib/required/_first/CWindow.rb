@@ -100,7 +100,7 @@ class << self
 
   def set_mode_clavier(adata = nil)
     adata ||= ['  NORMAL  ', CWindow::TEXT_COLOR]
-    @statusWind.writepos([0, 20], *adata)
+    @statusWind.writepos([0, 30], *adata)
     # init_status_and_cursor # NON ! SINON BOUCLE
   end #/ set_mode_clavier
 

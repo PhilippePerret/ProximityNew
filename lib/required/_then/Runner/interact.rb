@@ -10,6 +10,7 @@
 # Cette fonctionnalité peut se désactiver dans les préférences de l'application
 COMMANDS_TO_MODE = {
   'ins '  => {mode: :chiffres_simples},
+  'rep '  => {mode: :chiffres_simples},
   'dep '  => {mode: :chiffres_simples},
   'mov '  => {mode: :chiffres_simples},
   'rem '  => {mode: :chiffres_simples},
