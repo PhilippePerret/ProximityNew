@@ -113,10 +113,10 @@ class << self
       CWindow.textWind.write(Runner.iextrait.output)
       CWindow.log("L'affichage a été rafraichi. Ça va mieux ?".freeze)
 
+
       # *** Toutes les méthodes de modification du texte ***
 
-
-    when 'sup', 'del', 'delete', 'rem', 'remove'
+    when 'sup', 'del', 'delete', 'rem'
       index_ref = cmd.shift
       Runner.iextrait.remove(at:index_ref)
 
@@ -183,20 +183,17 @@ class << self
       end
 
 
-    when 'add'
+    when 'add', 'remove'
       # Pour ajouter un item à une liste prorpre, le plus souvent, comme
       # la liste des mots apostrophes.
       what  = cmd.shift
       value = cmd.join(SPACE)
       case what
-      when 'mot_tiret' # ajouter un mot tiret
-        Runner.itexte.add_mot_tiret(value)
-      when 'mot_apostrophe' # ajouter un mot apostrophe
-        Runner.itexte.add_mot_apostrophe(value)
+      when 'mot_tiret', 'mot_apostrophe', 'mot_sans_prox'
+        Runner.itexte.send("#{cmd_name}_#{what}".to_sym, value)
       else
         erreur("Je ne sais pas comment ajouter un/e #{what}")
       end
-
 
     when 'help'
       Runner.display_help

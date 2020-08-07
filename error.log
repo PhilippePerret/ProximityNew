@@ -16,3 +16,4 @@
 /Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:58:in `open_texte'
 /Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:31:in `run'
 /Users/philippeperret/Programmation/ProximityNew/run.rb:6:in `<main>'
+2020-08-07 11:37:58 +0200-- Le mot "bonjour" n'appartient pas à la liste des mots sans proximité…

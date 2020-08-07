@@ -21,13 +21,15 @@ modifications qui ont été faites jusque-là), utiliser :
 
     :update --confirmed
 
-Pour reconstruire le texte complet à partir des modifications
+Pour RECONSTRUIRE LE TEXTE COMPLET à partir des modifications
+     -----------------------------
 opérées.
 
     :rebuild
 
     Note : si c'est un projet Scrivener, tous les fichiers sont
-    reconstruits.
+    reconstruits et remplacés, une copie de chaque fichier et gardée dans
+    le dossier prox.
 
 
 MODIFCATION DU TEXTE
@@ -69,6 +71,32 @@ MODIFCATION DU TEXTE
 
       :ins 32 _space_             Insérer une espace à l'index 32.
 
+
+ AJOUTS DE MOTS À DES LISTES
+ ---------------------------
+
+ Chaque projet peut avoir ses propres listes, listes de mots apostrophés,
+ liste de mots avec tirets, liste de mots dont il ne faut pas checker la
+ proximités. On ajoute des mots à ces listes à l'aide de la commande :add
+ avec en deuxième argument la liste à modifier et à la suite le mot en
+ question.
+
+ Noter que pour toutes les valeurs ci-dessous, c'est le canon qu'il faut
+ indiquer, pas le mot lui-même. Surtout pour mot_sans_prox
+
+    :add mot_sans_prox <mot>      Ajoute "<mot>" à la liste des mots dont il ne
+                                  faut pas étudier les proximités.
+    :remove mot_sans_prox <m>     Pour le supprimer.
+
+    :add mot_tiret <le-mot>       Ajoute "<le-mot>" à la liste des mots avec
+                                  tirets.
+    :remove mot_tiret <m>         Pour le supprimer.
+
+    :add mot_apostrophe <le:mot>  Ajoute "<le:mot>" à la liste des mots avec
+                                  apostrophes. Noter que si ce mot est un mot
+                                  commun, il faut le mettre plutôt dans la liste
+                                  des constantes proximités.
+    :remove mot_apostrophe <m>    Pour le supprimer.
 
  AUTRES COMMANDES UTILES
  -----------------------

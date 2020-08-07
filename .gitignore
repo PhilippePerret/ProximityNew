@@ -3,7 +3,7 @@
 # Used by dotenv library to load environment variables.
 # .env
 
-/asset/exemples/**/*.*
+/asset/exemples/
 
 debug.log
 journal.log
