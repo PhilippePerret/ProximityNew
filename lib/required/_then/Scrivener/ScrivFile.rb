@@ -187,7 +187,7 @@ end #/ retrieve_old_rtf_file
 def txt_file_path
   @txt_file_path ||= File.join(opes_folder,'content_txt_for_prox.txt'.freeze)
 end #/ txt_file_path
-alias :main_file_txt :txt_file_path # pour la concordance de nom dans NewProx
+alias :full_text_path :txt_file_path # pour la concordance de nom dans NewProx
 
 # Chemin d'accès au fichier corrigé (quelques corrections comme les apostrophes
 # courbes) pour un traitement optimum dans NewProximity

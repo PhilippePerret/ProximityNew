@@ -102,8 +102,8 @@ def main_type
   @main_type ||= begin
     type.split(DEUX_POINTS).first
   rescue Exception => e
-    log("PROBLÈME AVEC #{self.inspect} : #{e.message}")
-    log(e)
+    erreur("PROBLÈME AVEC #{self.inspect} : #{e.message}")
+    erreur(e)
     raise
   end
 end #/ main_type

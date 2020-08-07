@@ -156,9 +156,13 @@ end #/ projet_scrivener
 # pour projet scrivener)
 # C'est lui qui servira à relever tous les mots et qui sera
 # modifié à la fin pour refléter des changements.
-def main_file_txt
-  @main_file_txt ||= File.join(prox_folder,'full_text.txt')
-end #/ main_file_txt
+def full_text_path
+  @full_text_path ||= File.join(prox_folder,'full_text.txt').freeze
+end #/ full_text_path
+
+def lemma_data_path
+  @lemma_data_path ||= "#{only_mots_path}_lemma.data".freeze
+end #/ lemma_data_path
 
 def rebuild_file_path
   @rebuild_file_path ||= File.join(prox_folder, ('full_text_final-%s.txt'.freeze % Time.now.strftime('%d-%m-%Y')))
@@ -175,9 +179,10 @@ def config_path
 end #/ config_path
 def config_default_data
   {
-    last_first_index: 0,
-    distance_minimale_commune: 1000,
-    last_opening: Time.now.to_i
+    last_first_index:           0,
+    distance_minimale_commune:  1000,
+    last_opening:               Time.now.to_i,
+    apostrophes_courbes:        false,
   }
 end #/ config_default_data
 

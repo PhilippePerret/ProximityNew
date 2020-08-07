@@ -4,30 +4,47 @@
 
 ## Principes généraux
 
-Le programme s’utilise **en ligne de commande** — ou plutôt « dans le Terminal » car c’est une ligne de commande plus élaborée — ceci, principalement, pour permettre d’utiliser ruby sans avoir à faire de requêtes Ajax. La version non javascript doit permettre aussi, plus tard, une intégration plus facile dans Scrivener ou « avec » Scrivener.
+Le programme s’utilise **en ligne de commande** — ou plutôt « dans le Terminal » car c’est une ligne de commande plus élaborée avec Curses — ceci, principalement, pour permettre d’utiliser ruby sans avoir à faire de requêtes Ajax. La version non javascript doit permettre aussi, plus tard, une intégration plus facile dans Scrivener ou « avec » Scrivener (c’est fait).
 
 #### Mode simple/mode Scrivener
 
 Le programme doit pouvoir travailler sous deux modes :
 
 * simple : un texte (un fichier) est donné et on le modifie
-* scrivener : un roman Scrivener est donné et on le modifie
+* Scrivener : un roman Scrivener est donné et on le modifie
 
-##### Tout console
+#### Tout console
 
 Tout fonctionne comme dans Vim (normal) à base de commandes clavier. Chaque mot est repéré par un index, il est donc simple de procéder à des remplacements par `rep 13 le nouveau texte` pour « remplacer le mot 13 par “le nouveau texte” » ou `ins 12 ce nouveau contenu` pour « insérer “ce nouveau contenu” avant le mot 12 ».
 
+Un système de **mode de clavier** permet une gestion intelligente. Par exemple, lorsqu’on a tapé « :ins  » (l’espace est volontaire), le clavier passe en mode « chiffres simples » qui permet d’entrer les chiffres avec les touches de Q à M, ce qui est plus pratique. lorsque l’on a « :ins 234 » et que l’on joue une espace, l’espace est écrite et on repasse en passe normal pour taper le texte à insérer.
+
+#### Documentation dans le code
+
+Puisque tout sera chargé d'un coup (ou presque), je n'ai pas peur d'alourdir les fichiers. Donc les méthodes sont très documentées à l'intérieur des modules eux-mêmes. Dans ce fichier manuel du développeur je ne parlerai que des choses générales qui ne peuvent pas se trouver à un endroit précis.
+
+La documentation du projet est produite par [Yard](https://yardoc.org/).
 
 
 ## Classes d'éléments
 
-On utilise un nombre minimum de classes afin de travailler simplement. Exit les paragraphes, lignes et autres pages.
+On utilise un nombre limité de classes afin de travailler simplement. Exit les paragraphes, lignes et autres pages.
+
+Pour le programme de façon générale, on trouve
+
+* **Runner** qui est la classe générale qui gère l’ensemble de l’application.
+* **Texte**. Le texte traité, en tant que tel. **`Runner.itexte`** renvoie l’instance du texte courant.
+* **TexteExtrait**. L’extrait de texte en cours d’édition. **`Runner.iextrait`** retourne l’extrait courant.
+
+Pour le texte lui-même, on ne trouve que
 
 * **mot**. Les mots ou les locutions. Peut-être composé exceptionnellement de `not-mot` comme « aujourd'hui » qui comprend une apostrophe.
 * **not-mot**. Tout ce qui n’est pas une lettre qui va composer un mot.
-* **canon**. Pour maintenir les canons. Les canons, principalement, permettent de savoir rapidement si un mot est en proximité avec un autre.
-* **Texte**. Le texte traité, en tant que tel. **`Runner.itexte`** renvoie le texte courant.
-* **TexteExtrait**. L’extrait de texte en cours d’édition. **`Runner.iextrait`** retourne l’extrait courant.
+
+Pour le fonctionnement des proximités, on trouve :
+
+* **canon**. Pour maintenir les canons. Les canons, principalement, permettent de savoir rapidement si un mot est en proximité avec un autre. Les informations dans les `Canon`s, contrairement aux `Proximites`, sont assez complètes.
+* **Proximite**. Petite classe pour s’occuper d’une proximité. Le principe est qu’elles ne soient pas enregistrées, elles sont toujours calculées et instanciées à la volée, à la demande et la nécessité.
 
 
 

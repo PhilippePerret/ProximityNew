@@ -12,6 +12,14 @@ MOT_NONMOT_REG = /([#{WORD_DELIMITERS}]+)?([^#{WORD_DELIMITERS}]+)([#{WORD_DELIM
 
 # Pour les erreurs à enregistrer
 ParsingError = Struct.new(:message, :where)
+
+class Texte
+# ---------------------------------------------------------------------
+#
+#   INSTANCE
+#
+# ---------------------------------------------------------------------
+
 # Pour ajouter une erreur au cours du parsing
 # @usage
 #   add_parsing_error(ParsingError.new(<message>))
@@ -23,20 +31,19 @@ def add_parsing_error(error)
   @parsing_errors << error
 end #/ add_parsing_error
 
-class Texte
-# ---------------------------------------------------------------------
-#
-#   INSTANCE
-#
-# ---------------------------------------------------------------------
-
+# = main =
 # Méthode générale de parsing, pour n'importe quel document, Scrivener ou
 # pas.
 def parse
+
   # Initialisations
+  # Il faut tout remettre à zéro, notamment les mots et les Canons.
   self.init
   Canon.init
-  # Parser en fonction du type du document
+  Mot.init
+
+  # Parser en fonction du type du document (simple texte ou projet
+  # Scrivener)
   if projet_scrivener?
     projscriv = Scrivener::Projet.new(path, self)
     parse_projet_scrivener(projscriv) || return
@@ -120,11 +127,6 @@ def parse_projet_scrivener(projet)
   log("*** Parsing du projet scrivener #{projet.path}")
   CWindow.log("Parsing du projet scrivener #{projet.name}. Merci de patienter…")
 
-  # Initialisations
-  self.init
-  Canon.init
-  Mot.init
-
   # Prépare le projet Scrivener et, notamment, la base de données
   # où seront consignées les informations sur les fichiers.
   prepare_as_projet_scrivener
@@ -205,7 +207,7 @@ def show_parsing_errors
   @parsing_errors.each do |err|
     msg << "#{RC}#{err.message}"
   end
-  msg << "Ces problèmes doivent être réglés pour pouvoir déproximiser ce texte."
+  msg << "#{RC*2}Ces problèmes doivent être réglés pour pouvoir déproximiser ce texte."
   CWindow.textWind.write(msg.freeze)
 end #/ show_parsing_errors
 
@@ -221,18 +223,28 @@ end #/ fin_parsing
 
 # Eraser les fichiers
 # -------------------
+# Deux utilisations différentes de cette méthode :
+#   * pour un texte quelconque (1 fois au début)
+#   * pour un projet Scrivener (pour chaque fichier, 2 fois)
+#
 # La méthode s'appelle à deux endroits différents quand on traite un
 # projet Scrivener : au commencement du parsing, pour détruire les fichiers
 # généraux et avant le traitement de chaque fichier pour détruire les
-# main_file_txt et les refaire.
+# full_text_path et les refaire.
+# == Params:
+#   +scrivfile+   {ScrivFile}   Instance du fichier de Scrivener
+#
 def erase_parsing_files(scrivfile = nil)
   proprio = scrivfile || self
   file_list = []
   if scrivfile.nil?
     file_list << only_mots_path
     file_list << data_path
+    file_list << full_text_path
+    file_list << corrected_text_path
+    file_list << rebuild_file_path
   else
-    file_list << proprio.main_file_txt
+    file_list << proprio.full_text_path
   end
   file_list.each do |fpath|
     File.delete(fpath) if File.exists?(fpath)
@@ -254,13 +266,13 @@ end #/ parse_if_necessary
 
 def prepare(sfile = nil)
   if projet_scrivener?
-    file_to_correct = sfile.main_file_txt
+    file_to_correct = sfile.full_text_path
     file_corrected  = sfile.corrected_text_path
     # Il faut préparer le fichier Scrivener
     sfile.prepare
   else # simple copie du fichier texte, si pas projet Scrivener
-    FileUtils.copy(path, main_file_txt)
-    file_to_correct = main_file_txt
+    FileUtils.copy(path, full_text_path)
+    file_to_correct = full_text_path
     file_corrected  = corrected_text_path
   end
 
@@ -285,12 +297,6 @@ def decoupe_fichier_corriged(scrivfile = nil)
     next if line.strip.empty?
     new_items = traite_line_of_texte(line.strip)
     next if new_items.empty?
-    # if new_items.empty?
-    #   log("[Découpe fichier] # Aucun item ajouté avec la line #{line.inspect}".freeze)
-    #   next
-    # else
-    #   log("[Découpe fichier] Items ajoutés à itexte.items : #{new_items.count}".freeze)
-    # end
     new_items.each { |titem| titem.file_id = scrivfile.id } unless scrivfile.nil?
     @items += new_items
     # À la fin de chaque “ligne”, il faut mettre une fin de paragraphe
@@ -553,14 +559,24 @@ end #/ is_mot_tiret?
 # du fichier d'un projet Scrivener) et on le corrige pour qu'il puisse être
 # traité. Cette opération @produit le fichier +file_corrected_path+
 def prepare_fichier_corriged(file_to_correct, file_corrected_path)
+  log("*** Préparation du fichier corrigé")
   File.delete(file_corrected_path) if File.exists?(file_corrected_path)
   reffile = File.open(file_corrected_path,'a')
   begin
+    has_apostrophes_courbes = nil
     File.foreach(file_to_correct) do |line|
-      next if line == RC
+      next if line == RC # on passe les retours charriot seuls
+      if !has_apostrophes_courbes
+        has_apostrophes_courbes = !!line.match?(/’/)
+        log("has_apostrophes_courbes = #{has_apostrophes_courbes.inspect}")
+      end
       line = line.gsub(/’/, APO)
       reffile.puts line
     end
+    # Il faut enregistrer dans les informations du texte que les
+    # apostrophes courbes ont été remplacées, ou pas
+    config.save(apostrophes_courbes: has_apostrophes_courbes)
+    log("Configuration enregistrée (apostrophes_courbes: #{has_apostrophes_courbes.inspect})")
     return true
   rescue Exception => e
     erreur(e)
@@ -588,9 +604,9 @@ end #/ prepare_as_projet_scrivener
 # et de l'index dans le fichier only_mots_path. Cet index correspond.
 def lemmatize
   log("*** Lemmatisation du fichier", true)
-  @lemma_file_path = Lemma.parse(only_mots_path)
-  # log("Contenu du fichier @lemma_file_path : #{File.read(@lemma_file_path)}")
-  File.foreach(@lemma_file_path).with_index do |line, mot_idx_in_lemma|
+  Lemma.parse(self)
+  # log("Contenu du fichier lemma_data_path : #{File.read(lemma_data_path)}")
+  File.foreach(lemma_data_path).with_index do |line, mot_idx_in_lemma|
     next if line.strip.empty?
     traite_lemma_line(line, mot_idx_in_lemma) || return
   end # Fin de boucle sur chaque ligne du fichier de lemmatisation
@@ -634,7 +650,7 @@ def traite_lemma_line(line, idx)
       end.compact.join(SPACE) + '…').freeze
       # Extrait à partir des lignes
       extrait_lemma = []
-      File.foreach(@lemma_file_path).with_index do |line, sidx|
+      File.foreach(lemma_data_path).with_index do |line, sidx|
         next if sidx < idx - 20
         break if sidx > idx + 20
         extrait_lemma << line.split(TAB).first
@@ -643,7 +659,7 @@ def traite_lemma_line(line, idx)
 
       # 10 autour
       dixautour = {}
-      File.foreach(@lemma_file_path).with_index do |line, sidx|
+      File.foreach(lemma_data_path).with_index do |line, sidx|
         # next if sidx < idx - 20
         break if sidx > idx + 10
         dixautour.merge!( sidx => {lemma:line.split(TAB).first, mot:Mot.items[sidx]&.content} )
