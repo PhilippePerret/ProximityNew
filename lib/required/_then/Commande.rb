@@ -3,7 +3,7 @@ class Commande
 class << self
   # Jouer la commande voulue
   def run(cmd)
-    log("Commande jouée : #{cmd.inspect}")
+    log("🔨 Commande jouée : #{cmd.inspect}")
     historize(cmd)
     cmd_init = cmd.dup.freeze
     cmd = cmd.split(SPACE)
