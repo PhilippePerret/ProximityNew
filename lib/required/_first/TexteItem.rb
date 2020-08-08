@@ -243,7 +243,7 @@ def calcule_longueurs
   if non_mot?
     @f_length = length
   elsif is_colled === true
-    @f_length = [length, long_index].max + 1
+    @f_length = [length, long_index].max
   elsif !proximizable? || ( prox_avant.nil? && prox_apres.nil? )
     # Si ce n'est pas un mot proximizable ou qu'il n'y a pas de proximité
     # on compare juste la longueur de l'index et la longueur du mot

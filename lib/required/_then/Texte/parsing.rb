@@ -9,6 +9,10 @@ WORD_DELIMITERS = '  ?!,;:\.…—–=+$¥€«»\[\]\(\)<>“”' # pas de tra
 
 MOT_NONMOT_REG = /([#{WORD_DELIMITERS}]+)?([^#{WORD_DELIMITERS}]+)([#{WORD_DELIMITERS}]+)/
 
+# Utile pour la nouvelle formule
+REG_NO_WORD_DELIMITERS = /([#{WORD_DELIMITERS}]+)/ # les parenthèses vont capturer, dans split.
+REG_WORD_DELIMITERS =  /[^#{WORD_DELIMITERS}]+/
+REG_APO_TIRET = /[#{APO}#{TIRET}]/.freeze
 
 # Pour les erreurs à enregistrer
 ParsingError = Struct.new(:message, :where)
@@ -324,29 +328,80 @@ end #/ write_in_only_mots
 # remplacement.
 def traite_line_of_texte(line, reffileonlymots = nil)
   @refonlymots = reffileonlymots unless reffileonlymots.nil?
+  line = line.strip
   new_items = []
-  mark_style = nil # pour les projets Scrivener
-  # C'est ici qu'on va faire la découpe du texte en :
-  #     [AMORCE ]MOT NON-MOT
-  # Entendu qu'on part du principe qu'un texte est un enchainement
-  # entièrement de mot et de non-mot (les non-mots les plus utilisés
-  # étant les espaces et ensuite les ponctuations). L'amorce est aussi
-  # un non-mot, elle sert par exemple pour les dialogues ou tout texte
-  # ou ligne qui commencerait par une apostrophe ou un chevron.
-  line.scan(MOT_NONMOT_REG).to_a.each_with_index do |item, idx|
-    # next if item.nil? # pas de premier délimiteur par exemple
-    amorce, mot, nonmot = item # amorce : le tiret, par exemple, pour dialogue
-    # S'il y a une amorce, on l'ajoute
-    new_items << NonMot.new(amorce) unless amorce.nil?
-    # On traite le mot, qui peut être plus ou moins complexe
-    new_items = traite_mot(mot, nonmot, new_items)
-    # log("État de new_items : #{new_items.inspect}")
-  end #/scan
+
+  # *** Nouvelle façon de découper le texte ***
+
+  # Dans la nouvelle façon de découper le texte, on prend les délimiteurs
+  # possibles et on établit deux listes : la liste des délimiteurs de la
+  # ligne (avec scan) et la liste des non délimiteurs de la lignes (donc
+  # les mots, avec split). Ensuite, on parcourt les listes en parallèle
+  # pour reconstituer le texte.
+  # Par exemple, le paragraphe "– C'est ce que je dis !…" va produire :
+  #   ["— ", " ", " ", " ", " ", " !…"]
+  #   ["C'est", "ce", "que", "je", "dis"]
+  # Comme la liste des séparateurs de mots est plus longue, il faut
+  # commencer par elle.
+  # non_mots = line.scan(REG_NO_WORD_DELIMITERS).to_a
+
+  # Ici l'expression régulière aillant des parenthèses capturantes, le split
+  # va garder les délimiteurs, pour obtenir une liste parfaitement conforme
+  # à ce que l'on a besoin. Il faut juste savoir si la ligne commence par un
+  # délimiteur ou non
+  mots = line.split(REG_NO_WORD_DELIMITERS)
+  line_starts_with_non_mot = mots.first == EMPTY_STRING
+
+  # log("non_mots nouvelle formule : #{non_mots.inspect}")
+  log("les mots nouvelle formule : #{mots.inspect}")
+  log("La ligne commence-t-elle par un non word : #{line_starts_with_non_mot.inspect}")
+
+  # On retourne les listes pour pouvoir pop(er) au lieu de shift(er) pour
+  # des raisons de performances. Mais pour des listes aussi courtes, est-ce
+  # qu'on ne perd pas plus de temps à reverser qu'à shift(er) au lieu de
+  # pop(er) ?…
+  mots.reverse!
+
+  # Si la ligne ne commence pas par un mot, il faut prendre ce non-mot et
+  # le mettre au début de la liste des nouveaux text-items.
+  if line_starts_with_non_mot
+    mots.pop # pour retirer le string vide découlant de la découpe
+    new_items << NonMot.new(mots.pop)
+  end
+
+  begin
+    mot     = mots.pop
+    nonmot  = mots.pop # peut être nil
+    imot = TextWordScanned.new(mot, nonmot)
+    new_items += imot.scan
+    imot = nil
+  end until mots.empty?
+
+
+  # # *** Ancienne façon de procéder ***
+  #
+  # # C'est ici qu'on va faire la découpe du texte en :
+  # #     [AMORCE ]MOT NON-MOT
+  # # Entendu qu'on part du principe qu'un texte est un enchainement
+  # # entièrement de mot et de non-mot (les non-mots les plus utilisés
+  # # étant les espaces et ensuite les ponctuations). L'amorce est aussi
+  # # un non-mot, elle sert par exemple pour les dialogues ou tout texte
+  # # ou ligne qui commencerait par une apostrophe ou un chevron.
+  # line.scan(MOT_NONMOT_REG).to_a.each_with_index do |item, idx|
+  #   # next if item.nil? # pas de premier délimiteur par exemple
+  #   amorce, mot, nonmot = item # amorce : le tiret, par exemple, pour dialogue
+  #   # S'il y a une amorce, on l'ajoute
+  #   new_items << NonMot.new(amorce) unless amorce.nil?
+  #   # On traite le mot, qui peut être plus ou moins complexe
+  #   new_items = traite_mot(mot, nonmot, new_items)
+  #   # log("État de new_items : #{new_items.inspect}")
+  # end #/scan
 
   # Maintenant qu'on a tous les text-items de la phrase, on peut
   # ajouter les mots dans le fichier des mots seulement. On en profite
   # pour définir la propriété :lemma qui est peut-être déjà définie (voir
-  # l'explication dans la classe Mot)
+  # l'explication dans la classe Mot) OBSOLÈTE maintenant, mais on peut
+  # garder au cas où
   new_items.each do |titem|
     next unless titem.mot?
     titem.lemma ||= titem.content.downcase
@@ -356,204 +411,227 @@ def traite_line_of_texte(line, reffileonlymots = nil)
   return new_items
 end #/ traite_line_of_texte
 
-# Traitement général du mot
-# -------------------------
-# La méthode a été "isolée" car elle peut être appelée aussi bien
-# par la méthode `traite_line_of_texte` que la méthode `traite_mot_special`
-# Elle retourne systématiquement un Array, même si le mot est unique (entendu
-# que justement cette méthode va chercher à analyser un mot rendu complexe à
-# cause des apostrophes et des tirets — et autre chose ?)
-# @Return {Array of NonMot/Mot}
+
+# # Traitement général du mot
+# # -------------------------
+# # La méthode a été "isolée" car elle peut être appelée aussi bien
+# # par la méthode `traite_line_of_texte` que la méthode `traite_mot_special`
+# # Elle retourne systématiquement un Array, même si le mot est unique (entendu
+# # que justement cette méthode va chercher à analyser un mot rendu complexe à
+# # cause des apostrophes et des tirets — et autre chose ?)
+# # @Return {Array of NonMot/Mot}
+# #
+# # +mot+   {String} Le mot à traiter
+# # +nonmot+  {String} Le non-mot relevé après le mot, mais seulement avec la
+# #     phrase.
+# # +new_items+   {Array|Nil}   La liste des mots actuels de la phrase traitée
+# #     lorsque la méthode est appelée par `traite_line_of_texte`. Sinon Nil
+# #     lorsque la méthode est appelée par `traite_mot_special`
+# def traite_mot(mot, nonmot = nil, new_items = nil)
+#   # Pour mettre les mots qui seront ajoutés pour le mot fourni. Entendu
+#   # qu'un mot unique — p.e. << qu'est-ce >> — peut générer plusieurs mots
+#   #  — p.e. "qu'", "est" et "ce" —. Mais seulement si new_items n'est pas
+#   # fourni à la méthode (noter que new_items concerne seulement les mots
+#   # d'une phrase, pas du texte complet)
+#   mot_items = []
+#   # Pour une marque éventuelle de style, avec un projet Scrivener
+#   mark_style_start = nil
+#   mark_style_end   = nil
+#   if mot.start_with?('XSCRIVSTART')
+#     # C'est le début d'une marque de style dans un projet Scrivener
+#     # Note : cette marque est collé au mot, il faut donc poursuivre
+#     # le traitement
+#     mark_style_start = mot[11...14].gsub(/O/,'').to_i
+#     mot = mot[14..-1] # peut être vide
+#     mot = nil if mot.empty?
+#   elsif mot.start_with?('XSCRIVEND')
+#     # Cette marque n'est pas collé au dernier mot, il faut
+#     # arrêter le traitement après son enregistrement dans le
+#     # dernier mot traité.
+#     # QUESTION Que se passera-t-il ici si new_items n'est pas défini,
+#     # c'est-à-dire qu'on se trouve dans le cadre d'un mot complexe avec
+#     # un mot comportant un style dans Scrivener (ce qui peut très bien
+#     # arriver avec "rosa-bleu" et "bleu" dans un style particulier)
+#     mark_style_end = mot[9...12].gsub(/O/,'').to_i
+#     if new_items.nil?
+#       mot_items.last.mark_scrivener_end = mark_style_end
+#       mark_style_end = nil
+#     else
+#       new_items.last.mark_scrivener_end = mark_style_end
+#       mark_style_end = nil
+#     end
+#     return (new_items || []) + mot_items # rien à faire par la suite
+#   end
 #
-# +mot+   {String} Le mot à traiter
-# +nonmot+  {String} Le non-mot relevé après le mot, mais seulement avec la
-#     phrase.
-# +new_items+   {Array|Nil}   La liste des mots actuels de la phrase traitée
-#     lorsque la méthode est appelée par `traite_line_of_texte`. Sinon Nil
-#     lorsque la méthode est appelée par `traite_mot_special`
-def traite_mot(mot, nonmot = nil, new_items = nil)
-  # Pour mettre les mots qui seront ajoutés pour le mot fourni. Entendu
-  # qu'un mot unique — p.e. << qu'est-ce >> — peut générer plusieurs mots
-  #  — p.e. "qu'", "est" et "ce" —. Mais seulement si new_items n'est pas
-  # fourni à la méthode (noter que new_items concerne seulement les mots
-  # d'une phrase, pas du texte complet)
-  mot_items = []
-  # Pour une marque éventuelle de style, avec un projet Scrivener
-  mark_style_start = nil
-  mark_style_end   = nil
-  if mot.start_with?('XSCRIVSTART')
-    # C'est le début d'une marque de style dans un projet Scrivener
-    # Note : cette marque est collé au mot, il faut donc poursuivre
-    # le traitement
-    mark_style_start = mot[11...14].gsub(/O/,'').to_i
-    mot = mot[14..-1] # peut être vide
-    mot = nil if mot.empty?
-  elsif mot.start_with?('XSCRIVEND')
-    # Cette marque n'est pas collé au dernier mot, il faut
-    # arrêter le traitement après son enregistrement dans le
-    # dernier mot traité.
-    # QUESTION Que se passera-t-il ici si new_items n'est pas défini,
-    # c'est-à-dire qu'on se trouve dans le cadre d'un mot complexe avec
-    # un mot comportant un style dans Scrivener (ce qui peut très bien
-    # arriver avec "rosa-bleu" et "bleu" dans un style particulier)
-    mark_style_end = mot[9...12].gsub(/O/,'').to_i
-    if new_items.nil?
-      mot_items.last.mark_scrivener_end = mark_style_end
-      mark_style_end = nil
-    else
-      new_items.last.mark_scrivener_end = mark_style_end
-      mark_style_end = nil
-    end
-    return (new_items || []) + mot_items # rien à faire par la suite
-  end
+#   unless mot.nil? # par exemple quand on a une marque de début de style seul
+#     if mot.match?(/#{REG_APO_TIRET}/)
+#       traite_mot_special(mot, nonmot).each do |titem|
+#         # log("Mot spécial ajouté : #{titem.inspect}")
+#         if mark_style_start
+#           titem.mark_scrivener_start = mark_style_start
+#           mark_style_start = nil
+#         end
+#         mot_items << titem
+#       end
+#     else
+#       titem = Mot.new(mot).tap do |inst|
+#         if mark_style_start
+#           inst.mark_scrivener_start = mark_style_start
+#           mark_style_start = nil
+#         end
+#       end
+#       mot_items << titem
+#     end
+#   end #/si on a un mot
+#
+#   unless nonmot.nil?
+#     titem = NonMot.new(nonmot).tap do |inst|
+#       if mark_style_start
+#         inst.mark_scrivener_start = mark_style_start
+#         mark_style_start = nil
+#       end
+#     end
+#     mot_items << titem
+#   end
+#   return (new_items || []) + mot_items
+# end #/ traite_mot
 
-  unless mot.nil? # par exemple quand on a une marque de début de style seul
-    if mot.match?(/#{TIRET}/) || mot.match?(/#{APO}/)
-      traite_mot_special(mot, nonmot).each do |titem|
-        # log("Mot spécial ajouté : #{titem.inspect}")
-        if mark_style_start
-          titem.mark_scrivener_start = mark_style_start
-          mark_style_start = nil
-        end
-        mot_items << titem
-      end
-    else
-      titem = Mot.new(mot).tap do |inst|
-        if mark_style_start
-          inst.mark_scrivener_start = mark_style_start
-          mark_style_start = nil
-        end
-      end
-      mot_items << titem
-    end
-  end #/si on a un mot
+# # +nonmot+ {String} Ce qui suit le mot. C'est indispensable pour savoir si
+# #     le mot est "collé" ou non dans des formules comme :
+# #       L’« autre monde »       où "L’" doit être "collé"
+# #       – Bonn’ journée         où "Bonn’" ne doit pas être collé
+# def traite_mot_special(mot, nonmot = nil)
+#   mots = []
+#   # Avant, on regardait si le mot contenait des apostrophes et on le traitait
+#   # ensuite s'il contenait des tirets et on le traitait. Mais ça posait plein
+#   # de problème. Par exemple lorsque "to'tue" (pour "tortue") se trouvait dans
+#   # "to'tue-té" (le "-té" était ajouté dans Le Parc pour parler d'une évolution
+#   # de l'animal, ici la tortue). Donc en passant par cette méthode le mot
+#   # "to'tue-té" n'existant pas au premier parsing, le programme découpait en
+#   # "to'" et "tue-té" puis plus tard en "tue" et "té".
+#   # Alors qu'il aurait dû chercher "to'tue" et "tue-té" avant tout
+#
+#
+#   # # On récupère d'abord les apostrophes ou les tirets
+#   # apos_tirs = mot.scan(REG_APO_TIRET).to_a
+#   # bouts     = mot.split(REG_APO_TIRET)
+#   #
+#   # # Avec le premier
+#   #
+#   # return
+#   # # *** fin nouvelle méthode ***
+#
+#   if mot.match?(/#{APO}/)
+#     if is_mot_apostrophe?(mot)
+#       log("Mot #{mot.inspect} (index) enregistré comme mot apostrophe")
+#       return [Mot.new(mot)]
+#     else
+#       # Ce n'est pas un mot comme aujourd'hui, connu pour avoir une
+#       # apostrophe. S'il n'y qu'une seule apostrophe, on retourne deux
+#       # Ça peut être quelque chose comme :
+#       #   qu'aujourd'hui
+#       #   qu'est-ce
+#       #   qu'un
+#       #   d'avant
+#       bouts = mot.split(APO)
+#       bouts_debugged = bouts.inspect
+#       # On met forcément le premier mot comme ça dans la liste des items
+#       # Par exemple, c'est "qu'" ou "d'". On indique que ce mot doit être
+#       # collé au suivant, ce qui est toujours le cas (*).
+#       # (*) Cette "collure" n'est valable que pour constituer le fichier qui
+#       # sera lemmatisé car pour le fichier normal reconstitué, toutes les
+#       # espaces et autres ponctuations sont enregistrées en tant que text-item
+#       firstmot = Mot.new(bouts[0] + APO).tap { |m| m.is_colled = true }
+#       if bouts.count == 1
+#         # Ça arrive par exemple avec le "L" dans "L’« autre monde »" à
+#         # cause des chevrons. Dans ce cas, bouts = ["L"]. On peut donc
+#         # s'arrêter là en retournant simplement le mot apostrophé.
+#         # Ça arrive aussi avec tous les mots élisés à la fin dans les
+#         # dialogues.
+#         # Si le nonmot qui suit commence par une espace (insécable ou non)
+#         # il ne faut pas le coller à la suite
+#         if nonmot && nonmot.start_with?(/[  \t]/)
+#           firstmot.is_colled = false
+#           firstmot.lemma = bouts[0].downcase
+#         end
+#         log("Un mot avec apostrophe à la fin : #{bouts[0].inspect} (lemma: #{firstmot.lemma.inspect})")
+#         return [firstmot]
+#       elsif bouts.count == 2
+#         return [firstmot] + traite_mot(bouts[1])
+#       end
+#       # S'il y a deux apostrophe (maximum) on regarde si le second
+#       # mot est un mot connu, comme dans "plus qu'aujourd'hui"
+#       # Sinon, on renvoie les trois mots
+#       bouts.shift
+#       deuxi = bouts.join(APO)
+#       if is_mot_apostrophe?(deuxi)
+#         log("Mot #{deuxi} enregistré comme mot apostrophe")
+#         return [firstmot, Mot.new(deuxi)]
+#       else
+#         motsuiv = if bouts[0].nil?
+#           add_parsing_error(ParsingError.new("bouts[0] ne devrait pas pouvoir être nil dans #{mot.inspect} (bouts: #{bouts_debugged}). Ça devrait être le troisième mot.", "#{__FILE__}:#{__LINE__}"))
+#           Mot.new(APO)
+#         else
+#           Mot.new(bouts[0] << APO)
+#         end
+#         motsuiv.is_colled = true
+#         return [firstmot, motsuiv] + traite_mot(bouts[1])
+#       end
+#     end
+#   end
+#
+#   if mot.match?(/#{TIRET}/)
+#     if is_mot_tiret?(mot)
+#       # Un mot tiret connu, comme "peut-être" ou "grand-chose"
+#       # cf. la liste dans constantes/proximites.rb
+#       return [Mot.new(mot)]
+#     else
+#       # Ce n'est pas un mot comme peut-être, connu pour avoir une
+#       # apostrophe. S'il n'y qu'un seul tiret, on retourne les deux
+#       # mots avec un tiret ajouté en non mot
+#       bouts = mot.split(TIRET)
+#       if bouts.count == 2
+#         ary = []
+#         ary << Mot.new(bouts[0]) unless bouts[0].empty? # mot ≠ de "-po"
+#         ary << NonMot.new(TIRET, type:'PUN')
+#         return ary + traite_mot(bouts[1])
+#       end
+#       # S'il y a deux tirets (maximum) on regarde si le second
+#       # mot est un mot-tiret connu, comme dans "arrière-grand-père" (c'est
+#       # juste un exemple car "arrière-grand-père" est un mot-tiret connu)
+#       # Sinon, on renvoie les trois mots en mettant entre un tiret
+#       first = bouts.shift
+#       deuxi = bouts.join(TIRET)
+#       if is_mot_tiret?(deuxi)
+#         ary = []
+#         ary << Mot.new(first) unless first.empty?
+#         ary << NonMot.new(TIRET, type:'PUN')
+#         return ary + traite_mot(deuxi)
+#       else
+#         ary_mots = []
+#         ary_mots << Mot.new(first) unless first.empty?
+#         ary_mots << NonMot.new(TIRET, type:'PUN')
+#         ary_mots += traite_mot(bouts[0])
+#         ary_mots << NonMot.new(TIRET, type:'PUN')
+#         ary_mots += traite_mot(bouts[1])
+#         return ary_mots
+#       end
+#     end
+#   end
+# end #/ traite_mot_special
 
-  unless nonmot.nil?
-    titem = NonMot.new(nonmot).tap do |inst|
-      if mark_style_start
-        inst.mark_scrivener_start = mark_style_start
-        mark_style_start = nil
-      end
-    end
-    mot_items << titem
-  end
-  return (new_items || []) + mot_items
-end #/ traite_mot
-
-# +nonmot+ {String} Ce qui suit le mot. C'est indispensable pour savoir si
-#     le mot est "collé" ou non dans des formules comme :
-#       L’« autre monde »       où "L’" doit être "collé"
-#       – Bonn’ journée         où "Bonn’" ne doit pas être collé
-def traite_mot_special(mot, nonmot = nil)
-  mots = []
-  if mot.match?(/#{APO}/)
-    if is_mot_apostrophe?(mot)
-      return [Mot.new(mot)]
-    else
-      # Ce n'est pas un mot comme aujourd'hui, connu pour avoir une
-      # apostrophe. S'il n'y qu'une seule apostrophe, on retourne deux
-      # Ça peut être quelque chose comme :
-      #   qu'aujourd'hui
-      #   qu'est-ce
-      #   qu'un
-      #   d'avant
-      bouts = mot.split(APO)
-      bouts_debugged = bouts.inspect
-      # On met forcément le premier mot comme ça dans la liste des items
-      # Par exemple, c'est "qu'" ou "d'". On indique que ce mot doit être
-      # collé au suivant, ce qui est toujours le cas (*).
-      # (*) Cette "collure" n'est valable que pour constituer le fichier qui
-      # sera lemmatisé car pour le fichier normal reconstitué, toutes les
-      # espaces et autres ponctuations sont enregistrées entant que text-item
-      firstmot = Mot.new(bouts[0] + APO).tap { |m| m.is_colled = true }
-      if bouts.count == 1
-        # Ça arrive par exemple avec le "L" dans "L’« autre monde »" à
-        # cause des chevrons. Dans ce cas, bouts = ["L"]. On peut donc
-        # s'arrêter là en retournant simplement le mot apostrophé.
-        # Ça arrive aussi avec tous les mots élisés à la fin dans les
-        # dialogues.
-        # Si le nonmot qui suit commence par une espace (insécable ou non)
-        # il ne faut pas le coller à la suite
-        if nonmot && nonmot.start_with?(/[  \t]/)
-          firstmot.is_colled = false
-          firstmot.lemma = bouts[0].downcase
-        end
-        log("Un mot avec apostrophe à la fin : #{bouts[0].inspect} (lemma: #{firstmot.lemma.inspect})")
-        return [firstmot]
-      elsif bouts.count == 2
-        return [firstmot] + traite_mot(bouts[1])
-      end
-      # S'il y a deux apostrophe (maximum) on regarde si le second
-      # mot est un mot connu, comme dans "plus qu'aujourd'hui"
-      # Sinon, on renvoie les trois mots
-      bouts.shift
-      deuxi = bouts.join(APO)
-      if is_mot_apostrophe?(deuxi)
-        return [firstmot, Mot.new(deuxi)]
-      else
-        motsuiv = if bouts[0].nil?
-          add_parsing_error(ParsingError.new("bouts[0] ne devrait pas pouvoir être nil dans #{mot.inspect} (bouts: #{bouts_debugged}). Ça devrait être le troisième mot.", "#{__FILE__}:#{__LINE__}"))
-          Mot.new(APO)
-        else
-          Mot.new(bouts[0] << APO)
-        end
-        motsuiv.is_colled = true
-        return [firstmot, motsuiv] + traite_mot(bouts[1])
-      end
-    end
-  end
-
-  if mot.match?(/#{TIRET}/)
-    if is_mot_tiret?(mot)
-      # Un mot tiret connu, comme "peut-être" ou "grand-chose"
-      # cf. la liste dans constantes/proximites.rb
-      return [Mot.new(mot)]
-    else
-      # Ce n'est pas un mot comme peut-être, connu pour avoir une
-      # apostrophe. S'il n'y qu'un seul tiret, on retourne les deux
-      # mots avec un tiret ajouté en non mot
-      bouts = mot.split(TIRET)
-      if bouts.count == 2
-        ary = []
-        ary << Mot.new(bouts[0]) unless bouts[0].empty? # mot ≠ de "-po"
-        ary << NonMot.new(TIRET, type:'PUN')
-        return ary + traite_mot(bouts[1])
-      end
-      # S'il y a deux tirets (maximum) on regarde si le second
-      # mot est un mot-tiret connu, comme dans "arrière-grand-père" (c'est
-      # juste un exemple car "arrière-grand-père" est un mot-tiret connu)
-      # Sinon, on renvoie les trois mots en mettant entre un tiret
-      first = bouts.shift
-      deuxi = bouts.join(TIRET)
-      if is_mot_tiret?(deuxi)
-        ary = []
-        ary << Mot.new(first) unless first.empty?
-        ary << NonMot.new(TIRET, type:'PUN')
-        return ary + traite_mot(deuxi)
-      else
-        ary_mots = []
-        ary_mots << Mot.new(first) unless first.empty?
-        ary_mots << NonMot.new(TIRET, type:'PUN')
-        ary_mots += traite_mot(bouts[0])
-        ary_mots << NonMot.new(TIRET, type:'PUN')
-        ary_mots += traite_mot(bouts[1])
-        return ary_mots
-      end
-    end
-  end
-end #/ traite_mot_special
-
-# Retourne TRUE si le mot +mot+, qui contient une apostrophe, est un
-# mot connu comme "aujourd'hui" ou un mot défini propre au projet.
-def is_mot_apostrophe?(mot)
-  motd = mot.downcase
-  MOTS_APOSTROPHE[motd] || liste_mots_apostrophe[motd]
-end #/ has_apostrophe?
-
-def is_mot_tiret?(mot)
-  motd = mot.downcase
-  MOTS_TIRET[motd] || liste_mots_tiret[motd]
-end #/ is_mot_tiret?
+# # Retourne TRUE si le mot +mot+, qui contient une apostrophe, est un
+# # mot connu comme "aujourd'hui" ou un mot défini propre au projet.
+# def is_mot_apostrophe?(mot)
+#   motd = mot.downcase
+#   # log("Test is_mot_apostrophe?(#{mot.inspect}) : MOTS_APOSTROPHE[#{motd}]=#{MOTS_APOSTROPHE[motd].inspect} || liste_mots_apostrophe[#{motd}]=#{liste_mots_apostrophe[motd].inspect}")
+#   return !!(MOTS_APOSTROPHE[motd] || liste_mots_apostrophe[motd])
+# end #/ is_mot_apostrophe?
+#
+# def is_mot_tiret?(mot)
+#   motd = mot.downcase
+#   return !!(MOTS_TIRET[motd] || liste_mots_tiret[motd])
+# end #/ is_mot_tiret?
 
 # On prend le fichier texte (contenant tout le texte initial ou le texte
 # du fichier d'un projet Scrivener) et on le corrige pour qu'il puisse être
@@ -633,13 +711,14 @@ def traite_lemma_line(line, idx)
     # par une apostrophe
     erreur("### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS (index : idx) :".freeze)
     imot = Mot.items[idx]
-    log("### mot:#{mot.inspect}, index:#{idx} dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
+    log("### mot du fichier lemma:#{mot.inspect}, index:#{idx} dans imot: #{imot.content.inspect}, type:#{type.inspect}, canon: #{canon.inspect}")
     if titem.file_id
-      log("### file_id : titem.file_id / Path: #{ScrivFile.get_path_by_file_id(titem.file_id)}")
+      log("### file_id : #{titem.file_id} / Path: #{ScrivFile.get_path_by_file_id(titem.file_id)}")
     end
     if mot.match?(/[\-\']/)
       liste_prog, liste_perso, chose = mot.match?(/'/) ? ['MOTS_APOSTROPHE', 'avec apostrophe', 'mot_apostrophe'] : ['MOTS_TIRET', 'avec tirets', 'mot_tiret']
-      msg = "### Le mot #{mot.inspect} (index #{idx}) est à ajouter à la liste des mots spéciaux #{liste_perso}"
+      msg = "### Mots ne correspondant pas."
+      msg << "### Le mot #{mot.inspect} (index #{idx}) est à ajouter à la liste des mots spéciaux #{liste_perso}"
       msg << "#{RC}### avec la commande :add #{chose} #{mot}"
       msg << "#{RC}### Si c'est un mot commun, l'ajouter à #{liste_prog} dans lib/required/_first/contants/proximites.rb"
     else

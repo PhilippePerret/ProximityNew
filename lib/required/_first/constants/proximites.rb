@@ -23,16 +23,49 @@ MOTS_APOSTROPHE = {
 }
 
 MOTS_TIRET = {
-  'peut-être'     => true,
+  'à-coup' => true,
+  'à-propos' => true,
+  'après-midi' => true,
+  'arrière-grand-père'  => true,
+  'arrière-grand-papa'  => true,
+  'arrière-grand-mère'  => true,
+  'arrière-grand-maman' => true,
+  'c\'est-à-dire' => true,
+  'chez-soi' => true,
+  'chou-fleur' => true,
+  'coq-à-l\'âne' => true,
+  'franc-maçon' => true,
   'grand-chose'   => true,
   'grand-père'    => true,
   'grand-papa'    => true,
   'grand-mère'    => true,
   'grand-maman'   => true,
-  'arrière-grand-père'  => true,
-  'arrière-grand-papa'  => true,
-  'arrière-grand-mère'  => true,
-  'arrière-grand-maman' => true,
+  'gratte-ciel' => true,
+  'laissez-passer'  => true,
+  'non-dit' => true,
+  'ouvre-boîte' => true,
+  'ouvre-boite' => true,
+  'peut-être'     => true,
+  'pousse-café' => true,
+  'porte-clés' => true,
+  # 'qu\'en-dira-t-on' => true, Inconnu de tree-tagger
+  'qualité-prix' => true,
+  'rouge-gorge' => true,
+  'sans-gêne' => true,
+  'saut-de-lit' => true,
+  'sauve-qui-peut' => true,
+  'tape-à-l\'œil' => true,
+  'tout-à-l\'égout' => true,
+  'train-train' => true,
+  'va-et-vient' => true,
+  'va-nu-pied' => true,
+}
+
+# Les transformables sont des expressions particulières que tree-tagger traite
+# de façon particulière.
+TRANSFORMABLES = {
+  # Inconnu de tree-tagger mais qu'il faut transformer
+  'qu\'en-dira-t-on' => ['qu\'', 'en-dira', '-t-on'],
 }
 
 LOCUTIONS = {

@@ -218,6 +218,9 @@ end #/ prox_folder
 def folder
   @folder ||= File.dirname(path)
 end #/ folder
+def fname
+  @fname ||= File.basename(path)
+end #/ fname
 def affixe
   @affixe ||= File.basename(path, extension)
 end #/ affixe

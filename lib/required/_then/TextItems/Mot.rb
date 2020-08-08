@@ -23,6 +23,7 @@ attr_accessor :canon
 # des mots seuls ET pour la comparaison.
 # Mais au cours du parsing, tous les mots sont réglés pour avoir :lemma
 # comme version minuscule pour comparaison.
+# OBSOLÈTE, normalement, avec le nouveau traitement des mots
 attr_accessor :lemma
 
 def non_mot? ; false end
