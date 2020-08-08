@@ -121,6 +121,9 @@ def scan
 
   # Liste finale renvoyée
   return titems
+rescue Exception => e
+  erreur("ERROR avec #{self.inspect}")
+  erreur(e)
 end #/ scan
 
 

@@ -38,7 +38,7 @@ def remove(params)
   # Il faut simuler la suppression si nécessaire (note : ça n'arrive pas
   # pour une pure suppression — i.e. sans remplacement)
   unless params[:nosim]
-    simulation(params) || return
+    # simulation(params) || return # Essai aucune simulation
   end
   at = params[:real_at]
   # Dans tous les cas il faut retirer les mots de leur canon (si ce sont
