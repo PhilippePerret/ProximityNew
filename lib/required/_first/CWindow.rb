@@ -108,6 +108,8 @@ class << self
   MSG_STATUT_WIDTH = 30
   colonne_cur += MSG_STATUT_WIDTH
 
+  TITRE_TEXTE_WIDTH = 30
+  TITRE_TEXTE_START = Curses.cols - TITRE_TEXTE_WIDTH
 
   # = main =
   #
@@ -117,6 +119,7 @@ class << self
     set_mode_clavier(data_mode_clavier)
     set_distance_minimale_defaut
     set_statut_extrait
+    set_titre_texte
     # Pour remettre le curseur au bon endroit
     uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
   end #/ init_status_and_cursor
@@ -126,6 +129,18 @@ class << self
     @statusWind.writepos([0, MSG_STATUT_START], msg.ljust(MSG_STATUT_WIDTH), BLUE_COLOR)
     init_status_and_cursor
   end #/ status
+
+  def set_titre_texte
+    titre = Runner.itexte.nil? ? '---' : Runner.itexte.fname
+    titre = if titre.length > TITRE_TEXTE_WIDTH - 1
+      titre_av = titre[0...(TITRE_TEXTE_WIDTH/2 - 1)]
+      titre_ap = titre[(TITRE_TEXTE_WIDTH/2 - 1)..-1]
+      " #{titre_av}…#{titre_ap}".freeze
+    else
+      titre.rjust(TITRE_TEXTE_WIDTH - 1)
+    end + SPACE
+    @statusWind.writepos([0,TITRE_TEXTE_START,TITRE_TEXTE_WIDTH], titre, TEXT_COLOR)
+  end #/ set_titre_texte
 
   def set_statut_extrait
     str = " Items:#{Runner.iextrait.from_item}-#{Runner.iextrait.to_item}".freeze
