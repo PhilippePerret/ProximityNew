@@ -39,6 +39,9 @@ def remove(params)
   # pour une pure suppression — i.e. sans remplacement)
   unless params[:nosim]
     # simulation(params) || return # Essai aucune simulation
+    # Note : si je remets cette simulation, ça va poser problème lorsqu'on
+    # fait une simple suppression d'un mot. C'est arrivé en essayant de
+    # supprimer le dernier mot du simple_text.txt
   end
   at = params[:real_at]
   # Dans tous les cas il faut retirer les mots de leur canon (si ce sont

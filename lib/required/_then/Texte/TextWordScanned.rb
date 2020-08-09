@@ -63,6 +63,13 @@ TRAITEMENT DES APOSTROPHES ET TRAITS D'UNION
 [5] Les fins telles que "-t-il" dans "parle-t-il" par exemple sont traitées
     comme deux mots par tree-tagger (-> "parle", "-t-il")
 
+[6] Envoyer un string vide à la méthode `traite_string` peut survenir
+    lorsqu'on a un string qui se termine par une apostrophe ou un tiret.
+    Dans ce cas, le mot transmis se retrouve découpé en deux, avec un
+    second élément vide.
+    Ça arrive aussi, de la même manière, lorsque le mot commence par un
+    tiret ou une apostrophe, comme dans « 'ziva ! »
+
 =end
 class TextWordScanned
 
@@ -74,7 +81,7 @@ FIN_VERBALE = /((?:\-t)?\-(?:on|ils|il|elles|elle))$/i.freeze
 FIN_DEMONSTRATIVE = /(\-(?:là|ci))/i.freeze
 
 # Début pronominal, par exemple pour "qu'en penser" ou "d'aujourd'hui"
-DEBUT_PRONOMINAL = /^((?:qu|d|t|m|s|n)')/i.freeze
+DEBUT_PRONOMINAL = /^((?:qu|d|t|m|s|n|l)')/i.freeze
 
 attr_reader :mot, :nonmot
 def initialize(mot, nonmot)
@@ -98,7 +105,7 @@ def scan
     return [instance_nonmot_seule] if mot.nil?
     # Si on se trouve en présence d'un mot simple, on peut finaliser le
     # tout et le renvoyer.
-    return [instance_mot, instance_nonmot] unless mot.match?(REG_APO_TIRET)
+    return [instance_mot, instance_nonmot] unless mot.match?(REG_APO_OR_TIRET)
     # Sinon, on poursuit
   end
 
@@ -197,8 +204,10 @@ end #/ separe_mot_et_marque
 # @Return une LISTE ARRAY des instances de mots créées (sans le NonMot de
 # fin)
 def traite_string(str)
-  log("-> traite_string(#{str.inspect})")
-  if str.match?(REG_APO_TIRET).nil? # un mot sans apostrophe ni tiret
+  # log("-> traite_string(#{str.inspect})")
+  if str.nil? # [6]
+    [ ]
+  elsif str.match?(REG_APO_OR_TIRET).nil? # un mot sans apostrophe ni tiret
     [ Mot.new(str) ]
   elsif mot_apostrophe_connu?(str)
     [ Mot.new(str) ]
@@ -212,11 +221,11 @@ def traite_string(str)
 end #/ traite_string
 
 def scan_as_mot_complexe(str)
-  log("-> scan_as_mot_complexe(#{str.inspect})")
+  # log("-> scan_as_mot_complexe(#{str.inspect})")
 
   # Traitement comme mot avec "fin verbale" [5]
   if str.match?(FIN_VERBALE)
-    log("#{str.inspect}.split(FIN_VERBALE) : #{str.split(FIN_VERBALE).inspect}")
+    # log("#{str.inspect}.split(FIN_VERBALE) : #{str.split(FIN_VERBALE).inspect}")
     mot1, mot2 = str.split(FIN_VERBALE)
     return instance_colled(traite_string(mot1)) << Mot.new(mot2)
   end
@@ -228,7 +237,6 @@ def scan_as_mot_complexe(str)
 
   if str.match?(DEBUT_PRONOMINAL)
     vide, pronom, mot2 = str.split(DEBUT_PRONOMINAL)
-    log("pronom:#{pronom.inspect}, mot2:#{mot2.inspect}")
     return [ instance_colled(pronom) ] + traite_string(mot2)
   end
 
@@ -243,7 +251,7 @@ end #/ scan_as_mot_complexe
 # ---------------------------------------------------------------------
 
 def mot_simple?
-  return false if mot.match?(REG_APO_TIRET)
+  return false if mot.match?(REG_APO_OR_TIRET)
   return false if marque_scrivener?
   return true
 end #/ mot_simple?

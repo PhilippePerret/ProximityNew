@@ -13,7 +13,7 @@ class << self
 
   # Parse +itexte+ qui peut être une instance Texte ou un simple Path
   def parse(itexte)
-    cmd = ("/usr/local/bin/tree-tagger-french" +
+    cmd = ("/usr/local/bin/tree-tagger-french -quiet" +
            " < #{itexte.only_mots_path.inspect}" +
            " > #{itexte.lemma_data_path.inspect}").freeze
     log("cmd lemmatisation : #{cmd}".freeze)
