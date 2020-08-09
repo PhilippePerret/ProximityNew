@@ -1,5 +1,8 @@
 # encoding: UTF-8
+require 'treetagger'
+
 class Lemma
+BINARY_PATH = "/usr/local/bin/tree-tagger-french"
 NATURE_TO_SYMBOL = {
   'VER' => :verbe, 'DET' => :determinant, 'ADJ' => :adjectif, 'NOM' => :nom,
   'PRO' => :pronom, 'PRO:PER' => :pronom_personnel,
@@ -9,11 +12,14 @@ NATURE_TO_SYMBOL = {
   'NAM' => :prenom,
   'ABR' => :abbreviation, # km => kilomètre
 }
+END_MARKER = TreeTagger::Tagger::END_MARKER
+END_SENTENCE = "Pour\nMarquer\nLa\nFin\n"
+
 class << self
 
   # Parse +itexte+ qui peut être une instance Texte ou un simple Path
   def parse(itexte)
-    cmd = ("/usr/local/bin/tree-tagger-french -quiet" +
+    cmd = ("#{BINARY_PATH}" +
            " < #{itexte.only_mots_path.inspect}" +
            " > #{itexte.lemma_data_path.inspect}").freeze
     log("cmd lemmatisation : #{cmd}".freeze)

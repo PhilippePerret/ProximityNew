@@ -13,7 +13,6 @@ class << self
 
     case cmd_name
 
-
     when 'rebuild' # reconstruire le texte final
       Runner.itexte.rebuild
 

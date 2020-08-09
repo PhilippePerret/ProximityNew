@@ -167,8 +167,10 @@ class << self
   #               c'est toujours la fenêtre ui
   #   :message    Le message à afficher dans la fenêtre de log
   #   :keys       Une liste des touches admises, qui produira le retour
-  #               de l'attente.
-  def wait_for_user(params)
+  #               de l'attente. Si non fournie, c'est qu'on attend un texte.
+  #               Il sera retourné lorsque l'on pressera la touche entrée.
+  def wait_for_user(params = nil)
+    params ||= {}
     params[:window] ||= @uiWind
     logWind.write(params[:message])
     uiWind.clear
@@ -176,11 +178,19 @@ class << self
     choix = nil
     while true
       s = uiWind.curse.getch
-      if params[:keys].include?(s)
+      if params[:keys] && params[:keys].include?(s)
         choix = s
         break
-      elsif s == 127 # annulation
+      elsif s == 10 # touche entrée
         break
+      elsif s == 127 # annulation
+        choix = nil
+        break
+      else
+        choix ||= ''
+        choix << s.to_s
+        uiWind.clear
+        uiWind.write(choix)
       end
     end
     logWind.clear

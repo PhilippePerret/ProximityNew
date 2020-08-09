@@ -23,7 +23,9 @@ attr_accessor :canon
 # des mots seuls ET pour la comparaison.
 # Mais au cours du parsing, tous les mots sont réglés pour avoir :lemma
 # comme version minuscule pour comparaison.
-# OBSOLÈTE, normalement, avec le nouveau traitement des mots
+# Permet de traiter le cas par exemple "Souhait'" (mot coupé dans un dialogue)
+# qui produirait deux mots pour TreeTagger ("Souhait" et "'") et qu'il faut
+# faut donc écrire "Souhait" dans le fichier des mots seulement.
 attr_accessor :lemma
 
 def non_mot? ; false end

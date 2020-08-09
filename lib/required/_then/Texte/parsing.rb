@@ -12,6 +12,8 @@ REG_NO_WORD_DELIMITERS = /([#{WORD_DELIMITERS}]+)/ # les parenthèses vont captu
 REG_WORD_DELIMITERS =  /[^#{WORD_DELIMITERS}]+/
 REG_APO_OR_TIRET = /[#{APO}#{TIRET}]/.freeze
 
+REG_APO_OR_TIRET_CAP = /([#{APO}#{TIRET}])/.freeze
+
 # Pour les erreurs à enregistrer
 ParsingError = Struct.new(:message, :where)
 
@@ -474,7 +476,7 @@ end #/ traite_lemma_line
 #     a été composée au moment du parsing du texte.
 #
 def expose_erreur_desynchro(params)
-  erreur("### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS (index : idx) :".freeze)
+  # erreur(err)
 
   # Données envoyées par +params+
   idx = params[:idx]
@@ -542,7 +544,8 @@ def expose_erreur_desynchro(params)
   msg << RC*2
   add_parsing_error(msg)
   log(msg, true)
-  return false
+  err = "### ERREUR FATALE LES MOTS NE CORRESPONDENT PLUS (index : idx).".freeze
+  raise(err)
 end #/ expose_erreur_desynchro
 
 end #/Texte

@@ -14,6 +14,8 @@ class << self
   # Lancement de l'application
   #
   def run
+    # On initialise le log (journal.log)
+    Log.init
     # On prépare les fenêtres
     prepare_screen
     # On regarde le précédent texte édité, s'il existe

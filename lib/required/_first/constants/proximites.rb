@@ -31,10 +31,10 @@ MOTS_TIRET = {
   'arrière-grand-mère'  => true,
   'arrière-grand-maman' => true,
   'c\'est-à-dire' => true,
-  'chez-soi' => true,
-  'chou-fleur' => true,
-  'coq-à-l\'âne' => true,
-  'franc-maçon' => true,
+  'chez-soi'      => true,
+  'chou-fleur'    => true,
+  'coq-à-l\'âne'  => true,
+  'franc-maçon'   => true,
   'grand-chose'   => true,
   'grand-père'    => true,
   'grand-papa'    => true,
@@ -50,7 +50,9 @@ MOTS_TIRET = {
   'porte-clés' => true,
   # 'qu\'en-dira-t-on' => true, Inconnu de tree-tagger
   'qualité-prix' => true,
+  'rendez-vous' => true,
   'rouge-gorge' => true,
+  'sage-femme' => true,
   'sans-gêne' => true,
   'saut-de-lit' => true,
   'sauve-qui-peut' => true,
@@ -65,7 +67,15 @@ MOTS_TIRET = {
 # de façon particulière.
 TRANSFORMABLES = {
   # Inconnu de tree-tagger mais qu'il faut transformer
-  'qu\'en-dira-t-on' => ['qu\'', 'en-dira', '-t-on'],
+  'qu\'en-dira-t-on' => ['qu\'', 'en-dira', '-t-on'], # BUG TreeTagger
+  'est-ce' => ['est', '-ce'],
+  'soi-même' => ['soi', '-même'],
+  'qu\'eux-mêmes' => ['qu\'', 'eux', '-mêmes'],   # BUG TreeTagger
+  'd\'eux-mêmes' => ['d\'', 'eux', '-mêmes'],     # BUG TreeTagger
+  'qu\'elle-même' => ['qu\'', 'elle', '-même'],   # BUG TreeTagger
+  'd\'elle-même' => ['d\'', 'elle', '-même'],     # BUG TreeTagger
+  'qu\'elles-mêmes' => ['qu\'', 'elles', '-mêmes'],   # BUG TreeTagger
+  'd\'elles-mêmes'  => ['d\'', 'elles', '-mêmes'],     # BUG TreeTagger
 }
 
 LOCUTIONS = {

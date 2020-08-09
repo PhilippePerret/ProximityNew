@@ -73,6 +73,9 @@ end #/Errorer
 
 class Log
 class << self
+  def init
+    new().init
+  end #/ init
   def current
     @current ||= new
   end #/ current
@@ -86,10 +89,12 @@ def close
 end #/ close
 def reflog
   @reflog ||= begin
-    File.delete(logpath) if File.exists?(logpath)
     File.open(logpath,'a')
   end
 end #/ reflog
+def init
+  File.delete(logpath) if File.exists?(logpath)
+end #/ init
 def logpath
   @logpath ||= File.join(APP_FOLDER,'journal.log')
 end #/ logpath

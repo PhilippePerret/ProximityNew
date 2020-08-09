@@ -73,15 +73,24 @@ TRAITEMENT DES APOSTROPHES ET TRAITS D'UNION
 =end
 class TextWordScanned
 
+# *** Les expressions où ON DOIT séparer les mots ***
+
 # Fin verbale, par exemple pour "parle-t-on"
-FIN_VERBALE = /((?:\-t)?\-(?:on|ils|il|elles|elle))$/i.freeze
+FIN_VERBALE = /((?:\-t)?\-(?:ils|il|elles|elle|on|je|tu|les|le|la|moi|toi|lui|nous|vous|leurs|leur|y))$/i.freeze
 
 # FIN_VERBALE = /(-(?:on|ils|il|elles|elle))$/i.freeze
 
-FIN_DEMONSTRATIVE = /(\-(?:là|ci))/i.freeze
+FIN_DEMONSTRATIVE = /(\-(?:là|ci|ce))$/i.freeze
 
 # Début pronominal, par exemple pour "qu'en penser" ou "d'aujourd'hui"
-DEBUT_PRONOMINAL = /^((?:qu|d|t|m|s|n|l)')/i.freeze
+DEBUT_PRONOMINAL = /^((?:d|t|m|s|n|l|c|j|qu|lorsqu|presqu|jusqu)')/i.freeze
+
+# *** les expressions où ON NE DOIT PAS découper les mots ***
+
+FIN_MEME_TOUS = /\-mêmes?$/i.freeze
+FIN_MEME_BONS = /^((?:elle|elles|lui|nous|vous|toi|moi|eux)\-(?:même|mêmes))$/i.freeze
+
+# BUG TreeTagger : "soi-même" est inconnu
 
 attr_reader :mot, :nonmot
 def initialize(mot, nonmot)
@@ -124,6 +133,23 @@ def scan
     i.mark_scrivener_end    = @mark_style_end
   end
 
+  if titems.count > 1
+    titems.each do |titem|
+      titem.is_colled = true
+    end
+  end
+  if nonmot.start_with?(/["«]/)
+    titems[0].is_colled = true if titems.count == 1
+  else
+    titems[-1].is_colled = false
+  end
+
+  # # === ICI ===
+  # if mot == 'qu\'eux-mêmes'
+  #   log("titems de qu\'eux-mêmes : #{titems.inspect}")
+  #   raise "glourps"
+  # end
+
   titems << instance_nonmot # [3]
 
   # Liste finale renvoyée
@@ -151,7 +177,7 @@ def instance_colled(foo)
     return foo
   else
     foo = Mot.new(foo) if foo.is_a?(String)
-    foo.tap { |i| i.is_colled = true }
+    foo.is_colled = true
     return foo # pour la clarté
   end
 end #/ instance_colled
@@ -213,8 +239,12 @@ def traite_string(str)
     [ Mot.new(str) ]
   elsif mot_tiret_connu?(str)
     [ Mot.new(str) ]
-  elsif transformable?
-    TRANSFORMABLES[downcase].collect { |m| Mot.new(mt) }
+  elsif transformable?(str)
+    # log("#{str.inspect} a été reconnu comme Transformable : TRANSFORMABLES[#{str.downcase.inspect}] = #{TRANSFORMABLES[str.downcase].inspect}.")
+    # res = TRANSFORMABLES[str.downcase].collect { |mt| Mot.new(mt).tap{|i|i.is_colled = true} }
+    # res[-1].is_colled = false
+    # log("Transformé en : #{res.inspect}")
+    TRANSFORMABLES[str.downcase].collect { |mt| Mot.new(mt) }
   else # apostrophes + tirets
     scan_as_mot_complexe(str)
   end
@@ -235,9 +265,21 @@ def scan_as_mot_complexe(str)
     return instance_colled(traite_string(mot1)) << Mot.new(mot2)
   end
 
+  if str.start_with?(APO) || str.end_with?(APO)
+    titem = Mot.new(str)
+    titem.lemma = str.gsub(/#{APO}/,'') unless str.end_with?(APO) && nonmot.start_with?(/["«]/)
+    return [ titem ]
+  end
+
   if str.match?(DEBUT_PRONOMINAL)
     vide, pronom, mot2 = str.split(DEBUT_PRONOMINAL)
-    return [ instance_colled(pronom) ] + traite_string(mot2)
+    # return [ instance_colled(pronom) ] + traite_string(mot2)
+    return [ Mot.new(pronom) ] + traite_string(mot2)
+  end
+
+  if str.match?(FIN_MEME_TOUS) && ! str.match?(FIN_MEME_BONS)
+    motav, meme = str.split(TIRET)
+    return [ Mot.new(motav), Mot.new("#{TIRET}#{meme}") ]
   end
 
   # Si le mot ne répond à aucun des cas précédents, on doit le
@@ -261,9 +303,8 @@ def marque_scrivener?
   @has_mark_scrivener
 end #/ marque_scrivener?
 
-def transformable?
-  @is_transformable = TRANSFORMABLES.key?(downcase) if @is_transformable.nil?
-  @is_transformable
+def transformable?(str = nil)
+  TRANSFORMABLES.key?((str || mot).downcase)
 end #/ transformable?
 
 def mot_apostrophe_connu?(str = nil)
