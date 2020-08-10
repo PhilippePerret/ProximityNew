@@ -189,10 +189,10 @@ end #/ f_content
 def content_rebuilt
   c = content
   if mark_scrivener_start
-    c.prepend("<$Scr_Ps::#{mark_scrivener_start}>".freeze)
+    c.prepend("<$Scr_#{mark_scrivener_start[:lettre]}s::#{mark_scrivener_start[:id]}>".freeze)
   end
   if mark_scrivener_end
-    c.prepend("<!$Scr_Ps::#{mark_scrivener_end}>".freeze)
+    c.prepend("<!$Scr_#{mark_scrivener_end[:lettre]}s::#{mark_scrivener_end[:id]}>".freeze)
   end
   return c
 end #/ content_rebuilt

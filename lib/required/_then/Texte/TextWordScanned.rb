@@ -213,14 +213,28 @@ end #/ instance_non_mot
 # ---------------------------------------------------------------------
 
 def separe_mot_et_marque
-  if mot.start_with?('XSCRIVSTART')
+  if mot.start_with?(/XSCRIVSTART/)
     # Cf. [1]
-    @mark_style_start = mot[11...14].gsub(/O/,'').to_i
-    @mot = mot[14..-1]
+    lettre_style  = mot[11]
+    mark_style    = mot[12...15].gsub(/O/,'').to_i
+    @mark_style_start = {id: mark_style, lettre: lettre_style}
+    @mot = mot[15..-1]
     @mot = nil if @mot.empty? # Cf. [2]
-  elsif mot.start_with?('XSCRIVEND')
-    @mark_style_end = mot[9...12].gsub(/O/,'').to_i
-    @mot = mot[12..-1]
+  end
+
+  return if @mot.nil?
+
+  if mot.match?('XSCRIVEND')
+    log("Le mot #{mot.inspect} contient la marque de fin")
+    idx = mot.index('XSCRIVEND')
+    extr = mot[(idx+9)..(idx+9+4)]
+    lettre_style = extr[0]
+    mark_style = extr[1..-1]
+    id_style = mark_style.gsub(/O/,'').to_i
+    @mark_style_end = {id: id_style, lettre: lettre_style}
+    log("@mark_style_end: #{@mark_style_end.inspect}")
+    @mot = mot.sub(/XSCRIVEND#{extr}/,'')
+    log("@mot : #{@mot.inspect}")
     @mot = nil if @mot.empty? # Cf. [2]
   end
 end #/ separe_mot_et_marque

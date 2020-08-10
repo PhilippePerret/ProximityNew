@@ -14,6 +14,10 @@ require 'sqlite3'
     la table de données qui va contenir les données pour les fichiers.
 =end
 class ScrivFile
+
+REG_BALISE_STYLE_IN   = /<\$Scr_(C|P)s::([0-9]+)> */.freeze
+REG_BALISE_STYLE_OUT  = / *<\!\$Scr_(C|P)s::([0-9]+)>/.freeze
+
 class << self
 
   # Crée la table qui va recevoir les fichiers du projet Scrivener
@@ -122,23 +126,23 @@ end #/ prepare
 
 # Méthode qui remplace les balises <$Scr_Cs([0-9]+)> par une marque
 # XSCRIVxxx<mot> pour le traitement dans New Proximity
-REG_BALISE_STYLE_IN   = /<\$Scr_Ps::([0-9]+)> */.freeze
-REG_BALISE_STYLE_OUT  = / *<\!\$Scr_Ps::([0-9]+)>/.freeze
 def remplace_balises_styles
   temp = "#{txt_file_path}.prov"
   FileUtils.move(txt_file_path, temp)
   ref = File.open(txt_file_path,'a')
   File.foreach(temp) do |line|
-    log("line: #{line}")
-    log("line contient une balise In ? #{line.match?(REG_BALISE_STYLE_IN).inspect}")
-    log("line contient une balise Out ? #{line.match?(REG_BALISE_STYLE_OUT).inspect}")
+    # log("line: #{line}")
+    # log("line contient une balise In ? #{line.match?(REG_BALISE_STYLE_IN).inspect}")
+    # log("line contient une balise Out ? #{line.match?(REG_BALISE_STYLE_OUT).inspect}")
     line.gsub!(REG_BALISE_STYLE_IN){
-      nomb = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
-      "XSCRIVSTART#{nomb}".freeze
+      lett = $1.freeze
+      nomb = $2.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
+      "XSCRIVSTART#{lett}#{nomb}".freeze
     }
     line.gsub!(REG_BALISE_STYLE_OUT){
-      nomb = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
-      "XSCRIVEND#{nomb}".freeze
+      lett = $1.freeze
+      nomb = $2.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
+      "XSCRIVEND#{lett}#{nomb}".freeze
     }
     # line.gsub!(){
     #   nomb    = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro

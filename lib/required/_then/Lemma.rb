@@ -32,9 +32,10 @@ class << self
            " 2> #{lemma_error_path}").freeze
     log("cmd lemmatisation : #{cmd}".freeze)
     lemma_result = `#{cmd}`
-    if File.exists?(lemma_error_path)
-      erreur("Une erreur TreeTager est survenue, consulter le fichier error_lemma.log.")
-    end
+    # if File.exists?(lemma_error_path)
+    #   NON, PAS FORCÉMENT
+    #   erreur("Une erreur TreeTager est survenue, consulter le fichier error_lemma.log.")
+    # end
 
     lemma_result
   end #/ parse
