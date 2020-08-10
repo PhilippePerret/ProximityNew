@@ -276,7 +276,7 @@ end #/ calcule_longueurs
 # Retourne true si le text-item peut être étudié au niveau de ses proximités
 def proximizable?
   @is_not_proximizabe ||= begin
-    if non_mot? || length < 4 || main_type == 'PRO' || main_type == 'DET' || is_exclu?
+    if non_mot? || length < 4 || icanon.nil? || main_type == 'PRO' || main_type == 'DET' || is_exclu?
       :false
     else
       :true

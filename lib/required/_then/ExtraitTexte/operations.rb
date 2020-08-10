@@ -290,10 +290,8 @@ def simulation(params)
   # On regarde s'il y a des risques de proximité
   new_mots.each do |new_mot|
     debug("[Simulation] *** Étude du mot #{new_mot.cio}")
-    # Si new_mot n'a pas de canon, c'est qu'aucun autre mot de sa
-    # famille n'existe dans le texte. Il ne peut pas avoir de proximités. On
-    # peut passer directement au suivant.
-    new_mot.icanon || next
+    # Si c'est un mot non proximizable, on le passe
+    next if not new_mot.proximizable?
     # Si c'est un mot qui a un canon ignoré, on le passe
     next if new_mot.icanon.ignored?
     # Distance minimale pour que deux mots ne soient pas en proximité
