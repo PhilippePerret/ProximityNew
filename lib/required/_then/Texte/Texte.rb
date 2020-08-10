@@ -235,11 +235,11 @@ def db_path
 end #/ db_path
 
 def data_path
-  @data_path ||= File.join(prox_folder,"#{affixe}-prox.data.msh")
+  @data_path ||= File.join(prox_folder,"data.msh")
 end #/ data_path
 
 def corrected_text_path
-  @corrected_text_path ||= File.join(prox_folder,"#{affixe}_c#{extension}".freeze)
+  @corrected_text_path ||= File.join(prox_folder,"corrected#{extension}".freeze)
 end #/ corrected_text_path
 
 def prox_folder

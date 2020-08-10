@@ -140,7 +140,7 @@ def scan
   if titems.count > 1
     titems.each { |titem| titem.is_colled = true }
   end
-  if nonmot.start_with?(/["«]/)
+  if nonmot && nonmot.start_with?(/["«]/)
     titems[0].is_colled = true if titems.count == 1
   else
     titems[-1].is_colled = false

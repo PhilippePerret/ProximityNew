@@ -117,6 +117,10 @@ MODIFCATION DU TEXTE
     :show <index>             Pour afficher le texte à partir de cet
                               index de mot.
 
+    :copy texte <new_name>    Faire une copie du projet actuel sous un autre
+                              nom.
+    :copy projet <new_name>   Alias de la précédente.
+
     :next page                Pour passer à la page suivante
     (flèche droite)
     :prev page                Pour passer à la page précédente

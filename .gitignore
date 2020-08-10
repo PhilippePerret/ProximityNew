@@ -4,6 +4,7 @@
 # .env
 
 /asset/exemples/
+/asset/exemples_errones/
 
 debug.log
 journal.log

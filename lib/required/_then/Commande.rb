@@ -47,7 +47,8 @@ class << self
         item = Runner.itexte.items[item_index]
         msg = "DEBUG item #{item_index} : #{item.debug(output: :console)}".freeze
         debug(msg)
-        CWindow.log(msg)
+        debug(item.inspect)
+        CWindow.log("#{msg} (détails dans debug.log)")
       when 'mots'
         debug("#{RC*2}Débuggage des mots du texte".freeze)
         entete = "#{RC} #{'index'.ljust(7)}#{'Contenu'.ljust(15)}#{'Offset'.ljust(8)}#{'FileId'.ljust(7)}".freeze
@@ -137,7 +138,7 @@ class << self
       Runner.iextrait.unignore(at: index_ref, cancellor: @operation_cancellor)
       Runner.itexte.cancellor.add_and_save(@operation_cancellor)
 
-    when 'sup', 'del', 'delete', 'rem'
+    when 'sup', 'del', 'rem'
       index_ref = cmd.shift
       @operation_cancellor = OpeCancellor.new(cmd_init)
       Runner.iextrait.remove(at:index_ref, cancellor: @operation_cancellor)
@@ -224,6 +225,11 @@ class << self
 
     when 'help'
       Runner.display_help
+
+
+    when 'copy'
+      what = cmd.shift
+      Runner.copy(what, cmd)
 
     else
 

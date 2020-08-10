@@ -57,8 +57,10 @@ end #/ add
 
 def remove(mot)
   idx = items.find_index { |m| m.index == mot.index }
-  items.slice!(idx)
-  offsets.slice!(idx)
+  unless idx.nil? # ça arrive quand on vient de retirer le mot par un autre biais
+    items.slice!(idx)
+    offsets.slice!(idx)
+  end
 end #/ remove
 
 def count

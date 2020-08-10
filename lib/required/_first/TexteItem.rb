@@ -206,11 +206,11 @@ def f_proximities
     dist_avant = ''
     dist_apres = ''
     if prox_avant
-      log("Mot “#{content}” (#{index}/#{offset}) a une proximité AVANT : #{prox_avant.mot_avant.content} (#{prox_avant.mot_avant.index}/#{prox_avant.mot_avant.offset})")
+      # log("Mot “#{content}” (#{index}/#{offset}) a une proximité AVANT : #{prox_avant.mot_avant.content} (#{prox_avant.mot_avant.index}/#{prox_avant.mot_avant.offset})")
       dist_avant = (prox_avant.mot_avant.index - Runner.iextrait.from_item).to_s
     end
     if prox_apres
-      log("Mot “#{content}” (#{index}/#{offset}) a une proximité APRÈS : #{prox_apres.mot_apres.content} (#{prox_apres.mot_apres.index}/#{prox_apres.mot_apres.offset})")
+      # log("Mot “#{content}” (#{index}/#{offset}) a une proximité APRÈS : #{prox_apres.mot_apres.content} (#{prox_apres.mot_apres.index}/#{prox_apres.mot_apres.offset})")
       dist_apres = (prox_apres.mot_apres.index - Runner.iextrait.from_item).to_s
     end
 
@@ -319,14 +319,25 @@ def prox_color
   end
 end #/ prox_color
 
+def index_in_canon
+  icanon.offsets.index(offset)
+end #/ index_in_canon
+
 def prox_avant
   @prox_avant_calculed || begin
-    if !proximizable? || icanon.nil? || icanon.count == 1
+    if !proximizable? || icanon.nil? || icanon.count == 1 || index_in_canon.nil?
       @prox_avant = nil
     else
       # log("*** Recherche proximité avant de #{cio} ***")
       # log("Offsets du canon #{icanon.canon.inspect} : #{icanon.offsets.inspect}")
-      idx_canon = icanon.offsets.index(offset)
+
+      # On cherche l'index du mot courant dans son canon. Pour se faire, on
+      # se sert des offsets puisqu'ils sont enregistrés dans le canon.
+      # NOTE On pourrait aussi fonctionner avec les identifiants des mots, ce
+      # qui serait peut-être plus sûr (mais pour le moment, cet identifiant
+      # n'existe pas)
+      idx_canon = index_in_canon
+
       # log("Index du mot courant dans icanon.offsets: #{idx_canon}")
       if idx_canon > 0 # il peut y avoir un mot avant
 
@@ -360,11 +371,11 @@ def prox_avant=(prox); @prox_avant = prox end
 
 def prox_apres
    @prox_apres_calculed || begin
-    if !proximizable? || icanon.nil? || icanon.count == 1
+    if !proximizable? || icanon.nil? || icanon.count == 1 || index_in_canon.nil?
       @prox_apres = nil
     else
       # log("*** Recherche proximité APRÈS pour #{cio} ***")
-      idx_canon = icanon.offsets.index(offset)
+      idx_canon = index_in_canon
 
       # Il ne faut pas prendre en compte un mot non proximizable (par
       # exemple ignoré)

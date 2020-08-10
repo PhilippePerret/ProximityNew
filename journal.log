@@ -1,357 +1,48 @@
-2020-08-10 14:51:42 +0200 -> open_texte (text_path:"/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv")
-2020-08-10 14:51:42 +0200 -- Projet Scrivener --
-2020-08-10 14:51:43 +0200 Projet Scrivener instancié.
-2020-08-10 14:51:43 +0200 Configuration enregistrée (:last_text_path)
-2020-08-10 14:51:43 +0200 Instanciation @extrait (à partir de l'item 0)
-2020-08-10 14:51:43 +0200 -> ExtraitTexte#output
-2020-08-10 14:51:43 +0200 On doit afficher les items de 0 à 400 (nombre total : 79179)
-2020-08-10 14:51:43 +0200 Mot “jamais” (17/48) a une proximité APRÈS : jamais (30/83)
-2020-08-10 14:51:43 +0200 Mot “jamais” (30/83) a une proximité AVANT : jamais (17/48)
-2020-08-10 14:51:43 +0200 Mot “existence” (49/135) a une proximité APRÈS : existence (55/153)
-2020-08-10 14:51:43 +0200 Mot “existence” (55/153) a une proximité AVANT : existence (49/135)
-2020-08-10 14:51:43 +0200 Mot “encore” (81/249) a une proximité APRÈS : Encore (135/412)
-2020-08-10 14:51:43 +0200 Mot “Encore” (135/412) a une proximité AVANT : encore (81/249)
-2020-08-10 14:51:43 +0200 Mot “sont” (144/441) a une proximité AVANT : sera (77847/220584)
-2020-08-10 14:51:43 +0200 Mot “sont” (144/441) a une proximité APRÈS : sont (207/625)
-2020-08-10 14:51:43 +0200 Mot “sont” (207/625) a une proximité AVANT : sont (144/441)
-2020-08-10 14:51:43 +0200 Mot “sont” (207/625) a une proximité APRÈS : seront (243/730)
-2020-08-10 14:51:43 +0200 Mot “Quand” (241/724) a une proximité APRÈS : Quand (292/883)
-2020-08-10 14:51:43 +0200 Mot “seront” (243/730) a une proximité AVANT : sont (207/625)
-2020-08-10 14:51:43 +0200 Mot “Till” (277/832) a une proximité APRÈS : Till (286/862)
-2020-08-10 14:51:43 +0200 Mot “sans” (279/838) a une proximité APRÈS : sans (343/1007)
-2020-08-10 14:51:43 +0200 Mot “Till” (286/862) a une proximité AVANT : Till (277/832)
-2020-08-10 14:51:43 +0200 Mot “Quand” (292/883) a une proximité AVANT : Quand (241/724)
-2020-08-10 14:51:43 +0200 Mot “sans” (343/1007) a une proximité AVANT : sans (279/838)
-2020-08-10 14:51:43 +0200 <- ExtraitTexte#output
-2020-08-10 14:51:46 +0200 Soumission de la commande "update --force"
-2020-08-10 14:51:46 +0200 🔨 Commande jouée : "update --force"
-2020-08-10 14:51:46 +0200 *** Parsing du projet scrivener /Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv
-2020-08-10 14:51:46 +0200 -> prepare_as_projet_scrivener
-2020-08-10 14:51:46 +0200 -> create_table_base_for
-2020-08-10 14:51:47 +0200 Nombre de fichiers à traiter : 64
-2020-08-10 14:51:47 +0200 ** Traitement du fichier scrivener 8946C485-313A-4CA7-8370-EC9E81803661
-2020-08-10 14:51:47 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:47 +0200 Le mot "pourquoiXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "pourquoi"
-2020-08-10 14:51:47 +0200 Le mot "sonXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "son"
-2020-08-10 14:51:47 +0200 Le mot "BorneXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "Borne"
-2020-08-10 14:51:47 +0200 ** Traitement du fichier scrivener FF661791-B6D0-44B4-9114-5433404EBA5E
-2020-08-10 14:51:47 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:47 +0200 ** Traitement du fichier scrivener 23551D8B-7E79-41D4-A9B7-A4682C0E8864
-2020-08-10 14:51:47 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:47 +0200 Le mot "licumXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "licum"
-2020-08-10 14:51:47 +0200 Le mot "araignée-crabeXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "araignée-crabe"
-2020-08-10 14:51:47 +0200 Le mot "tilleuls-vieuxXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "tilleuls-vieux"
-2020-08-10 14:51:47 +0200 ** Traitement du fichier scrivener DC4A2E32-9347-49E8-B526-4F40B8E201FF
-2020-08-10 14:51:47 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:47 +0200 Le mot "borneXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "borne"
-2020-08-10 14:51:47 +0200 Le mot "enfantementXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "enfantement"
-2020-08-10 14:51:47 +0200 Le mot "quoiXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:47 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:47 +0200 @mot : "quoi"
-2020-08-10 14:51:47 +0200 ** Traitement du fichier scrivener 7922B1FF-9EC7-4837-AC19-5FA96AAD067D
-2020-08-10 14:51:47 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:47 +0200 ** Traitement du fichier scrivener 98416EF6-B22B-45ED-A3BF-E7961397999D
-2020-08-10 14:51:47 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:47 +0200 ** Traitement du fichier scrivener D03F0977-15D7-4F8F-920F-08514C8D8A1A
-2020-08-10 14:51:47 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:47 +0200 ** Traitement du fichier scrivener 161EB343-BF96-4FD3-BC36-8CAF1C2B9280
-2020-08-10 14:51:47 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener 22DFE9CB-51D9-4851-BD91-5AE26BC2DD28
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 Le mot "adopterXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:48 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:48 +0200 @mot : "adopter"
-2020-08-10 14:51:48 +0200 Le mot "réponsesXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:48 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:48 +0200 @mot : "réponses"
-2020-08-10 14:51:48 +0200 Le mot "adoptéXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:48 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:48 +0200 @mot : "adopté"
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener 83F5358A-72E9-4A51-AEC5-578A3A273738
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener 7985DAC1-C6C8-46FE-932A-C4E09E044258
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener 74B46C75-344E-4882-A04E-4C55A27BE364
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener 233307CD-1ABF-49E0-8320-9D0ECB15980E
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 Le mot "bornesXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:48 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:48 +0200 @mot : "bornes"
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener 0BA8A33D-0AEE-4806-B6C5-C3E6EF74C130
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener DA989CC9-4BE4-43EC-94EC-FABF5A0798A0
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener 29731D23-8924-4096-8B6B-EDD0B97B8DD6
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener 4548D9E5-660B-4ADA-8973-F588D6207A57
-2020-08-10 14:51:48 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:48 +0200 ** Traitement du fichier scrivener C8BBF4CF-C951-43BD-BA67-D05BB12EE2AA
-2020-08-10 14:51:49 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:49 +0200 Le mot "borneXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "borne"
-2020-08-10 14:51:49 +0200 Le mot "laXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "la"
-2020-08-10 14:51:49 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : ""
-2020-08-10 14:51:49 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : ""
-2020-08-10 14:51:49 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : ""
-2020-08-10 14:51:49 +0200 Le mot "bornesXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "bornes"
-2020-08-10 14:51:49 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : ""
-2020-08-10 14:51:49 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : ""
-2020-08-10 14:51:49 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : ""
-2020-08-10 14:51:49 +0200 ** Traitement du fichier scrivener D4C76910-9F76-4AE4-AD33-3D0A9F94155A
-2020-08-10 14:51:49 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:49 +0200 Le mot "pertinencesXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "pertinences"
-2020-08-10 14:51:49 +0200 ** Traitement du fichier scrivener 4A633A9D-6016-4A89-821D-AD23E9DC7643
-2020-08-10 14:51:49 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:49 +0200 Le mot "laXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "la"
-2020-08-10 14:51:49 +0200 Le mot "notreXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "notre"
-2020-08-10 14:51:49 +0200 Le mot "leurXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "leur"
-2020-08-10 14:51:49 +0200 Le mot "leurXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "leur"
-2020-08-10 14:51:49 +0200 Le mot "leurXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "leur"
-2020-08-10 14:51:49 +0200 Le mot "LeurXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "Leur"
-2020-08-10 14:51:49 +0200 ** Traitement du fichier scrivener 1CD56DBA-6CB7-41D2-A88C-2FC9B267276F
-2020-08-10 14:51:49 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:49 +0200 ** Traitement du fichier scrivener 9EC860DB-2886-4D16-ABE0-4A31EF61706D
-2020-08-10 14:51:49 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:49 +0200 Le mot "HïremXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "Hïrem"
-2020-08-10 14:51:49 +0200 Le mot "maXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "ma"
-2020-08-10 14:51:49 +0200 ** Traitement du fichier scrivener 93CDE652-EB27-4D82-A130-6AB99118C24B
-2020-08-10 14:51:49 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:49 +0200 ** Traitement du fichier scrivener E6FA9FE9-B46D-4AE7-90AB-CD4ADF0B6B30
-2020-08-10 14:51:49 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:49 +0200 Le mot "choseXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "chose"
-2020-08-10 14:51:49 +0200 Le mot "laXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "la"
-2020-08-10 14:51:49 +0200 ** Traitement du fichier scrivener 27A5A558-A4A9-4B95-9148-C0C62C2DA148
-2020-08-10 14:51:49 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:49 +0200 Le mot "lesXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "les"
-2020-08-10 14:51:49 +0200 Le mot "baveXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "bave"
-2020-08-10 14:51:49 +0200 Le mot "seulementXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:49 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:49 +0200 @mot : "seulement"
-2020-08-10 14:51:49 +0200 ** Traitement du fichier scrivener B2F7F049-8EBF-4653-8887-9244B0579FDB
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 ** Traitement du fichier scrivener B2026484-33DE-4B20-9734-FC1058134790
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 ** Traitement du fichier scrivener 6AF14F67-F62F-4E80-8C69-915C0ABAE7A4
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 ** Traitement du fichier scrivener 25F3E9D6-12D1-4827-AA57-CFF2D1092B92
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 ** Traitement du fichier scrivener C4DCEF82-DA33-4881-B182-EFB5DB9EF706
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 Le mot "suiveurXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "suiveur"
-2020-08-10 14:51:50 +0200 ** Traitement du fichier scrivener CFD619F0-2E79-47F6-BE96-0626E9B358A7
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 Le mot "campXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "camp"
-2020-08-10 14:51:50 +0200 Le mot "clanXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "clan"
-2020-08-10 14:51:50 +0200 Le mot "c'étaitXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "c'était"
-2020-08-10 14:51:50 +0200 ** Traitement du fichier scrivener 374E1D6F-204C-4D55-A609-2430D6C0E54E
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 Le mot "nocturnesXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "nocturnes"
-2020-08-10 14:51:50 +0200 ** Traitement du fichier scrivener 191BB0AF-AA15-4F5B-80DB-63F6D2DA6A82
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : ""
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : ""
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO1Avant" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "vant"
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : ""
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO1Vania" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "ania"
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO0XSCRIVSTARTCOO1Cette" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "SCRIVSTARTCOO1Cette"
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : ""
-2020-08-10 14:51:50 +0200 Le mot "acoustiqueXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "acoustique"
-2020-08-10 14:51:50 +0200 Le mot "exécutéXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "exécuté"
-2020-08-10 14:51:50 +0200 ** Traitement du fichier scrivener 1A5C9426-4079-42B4-A54A-2D2272DC99A7
-2020-08-10 14:51:50 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:50 +0200 Le mot "bêteXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : "bête"
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : ""
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : ""
-2020-08-10 14:51:50 +0200 Le mot "XSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:50 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:50 +0200 @mot : ""
-2020-08-10 14:51:51 +0200 ** Traitement du fichier scrivener 451A292F-A7AD-4656-8834-8A16A3AF8981
-2020-08-10 14:51:51 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:51 +0200 ** Traitement du fichier scrivener 0AF69B45-FBEE-436C-ACD6-98655F1C956A
-2020-08-10 14:51:51 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:51 +0200 ** Traitement du fichier scrivener 11AC5D20-C2B4-45C3-9C59-6E3F776F4D1F
-2020-08-10 14:51:51 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:51 +0200 Le mot "HïrenXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:51 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:51 +0200 @mot : "Hïren"
-2020-08-10 14:51:51 +0200 ** Traitement du fichier scrivener 88E2487B-10C6-4DA1-89B3-E8EA2E53998E
-2020-08-10 14:51:51 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:51 +0200 ** Traitement du fichier scrivener 2EEBC174-3B27-4AA0-87CF-583E37102EA4
-2020-08-10 14:51:51 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:51 +0200 ** Traitement du fichier scrivener 7696D1E2-5099-4DEE-9297-6999F5A016BF
-2020-08-10 14:51:51 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:51 +0200 Le mot "animauxXSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:51 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:51 +0200 @mot : "animaux"
-2020-08-10 14:51:51 +0200 Le mot "⩚XSCRIVENDCOO2" contient la marque de fin
-2020-08-10 14:51:51 +0200 @mark_style_end: {:id=>2, :lettre=>"C"}
-2020-08-10 14:51:51 +0200 @mot : "⩚"
-2020-08-10 14:51:51 +0200 Le mot "XSCRIVENDPOO0À" contient la marque de fin
-2020-08-10 14:51:51 +0200 @mark_style_end: {:id=>0, :lettre=>"P"}
-2020-08-10 14:51:51 +0200 @mot : ""
-2020-08-10 14:51:51 +0200 Le mot "DXSCRIVENDCOO2" contient la marque de fin
-2020-08-10 14:51:51 +0200 @mark_style_end: {:id=>2, :lettre=>"C"}
-2020-08-10 14:51:51 +0200 @mot : "D"
-2020-08-10 14:51:51 +0200 Le mot "⩞XSCRIVENDCOO2" contient la marque de fin
-2020-08-10 14:51:51 +0200 @mark_style_end: {:id=>2, :lettre=>"C"}
-2020-08-10 14:51:51 +0200 @mot : "⩞"
-2020-08-10 14:51:51 +0200 ** Traitement du fichier scrivener 791C91B1-A50F-4ED9-8FA5-7C41784DA8C8
-2020-08-10 14:51:51 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:51 +0200 ** Traitement du fichier scrivener 1722A905-E035-4BC8-81E6-1193A1B3EC62
-2020-08-10 14:51:52 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:52 +0200 Le mot "guideXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "guide"
-2020-08-10 14:51:52 +0200 ** Traitement du fichier scrivener A2DCCC70-89CB-486C-8059-1EAF932BD531
-2020-08-10 14:51:52 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:52 +0200 ** Traitement du fichier scrivener A3F6CE23-E7CF-4328-A6D5-299ECF3F0EC1
-2020-08-10 14:51:52 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:52 +0200 ** Traitement du fichier scrivener 27480D3A-469A-493F-A06E-5442D2C34200
-2020-08-10 14:51:52 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:52 +0200 ** Traitement du fichier scrivener 138A5211-6A85-40FF-8B40-34B7EFC27D3F
-2020-08-10 14:51:52 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:52 +0200 Le mot "sûrXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "sûr"
-2020-08-10 14:51:52 +0200 Le mot "foudroyéeXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "foudroyée"
-2020-08-10 14:51:52 +0200 Le mot "cotéeXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "cotée"
-2020-08-10 14:51:52 +0200 Le mot "désactivationXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "désactivation"
-2020-08-10 14:51:52 +0200 Le mot "moyenXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "moyen"
-2020-08-10 14:51:52 +0200 Le mot "protégerXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "protéger"
-2020-08-10 14:51:52 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : ""
-2020-08-10 14:51:52 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : ""
-2020-08-10 14:51:52 +0200 Le mot "XSCRIVENDCOO1" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>1, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : ""
-2020-08-10 14:51:52 +0200 Le mot "décorativeXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "décorative"
-2020-08-10 14:51:52 +0200 ** Traitement du fichier scrivener 9F69B5DA-B1E1-4535-9FB5-26F53983E36A
-2020-08-10 14:51:52 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:52 +0200 ** Traitement du fichier scrivener 1AF586BE-7DAD-4C68-A776-D081FB657FE8
-2020-08-10 14:51:52 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:52 +0200 Le mot "savoirXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "savoir"
-2020-08-10 14:51:52 +0200 Le mot "apprisXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "appris"
-2020-08-10 14:51:52 +0200 ** Traitement du fichier scrivener 75367CB4-B1DD-409C-9919-2B4B5DAD06F8
-2020-08-10 14:51:52 +0200 *** Préparation du fichier corrigé
-2020-08-10 14:51:52 +0200 Le mot "sousXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "sous"
-2020-08-10 14:51:52 +0200 Le mot "aquatiqueXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "aquatique"
-2020-08-10 14:51:52 +0200 Le mot "terrestreXSCRIVENDCOO0" contient la marque de fin
-2020-08-10 14:51:52 +0200 @mark_style_end: {:id=>0, :lettre=>"C"}
-2020-08-10 14:51:52 +0200 @mot : "terrestre"
+2020-08-10 18:10:37 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples_errones/pour_erreur.scriv")
+2020-08-10 18:10:37 +0200 -- Projet Scrivener --
+2020-08-10 18:10:37 +0200 Projet Scrivener instancié.
+2020-08-10 18:10:37 +0200 Configuration enregistrée (:last_text_path)
+2020-08-10 18:10:38 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-10 18:10:38 +0200 -> ExtraitTexte#output
+2020-08-10 18:10:38 +0200 On doit afficher les items de 0 à 400 (nombre total : 79179)
+2020-08-10 18:10:38 +0200 <- ExtraitTexte#output
+2020-08-10 18:10:49 +0200 Soumission de la commande "show 2119"
+2020-08-10 18:10:49 +0200 🔨 Commande jouée : "show 2119"
+2020-08-10 18:10:49 +0200 -> ExtraitTexte#output
+2020-08-10 18:10:49 +0200 On doit afficher les items de 2119 à 2529 (nombre total : 79179)
+2020-08-10 18:10:49 +0200 <- ExtraitTexte#output
+2020-08-10 18:11:36 +0200 Soumission de la commande "rep 236-238 l'eau"
+2020-08-10 18:11:36 +0200 🔨 Commande jouée : "rep 236-238 l'eau"
+2020-08-10 18:11:36 +0200 parse_str par le système
+2020-08-10 18:11:38 +0200 Insertion de “l'eau” de 2355 à 2357 (3) (avant “ ”)
+2020-08-10 18:11:38 +0200 parse_str par le système
+2020-08-10 18:11:40 +0200 Lemma line : "l'\tDET:ART\tle" (index : 0)
+2020-08-10 18:11:40 +0200 Lemma line : "eau\tNOM\teau" (index : 1)
+2020-08-10 18:11:40 +0200 -> ExtraitTexte#output
+2020-08-10 18:11:40 +0200 On doit afficher les items de 2119 à 2459 (nombre total : 79178)
+2020-08-10 18:11:40 +0200 <- ExtraitTexte#output
+2020-08-10 18:12:17 +0200 Soumission de la commande "rep 245-248 faire de vague"
+2020-08-10 18:12:17 +0200 🔨 Commande jouée : "rep 245-248 faire de vague"
+2020-08-10 18:12:17 +0200 parse_str par le système
+2020-08-10 18:12:18 +0200 Insertion de “faire de vague” de 2364 à 2367 (4) (avant “ ”)
+2020-08-10 18:12:18 +0200 parse_str par le système
+2020-08-10 18:12:20 +0200 Lemma line : "faire\tVER:infi\tfaire" (index : 0)
+2020-08-10 18:12:20 +0200 Lemma line : "de\tPRP\tde" (index : 1)
+2020-08-10 18:12:20 +0200 Lemma line : "vague\tNOM\tvague" (index : 2)
+2020-08-10 18:12:20 +0200 -> ExtraitTexte#output
+2020-08-10 18:12:20 +0200 On doit afficher les items de 2119 à 2460 (nombre total : 79179)
+2020-08-10 18:12:20 +0200 <- ExtraitTexte#output
+2020-08-10 18:13:03 +0200 Soumission de la commande "show 2119"
+2020-08-10 18:13:03 +0200 🔨 Commande jouée : "show 2119"
+2020-08-10 18:13:03 +0200 -> ExtraitTexte#output
+2020-08-10 18:13:03 +0200 On doit afficher les items de 2119 à 2529 (nombre total : 79179)
+2020-08-10 18:13:03 +0200 <- ExtraitTexte#output
+2020-08-10 18:14:26 +0200 Soumission de la commande "debug mot 245"
+2020-08-10 18:14:26 +0200 🔨 Commande jouée : "debug mot 245"
+2020-08-10 18:14:46 +0200 Soumission de la commande "debug canon faire"
+2020-08-10 18:14:46 +0200 🔨 Commande jouée : "debug canon faire"
+2020-08-10 18:16:12 +0200 Soumission de la commande "debug mot 245"
+2020-08-10 18:16:12 +0200 🔨 Commande jouée : "debug mot 245"
+2020-08-10 18:16:19 +0200 Soumission de la commande "debug canon faire"
+2020-08-10 18:16:19 +0200 🔨 Commande jouée : "debug canon faire"
+2020-08-10 18:21:40 +0200 Soumission de la commande "q"
