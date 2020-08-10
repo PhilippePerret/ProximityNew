@@ -25,7 +25,7 @@ MODES_CLAVIER = {
     exclusif: true, # aucune autre touche que celles définies ci-dessous
     fin: /[0-9]+ $/, # on sort de ce mode quand on obtient ça pour la commande
     'q'=>'1', 's'=>'2', 'd'=>'3', 'f'=>'4', 'g'=>'5', 'h'=>'6', 'j'=>'7', 'k'=>'8', 'l'=>'9', 'm'=>'0',
-    ' ' => ' ',
+    ' ' => ' ', TIRET=>TIRET,
     # Puisque le mode est exclusif, il faut indiquer toutes les touches qui
     # doivent pouvoir passer.
     27=>27, 127=>127, 10=>10,

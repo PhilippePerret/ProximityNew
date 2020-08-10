@@ -14,6 +14,10 @@ def replace(params)
     real_at: AtStructure.new(params[:at], from_item),
     operation: 'replace'
   })
+
+  # Pour conserver le text-item de référence
+  params.merge!(titem_ref: itexte.items[params[:real_at].at])
+
   CWindow.log("Remplacement du/des mot/s #{params[:at]||params[:real_at].at} par “#{params[:content]}”")
   if params[:content] == '_space_' || params[:content] == '_return_'
     # Pas besoin de simulation pour ajouter une espace ou un retour chariot
@@ -25,8 +29,16 @@ def replace(params)
     simulation(params) || return
     params.merge!(nosim:true)
   end
+
+  # On enregistre cette opération sur le texte
+  # Noter qu'il faut le faire avant les opérations elles-mêmes pour que les
+  # index et indices ne soient pas encore recalculés suite à l'opération.
+  itexte.operator.add_text_operation(params)
+
   remove(params.merge(noupdate: true))
   insert(params.merge)
+
+
 end #/ replace
 
 # Suppression d'un ou plusieurs mots
@@ -34,6 +46,10 @@ def remove(params)
   params[:real_at] ||= begin
     AtStructure.new(params[:at], from_item).tap { |at| params.merge!(real_at: at) }
   end
+  # Le text-item de référence
+  params.merge!(titem_ref: itexte.items[params[:real_at].at]) unless params.key?(:titem_ref)
+
+  # Pour connaitre l'opération
   params.merge!(operation: 'remove') unless params.key?(:operation)
   # Il faut simuler la suppression si nécessaire (note : ça n'arrive pas
   # pour une pure suppression — i.e. sans remplacement)
@@ -126,6 +142,13 @@ def remove(params)
     at.list.each {|idx| Runner.itexte.items.slice!(idx)}
   end
 
+  # Si c'est vraiment une opération de destruction, on l'enregistre
+  # en tant qu'opération
+  if params[:operation] == 'remove'
+    # On enregistre cette opération sur le texte
+    itexte.operator.add_text_operation(params)
+  end
+
   unless params[:noupdate]
     update(params[:real_at].at)
     Runner.itexte.save
@@ -135,7 +158,15 @@ end #/ remove
 # Insert un ou plusieurs mots
 def insert(params)
   params[:real_at] ||= AtStructure.new(params[:at], from_item)
+
   params.merge!(operation: 'insert') unless params.key?(:operation)
+  # On ajoute si nécessaire le text-item de référence, qui permettra,
+  # notamment, de renseigner les messages, de récupérer le file_id si c'est
+  # un projet Scrivener, pour l'affecter aux nouveaux text-items et
+  # d'enregistrer les messages d'opération.
+  params.merge!(titem_ref: itexte.items[params[:real_at].at]) unless params.key?(:titem_ref)
+  # Sauf si :nosim, on crée la simulation pour voir si on va vraiment faire
+  # cete opération.
   unless params[:nosim]
     simulation(params) || return
   end
@@ -185,8 +216,14 @@ def insert(params)
     end
     new_items = [new_item]
   end
-  log("Nouveaux items ajoutés (#{new_items.count}) : ")
-  log(new_items.inspect)
+  # log("Nouveaux items ajoutés (#{new_items.count}) : ")
+  # log(new_items.inspect)
+
+  # Si c'est un projet Scrivener, il faut ajouter le file_id de l'item
+  # de référence aux nouveaux items
+  if itexte.projet_scrivener?
+    new_items.each {|titem| titem.file_id = params[:titem_ref].file_id}
+  end
 
   Runner.itexte.items.insert(params[:real_at].at, *new_items)
   # Pour l'annulation (sauf si c'est justement une annulation)
@@ -213,6 +250,15 @@ def insert(params)
       tempfile.delete
     end
   end #/sauf si c'est une balise
+
+  # Si c'est vraiment une opération d'insertion, on l'enregistre
+  # en tant qu'opération.
+  # Noter qu'il faut le faire avant l'update suivant, sinon tous les
+  # index et indices seront recalculés et donc faux.
+  if params[:operation] == 'insert'
+    # On enregistre cette opération sur le texte
+    itexte.operator.add_text_operation(params)
+  end
 
   unless params[:noupdate]
     update(params[:real_at].at)

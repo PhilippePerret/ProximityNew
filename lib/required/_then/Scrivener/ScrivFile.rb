@@ -43,6 +43,21 @@ class << self
     end
   end #/ get_by_file_id
 
+  # Boucle sur tous les fichiers Scrivener
+  def each(&block)
+    if block_given?
+      all.each { |sf| yield(sf) }
+    end
+  end #/ each
+
+  def all
+    @all ||= begin
+      db.execute("SELECT Id, Uuid, Path FROM scrivener_files").collect do |data|
+        new(nil, data)
+      end
+    end
+  end #/ all
+
   def save(sfile)
     begin
       db.execute("INSERT INTO scrivener_files (Id, Path, Uuid) VALUES (#{sfile.id}, #{sfile.path.inspect}, #{sfile.uuid.inspect})".freeze)
@@ -71,12 +86,22 @@ attr_reader :id, :projet, :path, :itexte
 # ---------------------------------------------------------------------
 
 # Instanciation, à partir du path
-def initialize(projet, path)
+#
+# Note : pour le moment, +projet+ ne sert à rien
+def initialize(projet, path_or_data)
+  save_is_required = false
   @projet = projet # Le projet Scrivener
-  @path   = path    # Le chemin au fichier content.rtf
-  @id     = self.class.get_new_id
+  if path_or_data.is_a?(String) # première instanciation
+    @path   = path_or_data    # Le chemin au fichier content.rtf
+    @id     = self.class.get_new_id
+    save_is_required = true
+  else
+    # Les données viennent de la base de données SQLite
+    # log("Data: #{path_or_data.inspect}")
+    @id, @uuid, @path = path_or_data
+  end
   @itexte = Runner.itexte
-  save
+  save if save_is_required
 end #/ initialize
 
 # On enregistre les données du fichier dans la base, c'est-à-dire,

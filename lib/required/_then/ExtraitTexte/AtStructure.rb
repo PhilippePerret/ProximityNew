@@ -12,6 +12,7 @@
 # En sachant aussi que l'index donné est l'index relatif à la fenêtre
 class AtStructure
   attr_reader :at, :from, :to, :nombre, :list, :at_init, :first_index, :last, :first
+  attr_reader :range # juste pour les message
   def initialize(at_init, first_index)
     @at_init = at_init.to_s # quelquefois, on envoie un nombre (annulation)
     @first_index = first_index
@@ -44,6 +45,7 @@ class AtStructure
       @nombre = @to - @from + 1
       @is_a_range = true
       @list = (@from..@to).to_a
+      @range = "#{@from}-#{@to}".freeze # attention : juste un string
     elsif list?
       @from = @first = list.first
       @to   = @tlast = list.last
@@ -113,6 +115,7 @@ private
     if false === @is_a_list
       # Si ce n'est pas vraiment une liste, on la transforme en range
       @at_init = "#{@list.first}-#{@list.last}"
+      @range = @at_init.dup.freeze
       log("Les index fournis (#{@list.inspect}) ne sont pas une liste, c'est un rang (#{@at_init}). Je la traite comme telle.".freeze)
     end
   end #/ traite_as_liste

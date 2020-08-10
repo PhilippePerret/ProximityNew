@@ -150,6 +150,11 @@ rescue Exception => e
   return false
 end #/ load
 
+# L'instance operator (qui sert pour le moment pour enregistrer les opérations)
+def operator
+  @operator ||= TextOperator.new(self)
+end #/ operator
+
 # L'instance annulateur
 def cancellor
   @cancellor ||= Cancellor.new(self)
