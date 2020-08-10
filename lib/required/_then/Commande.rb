@@ -13,6 +13,11 @@ class << self
 
     case cmd_name
 
+
+    when 'essai'
+
+      Lemma.parse_str("Bonjour tout le monde !", system: true)
+
     when 'rebuild' # reconstruire le texte final
       Runner.itexte.rebuild
 

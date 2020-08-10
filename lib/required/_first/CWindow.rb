@@ -64,12 +64,16 @@ class << self
 
     init_curses
 
-    self.hauteur_texte   = Curses.lines - (HAUTEUR_STATUS + HAUTEUR_UI + HAUTEUR_LOG)
+    deadLines = 0 # Pour essayer d'empêcher l'écran de sauter
+    self.hauteur_texte   = Curses.lines - (HAUTEUR_STATUS + HAUTEUR_UI + HAUTEUR_LOG) - deadLines
+    # La hauteur (de texte) à prendre en compte pour les autres fenêtres
+    # que la fenêtre de texte.
+    hTextRef = hauteur_texte + deadLines
 
     @textWind   = new([hauteur_texte, Curses.cols-2, 0,0])
-    @logWind    = new([HAUTEUR_LOG,   Curses.cols, hauteur_texte, 0])
-    @statusWind = new([HAUTEUR_STATUS, Curses.cols, hauteur_texte+HAUTEUR_LOG,0])
-    @uiWind     = new([HAUTEUR_UI,    Curses.cols, hauteur_texte+HAUTEUR_LOG+HAUTEUR_STATUS, 0])
+    @logWind    = new([HAUTEUR_LOG,   Curses.cols, hTextRef, 0])
+    @statusWind = new([HAUTEUR_STATUS, Curses.cols, hTextRef+HAUTEUR_LOG,0])
+    @uiWind     = new([HAUTEUR_UI,    Curses.cols, hTextRef+HAUTEUR_LOG+HAUTEUR_STATUS, 0])
 
     @top_ligne_texte_max = hauteur_texte - 1
 
