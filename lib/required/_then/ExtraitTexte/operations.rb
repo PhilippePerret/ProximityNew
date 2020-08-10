@@ -6,6 +6,22 @@ class ExtraitTexte
 #
 # ---------------------------------------------------------------------
 
+def ignore(params)
+  params.merge!({
+    real_at: AtStructure.new(params[:at], from_item),
+    operation: 'ignore'
+  })
+  params[:real_at].list { |titem| titem.is_ignored = true}
+end #/ ignore
+
+def unignore(params)
+  params.merge!({
+    real_at: AtStructure.new(params[:at], from_item),
+    operation: 'unignore'
+  })
+  params[:real_at].list { |titem| titem.is_ignored = false}
+end #/ un_ignore
+
 # Remplacer un mot par un ou des autres
 # Le remplacement consiste à supprimer l'élément courant et à insérer le
 # nouvel élément à la place (ou *les* nouveaux éléments)

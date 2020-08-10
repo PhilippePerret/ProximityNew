@@ -1,0 +1,44 @@
+2020-08-10 13:30:15 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs.scriv")
+2020-08-10 13:30:15 +0200 -- Projet Scrivener --
+2020-08-10 13:30:15 +0200 Projet Scrivener instancié.
+2020-08-10 13:30:15 +0200 Configuration enregistrée (:last_text_path)
+2020-08-10 13:30:15 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-10 13:30:15 +0200 -> ExtraitTexte#output
+2020-08-10 13:30:15 +0200 On doit afficher les items de 0 à 400 (nombre total : 163)
+2020-08-10 13:30:15 +0200 Mot “texte” (2/3) a une proximité APRÈS : texte (19/52)
+2020-08-10 13:30:15 +0200 Mot “Scrivener” (12/32) a une proximité APRÈS : scrivener (91/270)
+2020-08-10 13:30:15 +0200 Mot “texte” (19/52) a une proximité AVANT : texte (2/3)
+2020-08-10 13:30:15 +0200 Mot “texte” (19/52) a une proximité APRÈS : texte (125/373)
+2020-08-10 13:30:15 +0200 Mot “document” (25/70) a une proximité APRÈS : document (83/241)
+2020-08-10 13:30:15 +0200 Mot “contient” (30/89) a une proximité APRÈS : contient (85/250)
+2020-08-10 13:30:15 +0200 Mot “document” (83/241) a une proximité AVANT : document (25/70)
+2020-08-10 13:30:15 +0200 Mot “contient” (85/250) a une proximité AVANT : contient (30/89)
+2020-08-10 13:30:15 +0200 Mot “styles” (89/263) a une proximité APRÈS : style (109/328)
+2020-08-10 13:30:15 +0200 Mot “scrivener” (91/270) a une proximité AVANT : Scrivener (12/32)
+2020-08-10 13:30:16 +0200 Mot “style” (109/328) a une proximité AVANT : styles (89/263)
+2020-08-10 13:30:16 +0200 Mot “citation” (115/344) a une proximité APRÈS : citation (133/394)
+2020-08-10 13:30:16 +0200 Mot “texte” (125/373) a une proximité AVANT : texte (19/52)
+2020-08-10 13:30:16 +0200 Mot “citation” (133/394) a une proximité AVANT : citation (115/344)
+2020-08-10 13:30:16 +0200 Mot “citation” (133/394) a une proximité APRÈS : citation (144/430)
+2020-08-10 13:30:16 +0200 Mot “citation” (144/430) a une proximité AVANT : citation (133/394)
+2020-08-10 13:30:16 +0200 <- ExtraitTexte#output
+2020-08-10 13:30:33 +0200 Soumission de la commande "rem 27-36"
+2020-08-10 13:30:33 +0200 🔨 Commande jouée : "rem 27-36"
+2020-08-10 13:30:33 +0200 -> ExtraitTexte#output
+2020-08-10 13:30:33 +0200 On doit afficher les items de 0 à 172 (nombre total : 152)
+2020-08-10 13:30:33 +0200 Mot “texte” (2/3) a une proximité APRÈS : texte (19/52)
+2020-08-10 13:30:33 +0200 Mot “Scrivener” (12/32) a une proximité APRÈS : scrivener (80/236)
+2020-08-10 13:30:33 +0200 Mot “texte” (19/52) a une proximité AVANT : texte (2/3)
+2020-08-10 13:30:33 +0200 Mot “texte” (19/52) a une proximité APRÈS : texte (114/339)
+2020-08-10 13:30:33 +0200 Mot “document” (25/70) a une proximité APRÈS : document (72/207)
+2020-08-10 13:30:33 +0200 Mot “document” (72/207) a une proximité AVANT : document (25/70)
+2020-08-10 13:30:33 +0200 Mot “styles” (78/229) a une proximité APRÈS : style (98/294)
+2020-08-10 13:30:33 +0200 Mot “scrivener” (80/236) a une proximité AVANT : Scrivener (12/32)
+2020-08-10 13:30:33 +0200 Mot “style” (98/294) a une proximité AVANT : styles (78/229)
+2020-08-10 13:30:33 +0200 Mot “citation” (104/310) a une proximité APRÈS : citation (122/360)
+2020-08-10 13:30:33 +0200 Mot “texte” (114/339) a une proximité AVANT : texte (19/52)
+2020-08-10 13:30:33 +0200 Mot “citation” (122/360) a une proximité AVANT : citation (104/310)
+2020-08-10 13:30:33 +0200 Mot “citation” (122/360) a une proximité APRÈS : citation (133/396)
+2020-08-10 13:30:33 +0200 Mot “citation” (133/396) a une proximité AVANT : citation (122/360)
+2020-08-10 13:30:33 +0200 <- ExtraitTexte#output
+2020-08-10 14:01:11 +0200 Soumission de la commande "q"

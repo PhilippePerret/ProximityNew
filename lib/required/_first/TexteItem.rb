@@ -194,16 +194,7 @@ def content_rebuilt
 end #/ content_rebuilt
 
 # Méthode qui retourne les proximités formatées
-# La méthode permet aussi de connaitre la vraie longueur que le mot va
-# occuper dans l'affichage, en fonction de sa longueur et de ses distances.
-# Par exemple…
-#     mot
-#   234 1300
-# … est un mot de 3 lettres qui occupe 8 lettres. La longueur occupée est
-# soit la longueur du mot, soit la longueur de ses deux proximités (if any)
-# côte à côté.
-# Noter aussi que dans le cas de ce 'mot', le mot commence avec un décalage
-# de 2 (pour être sur le 4)
+# Les proximités sont calculées dans prox_avant et prox_apres
 def f_proximities
   if !proximizable? || (prox_avant.nil? && prox_apres.nil?)
     ' ' * f_length
@@ -276,7 +267,7 @@ end #/ calcule_longueurs
 # Retourne true si le text-item peut être étudié au niveau de ses proximités
 def proximizable?
   @is_not_proximizabe ||= begin
-    if non_mot? || length < 4 || icanon.nil? || main_type == 'PRO' || main_type == 'DET' || is_exclu?
+    if non_mot? || ignored? || length < 4 || icanon.nil? || main_type == 'PRO' || main_type == 'DET' || is_exclu?
       :false
     else
       :true
@@ -334,16 +325,25 @@ def prox_avant
       idx_canon = icanon.offsets.index(offset)
       # log("Index du mot courant dans icanon.offsets: #{idx_canon}")
       if idx_canon > 0 # il peut y avoir un mot avant
-        # log("Le mot possède un item avant lui")
-        prev_item_in_canon = icanon.items[idx_canon - 1]
-        # log("Cet item est : #{prev_item_in_canon.cio}")
-        distance = offset - prev_item_in_canon.offset
-        # log("Ils sont séparés de #{distance}")
-        if distance < icanon.distance_minimale
-          # log("Ils sont en proximité")
-          @prox_avant = Proximite.new(avant:prev_item_in_canon, apres:self, distance:distance)
-          prev_item_in_canon.prox_apres = @prox_avant
-        end
+
+        # Il ne faut pas prendre en compte un mot non proximizable (par
+        # exemple ignoré)
+        idx_prev_item = idx_canon.dup
+        prev_item_in_canon = nil
+        begin
+          prev_item_in_canon = icanon.items[ idx_prev_item -= 1 ]
+        end while prev_item_in_canon && false == prev_item_in_canon.proximizable?
+
+        unless prev_item_in_canon.nil?
+          # log("Cet item est : #{prev_item_in_canon.cio}")
+          distance = offset - prev_item_in_canon.offset
+          # log("Ils sont séparés de #{distance}")
+          if distance < icanon.distance_minimale
+            # log("Ils sont en proximité")
+            @prox_avant = Proximite.new(avant:prev_item_in_canon, apres:self, distance:distance)
+            prev_item_in_canon.prox_apres = @prox_avant
+          end
+        end #/fin de si l'item précédent existe
       else
         # log("C'est le premier offset => pas d'item avant")
       end
@@ -361,9 +361,15 @@ def prox_apres
     else
       # log("*** Recherche proximité APRÈS pour #{cio} ***")
       idx_canon = icanon.offsets.index(offset)
-      # log("Index dans icanon.offsets: #{idx_canon}")
-      # log("(icanon.offsets = #{icanon.offsets.inspect})")
-      next_item_in_canon = icanon.items[idx_canon + 1]
+
+      # Il ne faut pas prendre en compte un mot non proximizable (par
+      # exemple ignoré)
+      idx_next_item = idx_canon.dup
+      next_item_in_canon = nil
+      begin
+        next_item_in_canon = icanon.items[ idx_next_item += 1 ]
+      end while next_item_in_canon && false next_item_in_canon.proximizable?
+
       if next_item_in_canon # il y a un mot après
         # log("Un item a été trouvé après : #{next_item_in_canon.cio}")
         distance = next_item_in_canon.offset - offset

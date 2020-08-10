@@ -50,12 +50,16 @@ MODIFCATION DU TEXTE
 
   <cmd> s'exprime toujours sur trois lettres, même si son équivalent
   existe en longueur normale :
-    :ins/insert     Insérer un ou des mots
-    :rep/replace    Remplacer un ou des mots par un ou des mots
-    :rem/remove
-    :del/delete     Effacer un ou des mots
-    :mov            Déplacer le ou les mots. Exceptionnellement,
-                    l'argument suivant définit l'index d'arrivée.
+    :ins      Insérer un ou des mots
+    :rep      Remplacer un ou des mots par un ou des mots
+    :rem
+    :del      Effacer un ou des mots
+    :ign      Ignorer le ou les mots d'index donnés
+    :inj      Désignorer le ou les mots d'index donnés
+
+    Non Encore Implémenté
+    :mov      Déplacer le ou les mots. Exceptionnellement,
+              l'argument suivant définit l'index d'arrivée.
 
   <index> est l'index du mot dans la fenêtre affichée. Il peut être :
 

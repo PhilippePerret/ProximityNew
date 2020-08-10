@@ -28,8 +28,15 @@ attr_accessor :canon
 # faut donc écrire "Souhait" dans le fichier des mots seulement.
 attr_accessor :lemma
 
+# Cette propriété est mise à true si le mot doit être ignoré des recherches
+# de proximité.
+attr_accessor :is_ignored
+
 def non_mot? ; false end
 def mot? ; true end
 def ponctuation?; false end
+def ignored?
+  is_ignored === true
+end #/ ignored?
 
 end #/Mot < TexteItem
