@@ -31,6 +31,15 @@ opérées.
     reconstruits et remplacés, une copie de chaque fichier et gardée dans
     le dossier prox.
 
+RECONSTRUCTION "MANUELLE" DU TEXTE
+----------------------------------
+  Si un problème est survenu et qu'on doit reconstituer tout le texte
+  "à la main", notamment pour un fichier Scrivener, il suffit de se servir
+  du fichier 'operations.txt' se trouvant dans le dossier proximité du
+  texte ou du projet, qui contient toutes les opérations successives de
+  modification du texte (et seulement les opérations de modification, pour
+  la clarté).
+
 
 MODIFCATION DU TEXTE
 ====================

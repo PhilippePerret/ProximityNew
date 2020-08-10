@@ -30,7 +30,7 @@ end #/ reset
 #   @db ||= TextSQLite.new(self)
 # end #/ db
 
-# Essai de recomptage de tout pour voir le temps que ça prend
+# Méthode qui recompte tout, les offsets, les index, etc.
 def recompte(params = nil)
   start_time = Time.now.to_f
   params  ||= {}
@@ -38,7 +38,22 @@ def recompte(params = nil)
   offset  = 0
   nb      = 0 # pour connaitre le nombre de text-items traités
   canons_to_update = {} # Les canons qu'il faudra actualiser
-  idx = params[:from] - 1
+  # Premier index
+  # -------------
+  # En fait, ça va tellement vite, même avec un texte long, qu'on repart
+  # toujours du départ, même si params[:from] est défini.
+  # idx = params[:from] - 1
+  idx = -1 # pour que le premier soit 0
+
+  # Si c'est un projet scrivener, on va aussi redéfinir l'index
+  # de chaque mot dans chaque fichier. Cela permettra d'enregistrer les
+  # opération de façon très précise et juste. Par exemple, la phrase
+  # "'Bonjour' Mot inséré avant le 23e mot ('toi') dans le fichier 4"
+  # Bien noter que c'est seulement utile pour un projet Scrivener (donc
+  # avec plusieurs fichiers).
+  # Noter que le premier mot aura l'indice 1.
+  idx_mot_in_file = 0
+  current_file_id = nil # pour savoir quand on change de fichier
 
   while titem = self.items[idx += 1] # tant qu'il y a un item
 
@@ -55,7 +70,14 @@ def recompte(params = nil)
     end
     titem.offset = offset
     titem.index  = idx
-    # offset += titem.length + 1 # approximatif car on n'ajoute pas toujours 1 espace
+    # Pour gérer l'index dans le fichier (projet Scrivener)
+    if current_file_id != titem.file_id
+      current_file_id = titem.file_id.dup
+      idx_mot_in_file = 0
+    end
+    titem.indice_in_file = (idx_mot_in_file += 1) if titem.mot?
+    # Le nouvel offset. Maintenant, il est très juste puisque l'intégralité
+    # du texte, non-mot compris, est enregistré dans Texte@items.
     offset += titem.length
     nb += 1
   end
@@ -162,6 +184,12 @@ end #/ projet_scrivener
 #   CHEMINS
 #
 # ---------------------------------------------------------------------
+
+# Chemin d'accès au fichier pour enregistrer toutes les opérations
+# exécutées sur le texte
+def operations_file_path
+  @operations_file_path ||= File.join(prox_folder,'operations.txt').freeze
+end #/ operations_file_path
 
 # Chemin d'accès au fichier principal contenant tout le texte (sauf
 # pour projet scrivener)

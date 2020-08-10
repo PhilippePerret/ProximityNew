@@ -40,7 +40,18 @@ end # /<< self
 attr_reader :content
 attr_accessor :type, :index, :offset, :canon
 attr_accessor :icanon
+
+# Pour les projets Scrivener, on enregistre l'identifiant du fichier
+# contenant le mot. Le chemin d'accès du fichier peut être retrouvé
+# grâce à la méthode ScrivFile.get_path_by_file_id(+file_id+). Cette information
+# est enregistrée dans la base SQLite du texte/projet
 attr_accessor :file_id # pour les projets Scrivener
+# indice du mot (mots seulement) dans le fichier Scrivener correspondant ou
+# dans le texte complet lui-même (oui, l'information est également tenue à
+# jour pour un simple texte)
+# Noter que cet indice est recalculé chaque fois par Texte#recompte, et qu'il
+# est donc toujours juste, comme l'offset du mot.
+attr_accessor :indice_in_file
 
 # Utile pendant le parsing, pour savoir que dans "m'appelle" par exemple,
 # le "m'" doit être "collé" à "appelle" pour que tree-tagger fasse

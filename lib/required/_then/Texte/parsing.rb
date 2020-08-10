@@ -252,6 +252,7 @@ def erase_parsing_files(scrivfile = nil)
     file_list << full_text_path
     file_list << corrected_text_path
     file_list << rebuild_file_path
+    file_list << operations_file_path
   else
     file_list << proprio.full_text_path
   end
