@@ -160,6 +160,24 @@ def insert(params)
     ensure
       refonlymots.close
     end
+    # Si c'est une pure insertion, il faut ajouter une espace soit avant
+    # soit après les nouveaux items. On l'ajoute après si le titem d'après
+    # est un mot (.mot?) et on l'ajoute avant si le titem avant est un mot.
+    if params[:operation] == 'insert'
+      next_titem = itexte.items[params[:real_at].at]
+      prev_titem = itexte.items[params[:real_at].first - 1]
+      if next_titem && next_titem.mot? && new_items.last.mot?
+        # Dans le cas où l'item suivant existe, que c'est un mot, et que
+        # le dernier titem à insérer est aussi un mot, il faut ajouter
+        # une espace à la fin des nouveaux items.
+        new_items << NonMot.new(SPACE, type: 'space')
+      elsif prev_titem && prev_titem.mot? && new_items.first.mot?
+        # Sinon, dans le cas où l'item précédent existe, que c'est un mot
+        # et que le premier item à insérer est aussi un mot, il faut ajouter
+        # une espace au début des nouveaux items
+        new_items.unshift(NonMot.new(SPACE, type:'space'))
+      end
+    end
   else
     new_item = case params[:content]
     when '_space_'  then NonMot.new(SPACE, type:'space')
@@ -171,7 +189,7 @@ def insert(params)
   log(new_items.inspect)
 
   Runner.itexte.items.insert(params[:real_at].at, *new_items)
-  # Pour l'annulation (sauf si c'est une annulation)
+  # Pour l'annulation (sauf si c'est justement une annulation)
   if params.key?(:cancellor)
     idx = params[:real_at].at
     new_items.each do |titem|

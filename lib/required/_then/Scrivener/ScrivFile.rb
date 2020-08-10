@@ -97,8 +97,8 @@ end #/ prepare
 
 # Méthode qui remplace les balises <$Scr_Cs([0-9]+)> par une marque
 # XSCRIVxxx<mot> pour le traitement dans New Proximity
-REG_BALISE_STYLE_IN   = /<\$Scr_Ps::([0-9]+)>( +)?/.freeze
-REG_BALISE_STYLE_OUT  = /(?: +)?<\!\$Scr_Ps::([0-9]+)>/.freeze
+REG_BALISE_STYLE_IN   = /<\$Scr_Ps::([0-9]+)> */.freeze
+REG_BALISE_STYLE_OUT  = / *<\!\$Scr_Ps::([0-9]+)>/.freeze
 def remplace_balises_styles
   temp = "#{txt_file_path}.prov"
   FileUtils.move(txt_file_path, temp)
