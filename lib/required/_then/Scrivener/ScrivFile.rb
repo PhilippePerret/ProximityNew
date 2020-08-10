@@ -97,21 +97,33 @@ end #/ prepare
 
 # Méthode qui remplace les balises <$Scr_Cs([0-9]+)> par une marque
 # XSCRIVxxx<mot> pour le traitement dans New Proximity
+REG_BALISE_STYLE_IN   = /<\$Scr_Ps::([0-9]+)>( +)?/.freeze
+REG_BALISE_STYLE_OUT  = /(?: +)?<\!\$Scr_Ps::([0-9]+)>/.freeze
 def remplace_balises_styles
   temp = "#{txt_file_path}.prov"
   FileUtils.move(txt_file_path, temp)
   ref = File.open(txt_file_path,'a')
   File.foreach(temp) do |line|
-    line.gsub!(/<\$Scr_Cs::([0-9]+)>(.*?)<\!\$Scr_Cs::(\1)>/m){
-      nomb    = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
-      mots    = $2.freeze
-      balIN   = "XSCRIVSTART#{nomb}".freeze
-      balOUT  = "XSCRIVEND#{nomb}".freeze
-      balIN + mots + SPACE + balOUT # pas d'espace pour le premier !
+    log("line: #{line}")
+    log("line contient une balise In ? #{line.match?(REG_BALISE_STYLE_IN).inspect}")
+    log("line contient une balise Out ? #{line.match?(REG_BALISE_STYLE_OUT).inspect}")
+    line.gsub!(REG_BALISE_STYLE_IN){
+      nomb = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
+      "XSCRIVSTART#{nomb}".freeze
     }
+    line.gsub!(REG_BALISE_STYLE_OUT){
+      nomb = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
+      "XSCRIVEND#{nomb}".freeze
+    }
+    # line.gsub!(){
+    #   nomb    = $1.to_s.rjust(3,'O').freeze # vraiment des "oh" par zéro
+    #   mots    = $2.freeze
+    #   balOUT  = "XSCRIVEND#{nomb}".freeze
+    #   balIN + mots + SPACE + balOUT # pas d'espace pour le premier !
+    # }
     ref.puts(line)
   end
-  File.delete(temp)
+  # File.delete(temp)
   return true
 rescue Exception => e
   erreur(e)

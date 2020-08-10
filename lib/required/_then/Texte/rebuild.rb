@@ -49,6 +49,8 @@ def rebuild_as_projet_scrivener
     end
 
     # log("J'écris “#{titem.content_rebuilt}” dans ##{scrivFile.id}:#{scrivFile.new_txt_file_path}")
+    # C'est dans cette méthode-propriété #content_rebuilt que va être ajouté
+    # la balise de début de style ou de fin lorsque c'est un document Scrivener
     file_ref.write(titem.content_rebuilt)
 
   end #/ fin de boucle sur tous les text-items

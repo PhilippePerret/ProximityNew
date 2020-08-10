@@ -1,275 +1,101 @@
-2020-08-10 09:24:34 +0200 -> open_texte (text_path:"/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv")
-2020-08-10 09:24:34 +0200 -- Projet Scrivener --
-2020-08-10 09:24:34 +0200 Projet Scrivener instancié.
-2020-08-10 09:24:34 +0200 Configuration enregistrée (:last_text_path)
-2020-08-10 09:24:35 +0200 Instanciation @extrait (à partir de l'item 0)
-2020-08-10 09:24:35 +0200 -> ExtraitTexte#output
-2020-08-10 09:24:35 +0200 On doit afficher les items de 0 à 400 (nombre total : 79339)
-2020-08-10 09:24:35 +0200 Mot “jamais” (17/48) a une proximité APRÈS : jamais (31/84)
-2020-08-10 09:24:35 +0200 Mot “répondu” (19/55) a une proximité APRÈS : répondra (293/879)
-2020-08-10 09:24:35 +0200 Mot “pourquoi” (25/69) a une proximité APRÈS : pourquoi (362/1057)
-2020-08-10 09:24:35 +0200 Mot “jamais” (31/84) a une proximité AVANT : jamais (17/48)
-2020-08-10 09:24:35 +0200 Mot “pour” (35/99) a une proximité APRÈS : pour (354/1035)
-2020-08-10 09:24:35 +0200 Mot “existence” (50/136) a une proximité APRÈS : existence (57/155)
-2020-08-10 09:24:35 +0200 Mot “existence” (57/155) a une proximité AVANT : existence (50/136)
-2020-08-10 09:24:35 +0200 Mot “Quand” (59/166) a une proximité APRÈS : Quand (246/736)
-2020-08-10 09:24:35 +0200 Mot “interroge” (63/177) a une proximité APRÈS : interroger (287/857)
-2020-08-10 09:24:35 +0200 Mot “voit” (81/246) a une proximité APRÈS : voit (340/990)
-2020-08-10 09:24:35 +0200 Mot “encore” (83/251) a une proximité APRÈS : Encore (140/424)
-2020-08-10 09:24:35 +0200 Mot “mais” (91/278) a une proximité APRÈS : Mais (289/869)
-2020-08-10 09:24:35 +0200 Mot “plus” (96/292) a une proximité APRÈS : plus (427/1235)
-2020-08-10 09:24:35 +0200 Mot “silence” (107/321) a une proximité AVANT : silence (63309/178879)
-2020-08-10 09:24:35 +0200 Mot “Encore” (140/424) a une proximité AVANT : encore (83/251)
-2020-08-10 09:24:35 +0200 Mot “Encore” (140/424) a une proximité APRÈS : Encore (253/758)
-2020-08-10 09:24:35 +0200 Mot “question” (144/435) a une proximité APRÈS : question (257/769)
-2020-08-10 09:24:35 +0200 Mot “sont” (149/453) a une proximité AVANT : est (101/305)
-2020-08-10 09:24:35 +0200 Mot “sont” (149/453) a une proximité APRÈS : sont (212/637)
-2020-08-10 09:24:35 +0200 Mot “parc” (190/571) a une proximité APRÈS : parc (334/976)
-2020-08-10 09:24:35 +0200 Mot “sont” (212/637) a une proximité AVANT : sont (149/453)
-2020-08-10 09:24:35 +0200 Mot “sont” (212/637) a une proximité APRÈS : seront (248/742)
-2020-08-10 09:24:35 +0200 Mot “viendront” (244/725) a une proximité APRÈS : venus (442/1274)
-2020-08-10 09:24:35 +0200 Mot “Quand” (246/736) a une proximité AVANT : Quand (59/166)
-2020-08-10 09:24:35 +0200 Mot “Quand” (246/736) a une proximité APRÈS : Quand (297/895)
-2020-08-10 09:24:35 +0200 Mot “seront” (248/742) a une proximité AVANT : sont (212/637)
-2020-08-10 09:24:35 +0200 Mot “seront” (248/742) a une proximité APRÈS : est (383/1121)
-2020-08-10 09:24:35 +0200 Mot “Encore” (253/758) a une proximité AVANT : Encore (140/424)
-2020-08-10 09:24:35 +0200 Mot “Encore” (253/758) a une proximité APRÈS : Encore (394/1149)
-2020-08-10 09:24:35 +0200 Mot “question” (257/769) a une proximité AVANT : question (144/435)
-2020-08-10 09:24:35 +0200 Mot “question” (257/769) a une proximité APRÈS : question (398/1160)
-2020-08-10 09:24:35 +0200 Mot “Till” (282/844) a une proximité APRÈS : Till (291/874)
-2020-08-10 09:24:35 +0200 Mot “sans” (284/850) a une proximité APRÈS : sans (348/1019)
-2020-08-10 09:24:35 +0200 Mot “interroger” (287/857) a une proximité AVANT : interroge (63/177)
-2020-08-10 09:24:35 +0200 Mot “Mais” (289/869) a une proximité AVANT : mais (91/278)
-2020-08-10 09:24:35 +0200 Mot “Till” (291/874) a une proximité AVANT : Till (282/844)
-2020-08-10 09:24:35 +0200 Mot “Till” (291/874) a une proximité APRÈS : Till (455/1308)
-2020-08-10 09:24:35 +0200 Mot “répondra” (293/879) a une proximité AVANT : répondu (19/55)
-2020-08-10 09:24:35 +0200 Mot “Quand” (297/895) a une proximité AVANT : Quand (246/736)
-2020-08-10 09:24:35 +0200 Mot “fait” (301/906) a une proximité APRÈS : ferait (487/1392)
-2020-08-10 09:24:35 +0200 Mot “dans” (330/968) a une proximité APRÈS : dans (673/1916)
-2020-08-10 09:24:35 +0200 Mot “parc” (334/976) a une proximité AVANT : parc (190/571)
-2020-08-10 09:24:35 +0200 Mot “voit” (340/990) a une proximité AVANT : voit (81/246)
-2020-08-10 09:24:35 +0200 Mot “sans” (348/1019) a une proximité AVANT : sans (284/850)
-2020-08-10 09:24:35 +0200 Mot “sans” (348/1019) a une proximité APRÈS : sans (506/1448)
-2020-08-10 09:24:35 +0200 Mot “pour” (354/1035) a une proximité AVANT : pour (35/99)
-2020-08-10 09:24:35 +0200 Mot “pour” (354/1035) a une proximité APRÈS : pour (494/1414)
-2020-08-10 09:24:35 +0200 Mot “pourquoi” (362/1057) a une proximité AVANT : pourquoi (25/69)
-2020-08-10 09:24:35 +0200 <- ExtraitTexte#output
-2020-08-10 09:24:50 +0200 Soumission de la commande "rep 305 Liban"
-2020-08-10 09:24:50 +0200 🔨 Commande jouée : "rep 305 Liban"
-2020-08-10 09:24:50 +0200 parse_str par le système
-2020-08-10 09:24:52 +0200 Insertion de “Liban” pour l’index 305 (avant “ ”)
-2020-08-10 09:24:52 +0200 Nouveaux items ajoutés (1) : 
-2020-08-10 09:24:52 +0200 [#<Mot:0x00007f7ff705b878 @content="Liban", @lemma="liban">]
-2020-08-10 09:24:52 +0200 parse_str par le système
-2020-08-10 09:24:53 +0200 Lemma line : "liban\tNOM\t<unknown>" (index : 0)
-2020-08-10 09:24:54 +0200 -> ExtraitTexte#output
-2020-08-10 09:24:54 +0200 On doit afficher les items de 0 à 392 (nombre total : 79339)
-2020-08-10 09:24:54 +0200 Mot “jamais” (17/48) a une proximité APRÈS : jamais (31/84)
-2020-08-10 09:24:54 +0200 Mot “répondu” (19/55) a une proximité APRÈS : répondra (293/879)
-2020-08-10 09:24:54 +0200 Mot “pourquoi” (25/69) a une proximité APRÈS : pourquoi (362/1057)
-2020-08-10 09:24:54 +0200 Mot “jamais” (31/84) a une proximité AVANT : jamais (17/48)
-2020-08-10 09:24:54 +0200 Mot “pour” (35/99) a une proximité APRÈS : pour (354/1035)
-2020-08-10 09:24:54 +0200 Mot “existence” (50/136) a une proximité APRÈS : existence (57/155)
-2020-08-10 09:24:54 +0200 Mot “existence” (57/155) a une proximité AVANT : existence (50/136)
-2020-08-10 09:24:54 +0200 Mot “Quand” (59/166) a une proximité APRÈS : Quand (246/736)
-2020-08-10 09:24:54 +0200 Mot “interroge” (63/177) a une proximité APRÈS : interroger (287/857)
-2020-08-10 09:24:54 +0200 Mot “voit” (81/246) a une proximité APRÈS : voit (340/990)
-2020-08-10 09:24:54 +0200 Mot “encore” (83/251) a une proximité APRÈS : Encore (140/424)
-2020-08-10 09:24:54 +0200 Mot “mais” (91/278) a une proximité APRÈS : Mais (289/869)
-2020-08-10 09:24:54 +0200 Mot “plus” (96/292) a une proximité APRÈS : plus (427/1235)
-2020-08-10 09:24:54 +0200 Mot “silence” (107/321) a une proximité AVANT : silence (63309/178879)
-2020-08-10 09:24:54 +0200 Mot “Encore” (140/424) a une proximité AVANT : encore (83/251)
-2020-08-10 09:24:54 +0200 Mot “Encore” (140/424) a une proximité APRÈS : Encore (253/758)
-2020-08-10 09:24:54 +0200 Mot “question” (144/435) a une proximité APRÈS : question (257/769)
-2020-08-10 09:24:54 +0200 Mot “sont” (149/453) a une proximité AVANT : est (101/305)
-2020-08-10 09:24:54 +0200 Mot “sont” (149/453) a une proximité APRÈS : sont (212/637)
-2020-08-10 09:24:54 +0200 Mot “parc” (190/571) a une proximité APRÈS : parc (334/976)
-2020-08-10 09:24:54 +0200 Mot “sont” (212/637) a une proximité AVANT : sont (149/453)
-2020-08-10 09:24:54 +0200 Mot “sont” (212/637) a une proximité APRÈS : seront (248/742)
-2020-08-10 09:24:54 +0200 Mot “viendront” (244/725) a une proximité APRÈS : venus (442/1274)
-2020-08-10 09:24:54 +0200 Mot “Quand” (246/736) a une proximité AVANT : Quand (59/166)
-2020-08-10 09:24:54 +0200 Mot “Quand” (246/736) a une proximité APRÈS : Quand (297/895)
-2020-08-10 09:24:54 +0200 Mot “seront” (248/742) a une proximité AVANT : sont (212/637)
-2020-08-10 09:24:54 +0200 Mot “seront” (248/742) a une proximité APRÈS : est (383/1121)
-2020-08-10 09:24:54 +0200 Mot “Encore” (253/758) a une proximité AVANT : Encore (140/424)
-2020-08-10 09:24:54 +0200 Mot “Encore” (253/758) a une proximité APRÈS : Encore (394/1149)
-2020-08-10 09:24:54 +0200 Mot “question” (257/769) a une proximité AVANT : question (144/435)
-2020-08-10 09:24:54 +0200 Mot “question” (257/769) a une proximité APRÈS : question (398/1160)
-2020-08-10 09:24:54 +0200 Mot “Till” (282/844) a une proximité APRÈS : Till (291/874)
-2020-08-10 09:24:54 +0200 Mot “sans” (284/850) a une proximité APRÈS : sans (348/1019)
-2020-08-10 09:24:54 +0200 Mot “interroger” (287/857) a une proximité AVANT : interroge (63/177)
-2020-08-10 09:24:54 +0200 Mot “Mais” (289/869) a une proximité AVANT : mais (91/278)
-2020-08-10 09:24:54 +0200 Mot “Till” (291/874) a une proximité AVANT : Till (282/844)
-2020-08-10 09:24:54 +0200 Mot “Till” (291/874) a une proximité APRÈS : Till (455/1308)
-2020-08-10 09:24:54 +0200 Mot “répondra” (293/879) a une proximité AVANT : répondu (19/55)
-2020-08-10 09:24:54 +0200 Mot “Quand” (297/895) a une proximité AVANT : Quand (246/736)
-2020-08-10 09:24:54 +0200 Mot “fait” (301/906) a une proximité APRÈS : ferait (487/1392)
-2020-08-10 09:24:54 +0200 Mot “dans” (330/968) a une proximité APRÈS : dans (673/1916)
-2020-08-10 09:24:54 +0200 Mot “parc” (334/976) a une proximité AVANT : parc (190/571)
-2020-08-10 09:24:54 +0200 Mot “voit” (340/990) a une proximité AVANT : voit (81/246)
-2020-08-10 09:24:54 +0200 Mot “sans” (348/1019) a une proximité AVANT : sans (284/850)
-2020-08-10 09:24:54 +0200 Mot “sans” (348/1019) a une proximité APRÈS : sans (506/1448)
-2020-08-10 09:24:54 +0200 Mot “pour” (354/1035) a une proximité AVANT : pour (35/99)
-2020-08-10 09:24:54 +0200 Mot “pour” (354/1035) a une proximité APRÈS : pour (494/1414)
-2020-08-10 09:24:54 +0200 Mot “pourquoi” (362/1057) a une proximité AVANT : pourquoi (25/69)
-2020-08-10 09:24:54 +0200 <- ExtraitTexte#output
-2020-08-10 09:25:10 +0200 Soumission de la commande "rep 305 apprendre"
-2020-08-10 09:25:10 +0200 🔨 Commande jouée : "rep 305 apprendre"
-2020-08-10 09:25:10 +0200 parse_str par le système
-2020-08-10 09:26:03 +0200 Soumission de la commande "rep 305 apprendre"
-2020-08-10 09:26:03 +0200 🔨 Commande jouée : "rep 305 apprendre"
-2020-08-10 09:26:03 +0200 parse_str par le système
-2020-08-10 09:26:49 +0200 Soumission de la commande "rep 305 apprendre"
-2020-08-10 09:26:49 +0200 🔨 Commande jouée : "rep 305 apprendre"
-2020-08-10 09:26:49 +0200 parse_str par le système
-2020-08-10 09:26:53 +0200 Insertion de “apprendre” pour l’index 305 (avant “ ”)
-2020-08-10 09:26:53 +0200 Nouveaux items ajoutés (1) : 
-2020-08-10 09:26:53 +0200 [#<Mot:0x00007f7ff6b73360 @content="apprendre", @lemma="apprendre">]
-2020-08-10 09:26:53 +0200 parse_str par le système
-2020-08-10 09:26:55 +0200 Lemma line : "apprendre\tVER:infi\tapprendre" (index : 0)
-2020-08-10 09:26:55 +0200 -> ExtraitTexte#output
-2020-08-10 09:26:55 +0200 On doit afficher les items de 0 à 392 (nombre total : 79339)
-2020-08-10 09:26:55 +0200 Mot “jamais” (17/48) a une proximité APRÈS : jamais (31/84)
-2020-08-10 09:26:55 +0200 Mot “répondu” (19/55) a une proximité APRÈS : répondra (293/879)
-2020-08-10 09:26:55 +0200 Mot “pourquoi” (25/69) a une proximité APRÈS : pourquoi (362/1061)
-2020-08-10 09:26:55 +0200 Mot “jamais” (31/84) a une proximité AVANT : jamais (17/48)
-2020-08-10 09:26:55 +0200 Mot “pour” (35/99) a une proximité APRÈS : pour (354/1039)
-2020-08-10 09:26:55 +0200 Mot “existence” (50/136) a une proximité APRÈS : existence (57/155)
-2020-08-10 09:26:55 +0200 Mot “existence” (57/155) a une proximité AVANT : existence (50/136)
-2020-08-10 09:26:55 +0200 Mot “Quand” (59/166) a une proximité APRÈS : Quand (246/736)
-2020-08-10 09:26:55 +0200 Mot “interroge” (63/177) a une proximité APRÈS : interroger (287/857)
-2020-08-10 09:26:55 +0200 Mot “voit” (81/246) a une proximité APRÈS : voit (340/994)
-2020-08-10 09:26:55 +0200 Mot “encore” (83/251) a une proximité APRÈS : Encore (140/424)
-2020-08-10 09:26:55 +0200 Mot “mais” (91/278) a une proximité APRÈS : Mais (289/869)
-2020-08-10 09:26:55 +0200 Mot “plus” (96/292) a une proximité APRÈS : plus (427/1239)
-2020-08-10 09:26:55 +0200 Mot “silence” (107/321) a une proximité AVANT : silence (63309/178883)
-2020-08-10 09:26:55 +0200 Mot “Encore” (140/424) a une proximité AVANT : encore (83/251)
-2020-08-10 09:26:55 +0200 Mot “Encore” (140/424) a une proximité APRÈS : Encore (253/758)
-2020-08-10 09:26:55 +0200 Mot “question” (144/435) a une proximité APRÈS : question (257/769)
-2020-08-10 09:26:55 +0200 Mot “sont” (149/453) a une proximité AVANT : est (101/305)
-2020-08-10 09:26:55 +0200 Mot “sont” (149/453) a une proximité APRÈS : sont (212/637)
-2020-08-10 09:26:55 +0200 Mot “parc” (190/571) a une proximité APRÈS : parc (334/980)
-2020-08-10 09:26:55 +0200 Mot “sont” (212/637) a une proximité AVANT : sont (149/453)
-2020-08-10 09:26:55 +0200 Mot “sont” (212/637) a une proximité APRÈS : seront (248/742)
-2020-08-10 09:26:55 +0200 Mot “viendront” (244/725) a une proximité APRÈS : venus (442/1278)
-2020-08-10 09:26:55 +0200 Mot “Quand” (246/736) a une proximité AVANT : Quand (59/166)
-2020-08-10 09:26:55 +0200 Mot “Quand” (246/736) a une proximité APRÈS : Quand (297/895)
-2020-08-10 09:26:55 +0200 Mot “seront” (248/742) a une proximité AVANT : sont (212/637)
-2020-08-10 09:26:55 +0200 Mot “seront” (248/742) a une proximité APRÈS : est (383/1125)
-2020-08-10 09:26:55 +0200 Mot “Encore” (253/758) a une proximité AVANT : Encore (140/424)
-2020-08-10 09:26:55 +0200 Mot “Encore” (253/758) a une proximité APRÈS : Encore (394/1153)
-2020-08-10 09:26:55 +0200 Mot “question” (257/769) a une proximité AVANT : question (144/435)
-2020-08-10 09:26:55 +0200 Mot “question” (257/769) a une proximité APRÈS : question (398/1164)
-2020-08-10 09:26:55 +0200 Mot “Till” (282/844) a une proximité APRÈS : Till (291/874)
-2020-08-10 09:26:55 +0200 Mot “sans” (284/850) a une proximité APRÈS : sans (348/1023)
-2020-08-10 09:26:55 +0200 Mot “interroger” (287/857) a une proximité AVANT : interroge (63/177)
-2020-08-10 09:26:55 +0200 Mot “Mais” (289/869) a une proximité AVANT : mais (91/278)
-2020-08-10 09:26:55 +0200 Mot “Till” (291/874) a une proximité AVANT : Till (282/844)
-2020-08-10 09:26:55 +0200 Mot “Till” (291/874) a une proximité APRÈS : Till (455/1312)
-2020-08-10 09:26:55 +0200 Mot “répondra” (293/879) a une proximité AVANT : répondu (19/55)
-2020-08-10 09:26:55 +0200 Mot “Quand” (297/895) a une proximité AVANT : Quand (246/736)
-2020-08-10 09:26:55 +0200 Mot “fait” (301/906) a une proximité APRÈS : ferait (487/1396)
-2020-08-10 09:26:55 +0200 Mot “apprendre” (305/914) a une proximité AVANT : apprendre (73600/208048)
-2020-08-10 09:26:55 +0200 Mot “dans” (330/972) a une proximité APRÈS : dans (673/1920)
-2020-08-10 09:26:55 +0200 Mot “parc” (334/980) a une proximité AVANT : parc (190/571)
-2020-08-10 09:26:55 +0200 Mot “voit” (340/994) a une proximité AVANT : voit (81/246)
-2020-08-10 09:26:55 +0200 Mot “sans” (348/1023) a une proximité AVANT : sans (284/850)
-2020-08-10 09:26:55 +0200 Mot “sans” (348/1023) a une proximité APRÈS : sans (506/1452)
-2020-08-10 09:26:55 +0200 Mot “pour” (354/1039) a une proximité AVANT : pour (35/99)
-2020-08-10 09:26:55 +0200 Mot “pour” (354/1039) a une proximité APRÈS : pour (494/1418)
-2020-08-10 09:26:55 +0200 Mot “pourquoi” (362/1061) a une proximité AVANT : pourquoi (25/69)
-2020-08-10 09:26:55 +0200 <- ExtraitTexte#output
-2020-08-10 09:27:16 +0200 Soumission de la commande "show 0"
-2020-08-10 09:27:16 +0200 🔨 Commande jouée : "show 0"
-2020-08-10 09:27:16 +0200 -> ExtraitTexte#output
-2020-08-10 09:27:16 +0200 On doit afficher les items de 0 à 400 (nombre total : 79339)
-2020-08-10 09:27:16 +0200 Mot “jamais” (17/48) a une proximité APRÈS : jamais (31/84)
-2020-08-10 09:27:16 +0200 Mot “répondu” (19/55) a une proximité APRÈS : répondra (293/879)
-2020-08-10 09:27:16 +0200 Mot “pourquoi” (25/69) a une proximité APRÈS : pourquoi (362/1061)
-2020-08-10 09:27:16 +0200 Mot “jamais” (31/84) a une proximité AVANT : jamais (17/48)
-2020-08-10 09:27:16 +0200 Mot “pour” (35/99) a une proximité APRÈS : pour (354/1039)
-2020-08-10 09:27:16 +0200 Mot “existence” (50/136) a une proximité APRÈS : existence (57/155)
-2020-08-10 09:27:16 +0200 Mot “existence” (57/155) a une proximité AVANT : existence (50/136)
-2020-08-10 09:27:16 +0200 Mot “Quand” (59/166) a une proximité APRÈS : Quand (246/736)
-2020-08-10 09:27:16 +0200 Mot “interroge” (63/177) a une proximité APRÈS : interroger (287/857)
-2020-08-10 09:27:16 +0200 Mot “voit” (81/246) a une proximité APRÈS : voit (340/994)
-2020-08-10 09:27:16 +0200 Mot “encore” (83/251) a une proximité APRÈS : Encore (140/424)
-2020-08-10 09:27:16 +0200 Mot “mais” (91/278) a une proximité APRÈS : Mais (289/869)
-2020-08-10 09:27:16 +0200 Mot “plus” (96/292) a une proximité APRÈS : plus (427/1239)
-2020-08-10 09:27:16 +0200 Mot “silence” (107/321) a une proximité AVANT : silence (63309/178883)
-2020-08-10 09:27:16 +0200 Mot “Encore” (140/424) a une proximité AVANT : encore (83/251)
-2020-08-10 09:27:16 +0200 Mot “Encore” (140/424) a une proximité APRÈS : Encore (253/758)
-2020-08-10 09:27:16 +0200 Mot “question” (144/435) a une proximité APRÈS : question (257/769)
-2020-08-10 09:27:16 +0200 Mot “sont” (149/453) a une proximité AVANT : est (101/305)
-2020-08-10 09:27:16 +0200 Mot “sont” (149/453) a une proximité APRÈS : sont (212/637)
-2020-08-10 09:27:16 +0200 Mot “parc” (190/571) a une proximité APRÈS : parc (334/980)
-2020-08-10 09:27:16 +0200 Mot “sont” (212/637) a une proximité AVANT : sont (149/453)
-2020-08-10 09:27:16 +0200 Mot “sont” (212/637) a une proximité APRÈS : seront (248/742)
-2020-08-10 09:27:16 +0200 Mot “viendront” (244/725) a une proximité APRÈS : venus (442/1278)
-2020-08-10 09:27:16 +0200 Mot “Quand” (246/736) a une proximité AVANT : Quand (59/166)
-2020-08-10 09:27:16 +0200 Mot “Quand” (246/736) a une proximité APRÈS : Quand (297/895)
-2020-08-10 09:27:16 +0200 Mot “seront” (248/742) a une proximité AVANT : sont (212/637)
-2020-08-10 09:27:16 +0200 Mot “seront” (248/742) a une proximité APRÈS : est (383/1125)
-2020-08-10 09:27:16 +0200 Mot “Encore” (253/758) a une proximité AVANT : Encore (140/424)
-2020-08-10 09:27:16 +0200 Mot “Encore” (253/758) a une proximité APRÈS : Encore (394/1153)
-2020-08-10 09:27:16 +0200 Mot “question” (257/769) a une proximité AVANT : question (144/435)
-2020-08-10 09:27:16 +0200 Mot “question” (257/769) a une proximité APRÈS : question (398/1164)
-2020-08-10 09:27:16 +0200 Mot “Till” (282/844) a une proximité APRÈS : Till (291/874)
-2020-08-10 09:27:16 +0200 Mot “sans” (284/850) a une proximité APRÈS : sans (348/1023)
-2020-08-10 09:27:16 +0200 Mot “interroger” (287/857) a une proximité AVANT : interroge (63/177)
-2020-08-10 09:27:16 +0200 Mot “Mais” (289/869) a une proximité AVANT : mais (91/278)
-2020-08-10 09:27:16 +0200 Mot “Till” (291/874) a une proximité AVANT : Till (282/844)
-2020-08-10 09:27:16 +0200 Mot “Till” (291/874) a une proximité APRÈS : Till (455/1312)
-2020-08-10 09:27:16 +0200 Mot “répondra” (293/879) a une proximité AVANT : répondu (19/55)
-2020-08-10 09:27:16 +0200 Mot “Quand” (297/895) a une proximité AVANT : Quand (246/736)
-2020-08-10 09:27:16 +0200 Mot “fait” (301/906) a une proximité APRÈS : ferait (487/1396)
-2020-08-10 09:27:16 +0200 Mot “apprendre” (305/914) a une proximité AVANT : apprendre (73600/208048)
-2020-08-10 09:27:16 +0200 Mot “dans” (330/972) a une proximité APRÈS : dans (673/1920)
-2020-08-10 09:27:16 +0200 Mot “parc” (334/980) a une proximité AVANT : parc (190/571)
-2020-08-10 09:27:16 +0200 Mot “voit” (340/994) a une proximité AVANT : voit (81/246)
-2020-08-10 09:27:16 +0200 Mot “sans” (348/1023) a une proximité AVANT : sans (284/850)
-2020-08-10 09:27:16 +0200 Mot “sans” (348/1023) a une proximité APRÈS : sans (506/1452)
-2020-08-10 09:27:16 +0200 Mot “pour” (354/1039) a une proximité AVANT : pour (35/99)
-2020-08-10 09:27:16 +0200 Mot “pour” (354/1039) a une proximité APRÈS : pour (494/1418)
-2020-08-10 09:27:16 +0200 Mot “pourquoi” (362/1061) a une proximité AVANT : pourquoi (25/69)
-2020-08-10 09:27:16 +0200 <- ExtraitTexte#output
-2020-08-10 09:27:23 +0200 Soumission de la commande "recalcule"
-2020-08-10 09:27:23 +0200 🔨 Commande jouée : "recalcule"
-2020-08-10 09:38:52 +0200 Soumission de la commande "open /Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs.scriv"
-2020-08-10 09:38:52 +0200 🔨 Commande jouée : "open /Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs.scriv"
-2020-08-10 09:38:52 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs.scriv")
-2020-08-10 09:38:52 +0200 -- Projet Scrivener --
-2020-08-10 09:38:52 +0200 Projet Scrivener instancié.
-2020-08-10 09:38:52 +0200 Configuration enregistrée (:last_text_path)
-2020-08-10 09:38:53 +0200 = Le fichier doit être actualisé
-2020-08-10 09:38:53 +0200 *** Parsing du projet scrivener /Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs.scriv
-2020-08-10 09:38:53 +0200 Instanciation @extrait (à partir de l'item 0)
-2020-08-10 09:38:53 +0200 -> prepare_as_projet_scrivener
-2020-08-10 09:38:53 +0200 -> create_table_base_for
-2020-08-10 09:38:53 +0200 Nombre de fichiers à traiter : 3
-2020-08-10 09:38:53 +0200 ** Traitement du fichier scrivener DB849D9D-E3E1-4C88-9727-4CE76C5EED71
-2020-08-10 09:38:53 +0200 *** Préparation du fichier corrigé
-2020-08-10 09:38:53 +0200 ** Traitement du fichier scrivener 723F59E6-4C48-44BD-90E3-4D4894D6CB0A
-2020-08-10 09:38:53 +0200 *** Préparation du fichier corrigé
-2020-08-10 09:38:53 +0200 ** Traitement du fichier scrivener C9E047C8-4C05-4234-BE3C-9C894C24F713
-2020-08-10 09:38:53 +0200 *** Préparation du fichier corrigé
-2020-08-10 09:38:53 +0200 *** Lemmatisation du fichier
-2020-08-10 09:38:53 +0200 cmd lemmatisation : /usr/local/bin/tree-tagger-french < "/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs_prox/only_mots.txt" > "/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs_prox/only_mots.txt_lemma.data" 2> /Users/philippeperret/Programmation/ProximityNew/error_lemma.log
-2020-08-10 09:38:55 +0200 Une erreur TreeTager est survenue, consulter le fichier error_lemma.log.
-2020-08-10 09:38:55 +0200 👍 PARSING DU PROJET SCRIVENER Projet_Scrivener_multi_docs.scriv OPÉRÉ AVEC SUCCÈS
-2020-08-10 09:38:55 +0200    (durée de l'opération : 2.013737916946411)
+2020-08-10 10:04:35 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs.scriv")
+2020-08-10 10:04:35 +0200 -- Projet Scrivener --
+2020-08-10 10:04:35 +0200 Projet Scrivener instancié.
+2020-08-10 10:04:35 +0200 Configuration enregistrée (:last_text_path)
+2020-08-10 10:04:35 +0200 = Le fichier doit être actualisé
+2020-08-10 10:04:35 +0200 *** Parsing du projet scrivener /Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs.scriv
+2020-08-10 10:04:35 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-10 10:04:35 +0200 -> prepare_as_projet_scrivener
+2020-08-10 10:04:35 +0200 -> create_table_base_for
+2020-08-10 10:04:35 +0200 Nombre de fichiers à traiter : 3
+2020-08-10 10:04:35 +0200 ** Traitement du fichier scrivener DB849D9D-E3E1-4C88-9727-4CE76C5EED71
+2020-08-10 10:04:35 +0200 line: Un texte simple dans un fichier Scrivener.
+
+2020-08-10 10:04:35 +0200 line contient une balise In ? false
+2020-08-10 10:04:35 +0200 line contient une balise Out ? false
+2020-08-10 10:04:35 +0200 line: 
+
+2020-08-10 10:04:35 +0200 line contient une balise In ? false
+2020-08-10 10:04:35 +0200 line contient une balise Out ? false
+2020-08-10 10:04:35 +0200 *** Préparation du fichier corrigé
+2020-08-10 10:04:35 +0200 ** Traitement du fichier scrivener 723F59E6-4C48-44BD-90E3-4D4894D6CB0A
+2020-08-10 10:04:35 +0200 line: L'autre texte du deuxième document. Celui-ci contient de nombreux cas d'espèce avec des tirets comme grand-chose ou grand-mère et même peut-être ainsi que des aujourd'hui ou qu'en est-il ici ?
+
+2020-08-10 10:04:35 +0200 line contient une balise In ? false
+2020-08-10 10:04:35 +0200 line contient une balise Out ? false
+2020-08-10 10:04:35 +0200 line: 
+
+2020-08-10 10:04:35 +0200 line contient une balise In ? false
+2020-08-10 10:04:35 +0200 line contient une balise Out ? false
+2020-08-10 10:04:35 +0200 *** Préparation du fichier corrigé
+2020-08-10 10:04:35 +0200 ** Traitement du fichier scrivener C9E047C8-4C05-4234-BE3C-9C894C24F713
+2020-08-10 10:04:35 +0200 line: Ce document contient des styles scrivener et donc certainement des balises à analyser. Le style « bloc de citation » a été appliqué au texte « Ceci est une citation » ci-dessous.
+
+2020-08-10 10:04:35 +0200 line contient une balise In ? false
+2020-08-10 10:04:35 +0200 line contient une balise Out ? false
+2020-08-10 10:04:35 +0200 line: <$Scr_Ps::0>Ceci est une citation.
+
+2020-08-10 10:04:35 +0200 line contient une balise In ? true
+2020-08-10 10:04:35 +0200 line contient une balise Out ? false
+2020-08-10 10:04:35 +0200 line: <!$Scr_Ps::0>Il a deux paragraphes pour le moment.
+2020-08-10 10:04:35 +0200 line contient une balise In ? false
+2020-08-10 10:04:35 +0200 line contient une balise Out ? true
+2020-08-10 10:04:35 +0200 *** Préparation du fichier corrigé
+2020-08-10 10:04:35 +0200 *** Lemmatisation du fichier
+2020-08-10 10:04:35 +0200 cmd lemmatisation : /usr/local/bin/tree-tagger-french < "/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs_prox/only_mots.txt" > "/Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs_prox/only_mots.txt_lemma.data" 2> /Users/philippeperret/Programmation/ProximityNew/error_lemma.log
+2020-08-10 10:04:37 +0200 Une erreur TreeTager est survenue, consulter le fichier error_lemma.log.
+2020-08-10 10:04:37 +0200 👍 PARSING DU PROJET SCRIVENER Projet_Scrivener_multi_docs.scriv OPÉRÉ AVEC SUCCÈS
+2020-08-10 10:04:37 +0200    (durée de l'opération : 1.823132038116455)
 
 
-2020-08-10 09:38:55 +0200 -> ExtraitTexte#output
-2020-08-10 09:38:55 +0200 On doit afficher les items de 0 à 400 (nombre total : 173)
-2020-08-10 09:38:55 +0200 Mot “texte” (2/3) a une proximité APRÈS : texte (19/52)
-2020-08-10 09:38:55 +0200 Mot “Scrivener” (12/32) a une proximité APRÈS : scrivener (91/270)
-2020-08-10 09:38:55 +0200 Mot “texte” (19/52) a une proximité AVANT : texte (2/3)
-2020-08-10 09:38:55 +0200 Mot “texte” (19/52) a une proximité APRÈS : texte (125/373)
-2020-08-10 09:38:55 +0200 Mot “document” (25/70) a une proximité APRÈS : document (83/241)
-2020-08-10 09:38:55 +0200 Mot “contient” (30/89) a une proximité APRÈS : contient (85/250)
-2020-08-10 09:38:55 +0200 Mot “document” (83/241) a une proximité AVANT : document (25/70)
-2020-08-10 09:38:55 +0200 Mot “contient” (85/250) a une proximité AVANT : contient (30/89)
-2020-08-10 09:38:55 +0200 Mot “styles” (89/263) a une proximité APRÈS : style (109/328)
-2020-08-10 09:38:55 +0200 Mot “scrivener” (91/270) a une proximité AVANT : Scrivener (12/32)
-2020-08-10 09:38:55 +0200 Mot “style” (109/328) a une proximité AVANT : styles (89/263)
+2020-08-10 10:04:37 +0200 -> ExtraitTexte#output
+2020-08-10 10:04:37 +0200 On doit afficher les items de 0 à 400 (nombre total : 163)
+2020-08-10 10:04:37 +0200 Mot “texte” (2/3) a une proximité APRÈS : texte (19/52)
+2020-08-10 10:04:37 +0200 Mot “Scrivener” (12/32) a une proximité APRÈS : scrivener (91/270)
+2020-08-10 10:04:37 +0200 Mot “texte” (19/52) a une proximité AVANT : texte (2/3)
+2020-08-10 10:04:37 +0200 Mot “texte” (19/52) a une proximité APRÈS : texte (125/373)
+2020-08-10 10:04:37 +0200 Mot “document” (25/70) a une proximité APRÈS : document (83/241)
+2020-08-10 10:04:37 +0200 Mot “contient” (30/89) a une proximité APRÈS : contient (85/250)
+2020-08-10 10:04:37 +0200 Mot “document” (83/241) a une proximité AVANT : document (25/70)
+2020-08-10 10:04:37 +0200 Mot “contient” (85/250) a une proximité AVANT : contient (30/89)
+2020-08-10 10:04:37 +0200 Mot “styles” (89/263) a une proximité APRÈS : style (109/328)
+2020-08-10 10:04:37 +0200 Mot “scrivener” (91/270) a une proximité AVANT : Scrivener (12/32)
+2020-08-10 10:04:37 +0200 Mot “style” (109/328) a une proximité AVANT : styles (89/263)
+2020-08-10 10:04:37 +0200 Mot “citation” (115/344) a une proximité APRÈS : citation (133/394)
+2020-08-10 10:04:37 +0200 Mot “texte” (125/373) a une proximité AVANT : texte (19/52)
+2020-08-10 10:04:37 +0200 Mot “citation” (133/394) a une proximité AVANT : citation (115/344)
+2020-08-10 10:04:37 +0200 Mot “citation” (133/394) a une proximité APRÈS : citation (144/430)
+2020-08-10 10:04:37 +0200 Mot “citation” (144/430) a une proximité AVANT : citation (133/394)
+2020-08-10 10:04:37 +0200 <- ExtraitTexte#output
+2020-08-10 10:04:58 +0200 Soumission de la commande "rep 89 feuilles de styles"
+2020-08-10 10:04:58 +0200 🔨 Commande jouée : "rep 89 feuilles de styles"
+2020-08-10 10:04:58 +0200 parse_str par le système
+2020-08-10 10:05:12 +0200 Insertion de “feuilles de styles” pour l’index 89 (avant “ ”)
+2020-08-10 10:05:12 +0200 Nouveaux items ajoutés (5) : 
+2020-08-10 10:05:12 +0200 [#<Mot:0x00007fc339841418 @content="feuilles", @lemma="feuilles">, #<NonMot:0x00007fc3398413c8 @content=" ">, #<Mot:0x00007fc339841328 @content="de", @lemma="de">, #<NonMot:0x00007fc3398412d8 @content=" ">, #<Mot:0x00007fc339841238 @content="styles", @lemma="styles">]
+2020-08-10 10:05:12 +0200 parse_str par le système
+2020-08-10 10:05:14 +0200 Lemma line : "feuilles\tNOM\tfeuille" (index : 0)
+2020-08-10 10:05:14 +0200 Lemma line : "de\tPRP\tde" (index : 1)
+2020-08-10 10:05:14 +0200 Lemma line : "styles\tNOM\tstyle" (index : 2)
+2020-08-10 10:05:14 +0200 -> ExtraitTexte#output
+2020-08-10 10:05:14 +0200 On doit afficher les items de 0 à 172 (nombre total : 167)
+2020-08-10 10:05:14 +0200 Mot “texte” (2/3) a une proximité APRÈS : texte (19/52)
+2020-08-10 10:05:14 +0200 Mot “Scrivener” (12/32) a une proximité APRÈS : scrivener (95/282)
+2020-08-10 10:05:14 +0200 Mot “texte” (19/52) a une proximité AVANT : texte (2/3)
+2020-08-10 10:05:14 +0200 Mot “texte” (19/52) a une proximité APRÈS : texte (129/385)
+2020-08-10 10:05:14 +0200 Mot “document” (25/70) a une proximité APRÈS : document (83/241)
+2020-08-10 10:05:14 +0200 Mot “contient” (30/89) a une proximité APRÈS : contient (85/250)
+2020-08-10 10:05:14 +0200 Mot “document” (83/241) a une proximité AVANT : document (25/70)
+2020-08-10 10:05:14 +0200 Mot “contient” (85/250) a une proximité AVANT : contient (30/89)
+2020-08-10 10:05:14 +0200 Mot “styles” (93/275) a une proximité AVANT : style (113/340)
+2020-08-10 10:05:14 +0200 Mot “scrivener” (95/282) a une proximité AVANT : Scrivener (12/32)
+2020-08-10 10:05:14 +0200 Mot “style” (113/340) a une proximité APRÈS : styles (93/275)
+2020-08-10 10:05:14 +0200 Mot “citation” (119/356) a une proximité APRÈS : citation (137/406)
+2020-08-10 10:05:14 +0200 Mot “texte” (129/385) a une proximité AVANT : texte (19/52)
+2020-08-10 10:05:14 +0200 Mot “citation” (137/406) a une proximité AVANT : citation (119/356)
+2020-08-10 10:05:14 +0200 Mot “citation” (137/406) a une proximité APRÈS : citation (148/442)
+2020-08-10 10:05:14 +0200 Mot “citation” (148/442) a une proximité AVANT : citation (137/406)
+2020-08-10 10:05:14 +0200 <- ExtraitTexte#output
+2020-08-10 10:05:25 +0200 Soumission de la commande "rebuild"
+2020-08-10 10:05:25 +0200 🔨 Commande jouée : "rebuild"
+2020-08-10 10:05:25 +0200 scrivFile: /Users/philippeperret/Programmation/ProximityNew/asset/exemples/Projet_Scrivener_multi_docs.scriv/Files/Data/DB849D9D-E3E1-4C88-9727-4CE76C5EED71/content.rtf

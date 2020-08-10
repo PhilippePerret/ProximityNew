@@ -174,10 +174,10 @@ end #/ f_content
 def content_rebuilt
   c = content
   if mark_scrivener_start
-    c.prepend("<$Scr_Cs::#{mark_scrivener_start}>".freeze)
+    c.prepend("<$Scr_Ps::#{mark_scrivener_start}>".freeze)
   end
   if mark_scrivener_end
-    c << "<!$Scr_Cs::#{mark_scrivener_start}>".freeze
+    c.prepend("<!$Scr_Ps::#{mark_scrivener_end}>".freeze)
   end
   return c
 end #/ content_rebuilt
