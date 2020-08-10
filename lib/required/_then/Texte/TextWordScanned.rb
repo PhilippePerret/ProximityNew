@@ -102,7 +102,11 @@ def scan
   # On traite très rapidement le cas le plus simple (le mot ne contient
   # ni apostrophe, ni trait d'union, ni marque de style ou autres éléments
   # qui pourrait constituer une marque)
-  return [Mot.new(mot), NonMot.new(nonmot)] if mot_simple?
+  if mot_simple?
+    titems = [ Mot.new(mot) ]
+    titems << NonMot.new(nonmot) unless nonmot.nil?
+    return titems
+  end
 
   # On traite le cas où le mot contient une marque scrivener. Dans ce
   # cas, on doit séparer cette marque du mot pour obtenir vraiment le mot
@@ -134,9 +138,7 @@ def scan
   end
 
   if titems.count > 1
-    titems.each do |titem|
-      titem.is_colled = true
-    end
+    titems.each { |titem| titem.is_colled = true }
   end
   if nonmot.start_with?(/["«]/)
     titems[0].is_colled = true if titems.count == 1
@@ -150,7 +152,7 @@ def scan
   #   raise "glourps"
   # end
 
-  titems << instance_nonmot # [3]
+  titems << instance_nonmot unless nonmot.nil? # [3]
 
   # Liste finale renvoyée
   return titems
@@ -194,17 +196,16 @@ def downcase
 end #/ downcase
 
 def instance_nonmot
-  @instance_nonmot ||= NonMot.new(nonmot)
+  @instance_nonmot ||= NonMot.new(nonmot||'', type: 'mark-scrivener')
 end #/ instance_nonmot
 
 # On compose une instance nonmot "seule" lorsque le mot se résumait
 # à une marque de style Scrivener. Dans ce cas, c'est le non-mot qui
 # porte cette marque dans son instance.
 def instance_nonmot_seule
-  instance_nonmot.tap do |i|
-    i.mark_scrivener_start  = @mark_style_start
-    i.mark_scrivener_end    = @mark_style_end
-  end
+  instance_nonmot.mark_scrivener_start  = @mark_style_start
+  instance_nonmot.mark_scrivener_end    = @mark_style_end
+  instance_nonmot
 end #/ instance_non_mot
 
 # ---------------------------------------------------------------------

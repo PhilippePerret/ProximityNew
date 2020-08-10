@@ -156,17 +156,7 @@ def insert(params)
       # peut pas comporter des retours charriot, c'est déjà un repère.
       # new_mots = Lemma.parse_str(params[:content], format: :instances)
       Mot.init # remet la liste à vide, juste pour le contrôle des lemma
-      # NB Il faut toujours ajouter une espace après params[:content] pour
-      # être sûr que l'expression régulière de traite_line_of_texte, qui cherche
-      # un mot + un non-mot, trouve son bonheur. Si params[:content] termine
-      # déjà par un non-mot, ça n'est pas grave, puisque l'espace ne sera pas
-      # pris en compte.
-      content_pour_reg = "#{params[:content]} "
-      new_items = itexte.traite_line_of_texte(content_pour_reg, refonlymots)
-      # Quand c'est une pure insertion, il faut ajouter une espace après
-      # le mot inséré. Mais si c'est un remplacement, cette espace existe
-      # déjà.
-      new_items.pop if params[:operation] == 'replace'
+      new_items = itexte.traite_line_of_texte(params[:content], refonlymots)
     ensure
       refonlymots.close
     end
@@ -223,22 +213,27 @@ def simulation(params)
   debug("-> simulation avec paramètres : #{params.inspect}")
   # Si on a besoin de connaitre l'opération, elle se trouve dans
   # params[:operation]
-  Mot.init # remet la liste à vide, juste pour le contrôle des lemma
-  content_pour_reg = "#{params[:content]}#{SPACE}"
+
+  # On ré-initialise la liste des mots, pour pouvoir lemmatiser
+  # Rappel : cette liste des mots sera comparée à la liste des mots relevés
+  # par TreeTagger dans le fichier des seuls mots. La comparaison permettra
+  # d'affecter les canons aux Mots.
+  Mot.init
   begin
+    # On crée un fichier temporaire pour enregistrer les nouveaux mots.
+    # Note : très souvent, il y a un seul mot.
     tempfile = Tempfile.new('getmots')
     refonlymots = File.open(tempfile, 'a')
-    new_items = itexte.traite_line_of_texte(content_pour_reg, refonlymots)
-    # Cf. l'explication dans l'opération réelle elle-même
-    new_items.pop if params[:operation] == 'replace'
+    # On traite le(s) nouveau(x) mot(s) comme une ligne
+    new_items = itexte.traite_line_of_texte(params[:content], refonlymots)
   ensure
     refonlymots.close
   end
 
   debug("[Simulation] new_items = #{new_items.inspect}")
 
-  # On prend seulement les mots
-  new_mots = new_items.select{ |titem| titem.mot? }
+  # On prend seulement les mots parmi les nouveaux mot/non-mots créés
+  new_mots = new_items.select { |titem| titem.mot? }
 
   debug("[Simulation] les mots gardés : #{new_mots.inspect}")
 
@@ -253,9 +248,9 @@ def simulation(params)
         end
       end
       new_mot = new_mots[idx]
-      new_mot.type = type
-      new_mot.canon = canon
-      new_mot.icanon = Canon.items_as_hash[canon] # peut être nil
+      new_mot.type    = type
+      new_mot.canon   = canon
+      new_mot.icanon  = Canon.items_as_hash[canon] # peut être nil
       debug("[Simulation] Réglage de #{new_mot.cio}")
       debug("             Type: #{new_mot.type}")
       debug("             Canon: #{canon} #{new_mot.icanon.inspect}")

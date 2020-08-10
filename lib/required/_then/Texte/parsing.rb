@@ -331,6 +331,7 @@ end #/ write_in_only_mots
 # +refmotscontainer+ Référence au fichier contenant tous les mots,
 # dans le mode normal et un fichier virtuel pour les insertions et
 # remplacement.
+LINE_TEST = "« Puz aime Vania"
 def traite_line_of_texte(line, reffileonlymots = nil)
   @refonlymots = reffileonlymots unless reffileonlymots.nil?
   line = line.strip
@@ -340,10 +341,17 @@ def traite_line_of_texte(line, reffileonlymots = nil)
   # On utilise la faculté de String#split à conserver les délimiteurs s'ils
   # sont placés entre parenthèses capturantes.
   mots = line.split(REG_NO_WORD_DELIMITERS)
+  if line == LINE_TEST
+    # mots = ["", “« ”, Puz", " ", "aime", " ", "Vania"]
+    log("mots: #{mots.inspect}")
+  end
   # Si la liste commence par un string vide, c'est que la ligne commence
   # par un non-mot. Par exemple pour un dialogue, on trouve :
   # [ "", "— ", "Bonjour", " ", "tout", " ", "le", " ", "monde", " !" ]
   line_starts_with_non_mot = mots.first == EMPTY_STRING
+  if line == LINE_TEST
+    log("line_starts_with_non_mot: #{line_starts_with_non_mot.inspect}")
+  end
 
   # Debug
   # log("les mots nouvelle formule : #{mots.inspect}")
@@ -369,6 +377,7 @@ def traite_line_of_texte(line, reffileonlymots = nil)
     nonmot  = mots.pop # peut être nil
     imot = TextWordScanned.new(mot, nonmot)
     new_items += imot.scan
+
     imot = nil
   end until mots.empty?
 
@@ -378,6 +387,9 @@ def traite_line_of_texte(line, reffileonlymots = nil)
   # l'explication dans la classe Mot) OBSOLÈTE maintenant, mais on peut
   # garder au cas où
   new_items.each do |titem|
+    if titem.content.nil?
+      raise "TITEM NIL #{titem.inspect} items:#{new_items.inspect} (line: #{line})"
+    end
     next unless titem.mot?
     titem.lemma ||= titem.content.downcase
     write_in_only_mots("#{titem.lemma}#{titem.is_colled ? EMPTY_STRING : SPACE}".freeze)

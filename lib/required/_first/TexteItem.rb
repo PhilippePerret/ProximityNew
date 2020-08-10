@@ -58,7 +58,6 @@ attr_accessor :mark_scrivener_start, :mark_scrivener_end
 # été inauguré pour ajouter des NonMot's fin de paragraphe au cours du
 # découpage du texte.
 def initialize(content, params = nil)
-  exit if content.nil?
   @content = content
   self.class.add(self)
   unless params.nil?

@@ -1,151 +1,169 @@
-2020-08-09 18:33:56 +0200 -> open_texte (text_path:"/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv")
-2020-08-09 18:33:56 +0200 -- Projet Scrivener --
-2020-08-09 18:33:56 +0200 Projet Scrivener instancié.
-2020-08-09 18:33:56 +0200 Configuration enregistrée (:last_text_path)
-2020-08-09 18:33:56 +0200 = Le fichier doit être actualisé
-2020-08-09 18:33:57 +0200 *** Parsing du projet scrivener /Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv
-2020-08-09 18:33:57 +0200 Instanciation @extrait (à partir de l'item 0)
-2020-08-09 18:33:57 +0200 -> prepare_as_projet_scrivener
-2020-08-09 18:33:57 +0200 -> create_table_base_for
-2020-08-09 18:33:57 +0200 Nombre de fichiers à traiter : 64
-2020-08-09 18:33:57 +0200 ** Traitement du fichier scrivener 8946C485-313A-4CA7-8370-EC9E81803661
-2020-08-09 18:33:57 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:33:57 +0200 ** Traitement du fichier scrivener FF661791-B6D0-44B4-9114-5433404EBA5E
-2020-08-09 18:33:58 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:33:58 +0200 ** Traitement du fichier scrivener 23551D8B-7E79-41D4-A9B7-A4682C0E8864
-2020-08-09 18:33:58 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:33:58 +0200 ** Traitement du fichier scrivener DC4A2E32-9347-49E8-B526-4F40B8E201FF
-2020-08-09 18:33:59 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:33:59 +0200 ** Traitement du fichier scrivener 7922B1FF-9EC7-4837-AC19-5FA96AAD067D
-2020-08-09 18:33:59 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:33:59 +0200 ** Traitement du fichier scrivener 98416EF6-B22B-45ED-A3BF-E7961397999D
-2020-08-09 18:33:59 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:33:59 +0200 ** Traitement du fichier scrivener D03F0977-15D7-4F8F-920F-08514C8D8A1A
-2020-08-09 18:34:00 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:00 +0200 ** Traitement du fichier scrivener 161EB343-BF96-4FD3-BC36-8CAF1C2B9280
-2020-08-09 18:34:00 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:00 +0200 ** Traitement du fichier scrivener 22DFE9CB-51D9-4851-BD91-5AE26BC2DD28
-2020-08-09 18:34:00 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:00 +0200 ** Traitement du fichier scrivener 83F5358A-72E9-4A51-AEC5-578A3A273738
-2020-08-09 18:34:00 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:00 +0200 ** Traitement du fichier scrivener 7985DAC1-C6C8-46FE-932A-C4E09E044258
-2020-08-09 18:34:00 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:00 +0200 ** Traitement du fichier scrivener 74B46C75-344E-4882-A04E-4C55A27BE364
-2020-08-09 18:34:00 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:00 +0200 ** Traitement du fichier scrivener 233307CD-1ABF-49E0-8320-9D0ECB15980E
-2020-08-09 18:34:01 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:01 +0200 ** Traitement du fichier scrivener 0BA8A33D-0AEE-4806-B6C5-C3E6EF74C130
-2020-08-09 18:34:01 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:01 +0200 ** Traitement du fichier scrivener DA989CC9-4BE4-43EC-94EC-FABF5A0798A0
-2020-08-09 18:34:01 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:01 +0200 ** Traitement du fichier scrivener 29731D23-8924-4096-8B6B-EDD0B97B8DD6
-2020-08-09 18:34:02 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:02 +0200 ** Traitement du fichier scrivener 4548D9E5-660B-4ADA-8973-F588D6207A57
-2020-08-09 18:34:02 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:02 +0200 ** Traitement du fichier scrivener C8BBF4CF-C951-43BD-BA67-D05BB12EE2AA
-2020-08-09 18:34:02 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:02 +0200 ** Traitement du fichier scrivener D4C76910-9F76-4AE4-AD33-3D0A9F94155A
-2020-08-09 18:34:02 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:02 +0200 ** Traitement du fichier scrivener 4A633A9D-6016-4A89-821D-AD23E9DC7643
-2020-08-09 18:34:02 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:02 +0200 ** Traitement du fichier scrivener 1CD56DBA-6CB7-41D2-A88C-2FC9B267276F
-2020-08-09 18:34:02 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:02 +0200 ** Traitement du fichier scrivener 9EC860DB-2886-4D16-ABE0-4A31EF61706D
-2020-08-09 18:34:02 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:02 +0200 ** Traitement du fichier scrivener 93CDE652-EB27-4D82-A130-6AB99118C24B
-2020-08-09 18:34:03 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:03 +0200 ** Traitement du fichier scrivener E6FA9FE9-B46D-4AE7-90AB-CD4ADF0B6B30
-2020-08-09 18:34:03 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:03 +0200 ** Traitement du fichier scrivener 27A5A558-A4A9-4B95-9148-C0C62C2DA148
-2020-08-09 18:34:03 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:03 +0200 ** Traitement du fichier scrivener B2F7F049-8EBF-4653-8887-9244B0579FDB
-2020-08-09 18:34:03 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:03 +0200 ** Traitement du fichier scrivener B2026484-33DE-4B20-9734-FC1058134790
-2020-08-09 18:34:03 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:03 +0200 ** Traitement du fichier scrivener 6AF14F67-F62F-4E80-8C69-915C0ABAE7A4
-2020-08-09 18:34:03 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:03 +0200 ** Traitement du fichier scrivener 25F3E9D6-12D1-4827-AA57-CFF2D1092B92
-2020-08-09 18:34:03 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:03 +0200 ** Traitement du fichier scrivener C4DCEF82-DA33-4881-B182-EFB5DB9EF706
-2020-08-09 18:34:03 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:03 +0200 ** Traitement du fichier scrivener CFD619F0-2E79-47F6-BE96-0626E9B358A7
-2020-08-09 18:34:04 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:04 +0200 ** Traitement du fichier scrivener 374E1D6F-204C-4D55-A609-2430D6C0E54E
-2020-08-09 18:34:04 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:04 +0200 ** Traitement du fichier scrivener 191BB0AF-AA15-4F5B-80DB-63F6D2DA6A82
-2020-08-09 18:34:04 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:04 +0200 ** Traitement du fichier scrivener 1A5C9426-4079-42B4-A54A-2D2272DC99A7
-2020-08-09 18:34:04 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:04 +0200 ** Traitement du fichier scrivener 451A292F-A7AD-4656-8834-8A16A3AF8981
-2020-08-09 18:34:04 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:04 +0200 ** Traitement du fichier scrivener 0AF69B45-FBEE-436C-ACD6-98655F1C956A
-2020-08-09 18:34:04 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:04 +0200 ** Traitement du fichier scrivener 11AC5D20-C2B4-45C3-9C59-6E3F776F4D1F
-2020-08-09 18:34:04 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:04 +0200 ** Traitement du fichier scrivener 88E2487B-10C6-4DA1-89B3-E8EA2E53998E
-2020-08-09 18:34:05 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:05 +0200 ** Traitement du fichier scrivener 2EEBC174-3B27-4AA0-87CF-583E37102EA4
-2020-08-09 18:34:05 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:05 +0200 ** Traitement du fichier scrivener 7696D1E2-5099-4DEE-9297-6999F5A016BF
-2020-08-09 18:34:05 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:06 +0200 ** Traitement du fichier scrivener 791C91B1-A50F-4ED9-8FA5-7C41784DA8C8
-2020-08-09 18:34:06 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:06 +0200 ** Traitement du fichier scrivener 1722A905-E035-4BC8-81E6-1193A1B3EC62
-2020-08-09 18:34:06 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:06 +0200 ** Traitement du fichier scrivener A2DCCC70-89CB-486C-8059-1EAF932BD531
-2020-08-09 18:34:06 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:06 +0200 ** Traitement du fichier scrivener A3F6CE23-E7CF-4328-A6D5-299ECF3F0EC1
-2020-08-09 18:34:06 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:06 +0200 ** Traitement du fichier scrivener 27480D3A-469A-493F-A06E-5442D2C34200
-2020-08-09 18:34:06 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:06 +0200 ** Traitement du fichier scrivener 138A5211-6A85-40FF-8B40-34B7EFC27D3F
-2020-08-09 18:34:06 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:07 +0200 ** Traitement du fichier scrivener 9F69B5DA-B1E1-4535-9FB5-26F53983E36A
-2020-08-09 18:34:07 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:07 +0200 ** Traitement du fichier scrivener 1AF586BE-7DAD-4C68-A776-D081FB657FE8
-2020-08-09 18:34:07 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:07 +0200 ** Traitement du fichier scrivener 75367CB4-B1DD-409C-9919-2B4B5DAD06F8
-2020-08-09 18:34:07 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:08 +0200 ** Traitement du fichier scrivener CC512EC7-59C6-4E50-BFF1-EC73834F9094
-2020-08-09 18:34:08 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:08 +0200 ** Traitement du fichier scrivener 671E8E7F-D7B9-4BCB-A98D-F65F07C837C7
-2020-08-09 18:34:08 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:08 +0200 ** Traitement du fichier scrivener 57985C3B-F0C0-44F4-A34B-F43073A1754C
-2020-08-09 18:34:08 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:08 +0200 ** Traitement du fichier scrivener 87F66955-01EF-4A01-B466-49C0A0A3E40F
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:09 +0200 ** Traitement du fichier scrivener 65728140-EC05-43DC-9785-F6FDDACC66C2
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:09 +0200 ** Traitement du fichier scrivener 70CF5728-F4AE-4707-9F9D-04A5A07CE6DE
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:09 +0200 ** Traitement du fichier scrivener 256D7228-BC9D-45A9-B6B8-6D3B7E2EBBAE
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:09 +0200 ** Traitement du fichier scrivener FEC9429C-7AA9-4493-8A09-5F4E287431E4
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:09 +0200 ** Traitement du fichier scrivener 2243B91C-2CFE-4B2F-8D9C-5B9FD2E84620
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:09 +0200 ** Traitement du fichier scrivener D3FF487A-B7B0-4094-860F-6335B7EA1033
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:09 +0200 ** Traitement du fichier scrivener DB6FB649-9E09-47EF-9299-B86799B0CCE3
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:09 +0200 ** Traitement du fichier scrivener 8950BAF5-EBBE-4678-89B1-44204741834F
-2020-08-09 18:34:09 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:10 +0200 ** Traitement du fichier scrivener D85D172C-2E93-495A-9152-5C91862832EF
-2020-08-09 18:34:10 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:10 +0200 ** Traitement du fichier scrivener FE51410B-FC47-46D5-B0DD-590614A6AC5D
-2020-08-09 18:34:10 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:10 +0200 ** Traitement du fichier scrivener 8D1B8EA1-878E-465E-A672-179E774ADCA1
-2020-08-09 18:34:10 +0200 *** Préparation du fichier corrigé
-2020-08-09 18:34:10 +0200 *** Lemmatisation du fichier
-2020-08-09 18:34:10 +0200 cmd lemmatisation : /usr/local/bin/tree-tagger-french < "/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie_prox/only_mots.txt" > "/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie_prox/only_mots.txt_lemma.data"
-2020-08-09 18:34:12 +0200 PROBLÈME EN PARSANT le projet scrivener /Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv : undefined method `length' for nil:NilClass
-/Users/philippeperret/Programmation/ProximityNew/lib/required/_first/TexteItem.rb:113:in `length'
-/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Texte/Texte.rb:59:in `recompte'
-/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Texte/parsing.rb:182:in `parse_projet_scrivener'
-/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Texte/parsing.rb:53:in `parse'
-/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Texte/parsing.rb:269:in `parse_if_necessary'
-/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:59:in `open_texte'
-/Users/philippeperret/Programmation/ProximityNew/lib/required/_then/Runner/Runner.rb:33:in `run'
-/Users/philippeperret/Programmation/ProximityNew/run.rb:6:in `<main>'
-2020-08-09 18:34:12 +0200 Une erreur est survenue : undefined method `length' for nil:NilClass (quitter et consulter le journal)
-2020-08-09 18:35:00 +0200 Soumission de la commande "q"
+2020-08-10 07:21:33 +0200 -> open_texte (text_path:"/Users/philippeperret/Documents/Ecriture/Romans/Le_Parc/Le_Parc-copie.scriv")
+2020-08-10 07:21:33 +0200 -- Projet Scrivener --
+2020-08-10 07:21:33 +0200 Projet Scrivener instancié.
+2020-08-10 07:21:33 +0200 Configuration enregistrée (:last_text_path)
+2020-08-10 07:21:34 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-10 07:21:34 +0200 -> ExtraitTexte#output
+2020-08-10 07:21:34 +0200 On doit afficher les items de 0 à 400 (nombre total : 79337)
+2020-08-10 07:21:34 +0200 Mot “jamais” (17/48) a une proximité APRÈS : jamais (31/84)
+2020-08-10 07:21:34 +0200 Mot “répondu” (19/55) a une proximité APRÈS : répondra (291/870)
+2020-08-10 07:21:34 +0200 Mot “pourquoi” (25/69) a une proximité APRÈS : pourquoi (360/1048)
+2020-08-10 07:21:34 +0200 Mot “jamais” (31/84) a une proximité AVANT : jamais (17/48)
+2020-08-10 07:21:34 +0200 Mot “pour” (35/99) a une proximité APRÈS : pour (352/1026)
+2020-08-10 07:21:34 +0200 Mot “existence” (50/136) a une proximité APRÈS : existence (57/155)
+2020-08-10 07:21:34 +0200 Mot “existence” (57/155) a une proximité AVANT : existence (50/136)
+2020-08-10 07:21:34 +0200 Mot “Quand” (59/166) a une proximité APRÈS : Quand (244/727)
+2020-08-10 07:21:34 +0200 Mot “interroge” (63/177) a une proximité APRÈS : interroger (285/848)
+2020-08-10 07:21:34 +0200 Mot “voit” (81/246) a une proximité APRÈS : voit (338/981)
+2020-08-10 07:21:34 +0200 Mot “encore” (83/251) a une proximité APRÈS : Encore (138/415)
+2020-08-10 07:21:34 +0200 Mot “mais” (91/278) a une proximité APRÈS : Mais (287/860)
+2020-08-10 07:21:34 +0200 Mot “plus” (96/292) a une proximité APRÈS : plus (425/1226)
+2020-08-10 07:21:34 +0200 Mot “Encore” (138/415) a une proximité AVANT : encore (83/251)
+2020-08-10 07:21:34 +0200 Mot “Encore” (138/415) a une proximité APRÈS : Encore (251/749)
+2020-08-10 07:21:34 +0200 Mot “question” (142/426) a une proximité APRÈS : question (255/760)
+2020-08-10 07:21:34 +0200 Mot “sont” (147/444) a une proximité AVANT : est (101/305)
+2020-08-10 07:21:34 +0200 Mot “sont” (147/444) a une proximité APRÈS : sont (210/628)
+2020-08-10 07:21:34 +0200 Mot “parc” (188/562) a une proximité APRÈS : parc (332/967)
+2020-08-10 07:21:34 +0200 Mot “sont” (210/628) a une proximité AVANT : sont (147/444)
+2020-08-10 07:21:34 +0200 Mot “sont” (210/628) a une proximité APRÈS : seront (246/733)
+2020-08-10 07:21:34 +0200 Mot “viendront” (242/716) a une proximité APRÈS : venus (440/1265)
+2020-08-10 07:21:34 +0200 Mot “Quand” (244/727) a une proximité AVANT : Quand (59/166)
+2020-08-10 07:21:34 +0200 Mot “Quand” (244/727) a une proximité APRÈS : Quand (295/886)
+2020-08-10 07:21:34 +0200 Mot “seront” (246/733) a une proximité AVANT : sont (210/628)
+2020-08-10 07:21:34 +0200 Mot “seront” (246/733) a une proximité APRÈS : est (381/1112)
+2020-08-10 07:21:34 +0200 Mot “Encore” (251/749) a une proximité AVANT : Encore (138/415)
+2020-08-10 07:21:34 +0200 Mot “Encore” (251/749) a une proximité APRÈS : Encore (392/1140)
+2020-08-10 07:21:34 +0200 Mot “question” (255/760) a une proximité AVANT : question (142/426)
+2020-08-10 07:21:34 +0200 Mot “question” (255/760) a une proximité APRÈS : question (396/1151)
+2020-08-10 07:21:34 +0200 Mot “Till” (280/835) a une proximité APRÈS : Till (289/865)
+2020-08-10 07:21:34 +0200 Mot “sans” (282/841) a une proximité APRÈS : sans (346/1010)
+2020-08-10 07:21:34 +0200 Mot “interroger” (285/848) a une proximité AVANT : interroge (63/177)
+2020-08-10 07:21:34 +0200 Mot “Mais” (287/860) a une proximité AVANT : mais (91/278)
+2020-08-10 07:21:34 +0200 Mot “Till” (289/865) a une proximité AVANT : Till (280/835)
+2020-08-10 07:21:34 +0200 Mot “Till” (289/865) a une proximité APRÈS : Till (453/1299)
+2020-08-10 07:21:34 +0200 Mot “répondra” (291/870) a une proximité AVANT : répondu (19/55)
+2020-08-10 07:21:34 +0200 Mot “Quand” (295/886) a une proximité AVANT : Quand (244/727)
+2020-08-10 07:21:34 +0200 Mot “fait” (299/897) a une proximité APRÈS : ferait (485/1383)
+2020-08-10 07:21:34 +0200 Mot “dans” (328/959) a une proximité APRÈS : dans (671/1907)
+2020-08-10 07:21:34 +0200 Mot “parc” (332/967) a une proximité AVANT : parc (188/562)
+2020-08-10 07:21:34 +0200 Mot “voit” (338/981) a une proximité AVANT : voit (81/246)
+2020-08-10 07:21:34 +0200 Mot “sans” (346/1010) a une proximité AVANT : sans (282/841)
+2020-08-10 07:21:34 +0200 Mot “sans” (346/1010) a une proximité APRÈS : sans (504/1439)
+2020-08-10 07:21:34 +0200 Mot “pour” (352/1026) a une proximité AVANT : pour (35/99)
+2020-08-10 07:21:34 +0200 Mot “pour” (352/1026) a une proximité APRÈS : pour (492/1405)
+2020-08-10 07:21:34 +0200 Mot “pourquoi” (360/1048) a une proximité AVANT : pourquoi (25/69)
+2020-08-10 07:21:34 +0200 <- ExtraitTexte#output
+2020-08-10 07:21:45 +0200 Soumission de la commande "rep 105 bruit"
+2020-08-10 07:21:45 +0200 🔨 Commande jouée : "rep 105 bruit"
+2020-08-10 07:21:46 +0200 Insertion de “bruit” pour l’index 105 (avant “. ”)
+2020-08-10 07:21:46 +0200 Nouveaux items ajoutés (1) : 
+2020-08-10 07:21:46 +0200 [#<Mot:0x00007f9b14ab0890 @content="bruit", @lemma="bruit">]
+2020-08-10 07:21:48 +0200 Lemma line : "bruit\tVER:pres\tbruir|bruire" (index : 0)
+2020-08-10 07:21:48 +0200 -> ExtraitTexte#output
+2020-08-10 07:21:48 +0200 On doit afficher les items de 0 à 390 (nombre total : 79337)
+2020-08-10 07:21:48 +0200 Mot “jamais” (17/48) a une proximité APRÈS : jamais (31/84)
+2020-08-10 07:21:48 +0200 Mot “répondu” (19/55) a une proximité APRÈS : répondra (291/868)
+2020-08-10 07:21:48 +0200 Mot “pourquoi” (25/69) a une proximité APRÈS : pourquoi (360/1046)
+2020-08-10 07:21:48 +0200 Mot “jamais” (31/84) a une proximité AVANT : jamais (17/48)
+2020-08-10 07:21:48 +0200 Mot “pour” (35/99) a une proximité APRÈS : pour (352/1024)
+2020-08-10 07:21:48 +0200 Mot “existence” (50/136) a une proximité APRÈS : existence (57/155)
+2020-08-10 07:21:48 +0200 Mot “existence” (57/155) a une proximité AVANT : existence (50/136)
+2020-08-10 07:21:48 +0200 Mot “Quand” (59/166) a une proximité APRÈS : Quand (244/725)
+2020-08-10 07:21:48 +0200 Mot “interroge” (63/177) a une proximité APRÈS : interroger (285/846)
+2020-08-10 07:21:48 +0200 Mot “voit” (81/246) a une proximité APRÈS : voit (338/979)
+2020-08-10 07:21:48 +0200 Mot “encore” (83/251) a une proximité APRÈS : Encore (138/413)
+2020-08-10 07:21:48 +0200 Mot “mais” (91/278) a une proximité APRÈS : Mais (287/858)
+2020-08-10 07:21:48 +0200 Mot “plus” (96/292) a une proximité APRÈS : plus (425/1224)
+2020-08-10 07:21:48 +0200 Mot “Encore” (138/413) a une proximité AVANT : encore (83/251)
+2020-08-10 07:21:48 +0200 Mot “Encore” (138/413) a une proximité APRÈS : Encore (251/747)
+2020-08-10 07:21:48 +0200 Mot “question” (142/424) a une proximité APRÈS : question (255/758)
+2020-08-10 07:21:48 +0200 Mot “sont” (147/442) a une proximité AVANT : est (101/305)
+2020-08-10 07:21:48 +0200 Mot “sont” (147/442) a une proximité APRÈS : sont (210/626)
+2020-08-10 07:21:48 +0200 Mot “parc” (188/560) a une proximité APRÈS : parc (332/965)
+2020-08-10 07:21:48 +0200 Mot “sont” (210/626) a une proximité AVANT : sont (147/442)
+2020-08-10 07:21:48 +0200 Mot “sont” (210/626) a une proximité APRÈS : seront (246/731)
+2020-08-10 07:21:48 +0200 Mot “viendront” (242/714) a une proximité APRÈS : venus (440/1263)
+2020-08-10 07:21:48 +0200 Mot “Quand” (244/725) a une proximité AVANT : Quand (59/166)
+2020-08-10 07:21:48 +0200 Mot “Quand” (244/725) a une proximité APRÈS : Quand (295/884)
+2020-08-10 07:21:48 +0200 Mot “seront” (246/731) a une proximité AVANT : sont (210/626)
+2020-08-10 07:21:48 +0200 Mot “seront” (246/731) a une proximité APRÈS : est (381/1110)
+2020-08-10 07:21:48 +0200 Mot “Encore” (251/747) a une proximité AVANT : Encore (138/413)
+2020-08-10 07:21:48 +0200 Mot “Encore” (251/747) a une proximité APRÈS : Encore (392/1138)
+2020-08-10 07:21:48 +0200 Mot “question” (255/758) a une proximité AVANT : question (142/424)
+2020-08-10 07:21:48 +0200 Mot “question” (255/758) a une proximité APRÈS : question (396/1149)
+2020-08-10 07:21:48 +0200 Mot “Till” (280/833) a une proximité APRÈS : Till (289/863)
+2020-08-10 07:21:48 +0200 Mot “sans” (282/839) a une proximité APRÈS : sans (346/1008)
+2020-08-10 07:21:48 +0200 Mot “interroger” (285/846) a une proximité AVANT : interroge (63/177)
+2020-08-10 07:21:48 +0200 Mot “Mais” (287/858) a une proximité AVANT : mais (91/278)
+2020-08-10 07:21:48 +0200 Mot “Till” (289/863) a une proximité AVANT : Till (280/833)
+2020-08-10 07:21:48 +0200 Mot “Till” (289/863) a une proximité APRÈS : Till (453/1297)
+2020-08-10 07:21:48 +0200 Mot “répondra” (291/868) a une proximité AVANT : répondu (19/55)
+2020-08-10 07:21:48 +0200 Mot “Quand” (295/884) a une proximité AVANT : Quand (244/725)
+2020-08-10 07:21:48 +0200 Mot “fait” (299/895) a une proximité APRÈS : ferait (485/1381)
+2020-08-10 07:21:48 +0200 Mot “dans” (328/957) a une proximité APRÈS : dans (671/1905)
+2020-08-10 07:21:48 +0200 Mot “parc” (332/965) a une proximité AVANT : parc (188/560)
+2020-08-10 07:21:48 +0200 Mot “voit” (338/979) a une proximité AVANT : voit (81/246)
+2020-08-10 07:21:48 +0200 Mot “sans” (346/1008) a une proximité AVANT : sans (282/839)
+2020-08-10 07:21:48 +0200 Mot “sans” (346/1008) a une proximité APRÈS : sans (504/1437)
+2020-08-10 07:21:48 +0200 Mot “pour” (352/1024) a une proximité AVANT : pour (35/99)
+2020-08-10 07:21:48 +0200 Mot “pour” (352/1024) a une proximité APRÈS : pour (492/1403)
+2020-08-10 07:21:48 +0200 Mot “pourquoi” (360/1046) a une proximité AVANT : pourquoi (25/69)
+2020-08-10 07:21:48 +0200 <- ExtraitTexte#output
+2020-08-10 07:23:10 +0200 Soumission de la commande "rep 105 silence"
+2020-08-10 07:23:10 +0200 🔨 Commande jouée : "rep 105 silence"
+2020-08-10 07:23:12 +0200 Insertion de “silence” pour l’index 105 (avant “. ”)
+2020-08-10 07:23:12 +0200 Nouveaux items ajoutés (1) : 
+2020-08-10 07:23:12 +0200 [#<Mot:0x00007f9b14f06e58 @content="silence", @lemma="silence">]
+2020-08-10 07:23:13 +0200 Lemma line : "silence\tNOM\tsilence" (index : 0)
+2020-08-10 07:23:13 +0200 -> ExtraitTexte#output
+2020-08-10 07:23:13 +0200 On doit afficher les items de 0 à 390 (nombre total : 79337)
+2020-08-10 07:23:13 +0200 Mot “jamais” (17/48) a une proximité APRÈS : jamais (31/84)
+2020-08-10 07:23:13 +0200 Mot “répondu” (19/55) a une proximité APRÈS : répondra (291/870)
+2020-08-10 07:23:13 +0200 Mot “pourquoi” (25/69) a une proximité APRÈS : pourquoi (360/1048)
+2020-08-10 07:23:13 +0200 Mot “jamais” (31/84) a une proximité AVANT : jamais (17/48)
+2020-08-10 07:23:13 +0200 Mot “pour” (35/99) a une proximité APRÈS : pour (352/1026)
+2020-08-10 07:23:13 +0200 Mot “existence” (50/136) a une proximité APRÈS : existence (57/155)
+2020-08-10 07:23:13 +0200 Mot “existence” (57/155) a une proximité AVANT : existence (50/136)
+2020-08-10 07:23:13 +0200 Mot “Quand” (59/166) a une proximité APRÈS : Quand (244/727)
+2020-08-10 07:23:13 +0200 Mot “interroge” (63/177) a une proximité APRÈS : interroger (285/848)
+2020-08-10 07:23:13 +0200 Mot “voit” (81/246) a une proximité APRÈS : voit (338/981)
+2020-08-10 07:23:13 +0200 Mot “encore” (83/251) a une proximité APRÈS : Encore (138/415)
+2020-08-10 07:23:13 +0200 Mot “mais” (91/278) a une proximité APRÈS : Mais (287/860)
+2020-08-10 07:23:13 +0200 Mot “plus” (96/292) a une proximité APRÈS : plus (425/1226)
+2020-08-10 07:23:13 +0200 Mot “silence” (105/312) a une proximité AVANT : silence (63307/178870)
+2020-08-10 07:23:14 +0200 Mot “Encore” (138/415) a une proximité AVANT : encore (83/251)
+2020-08-10 07:23:14 +0200 Mot “Encore” (138/415) a une proximité APRÈS : Encore (251/749)
+2020-08-10 07:23:14 +0200 Mot “question” (142/426) a une proximité APRÈS : question (255/760)
+2020-08-10 07:23:14 +0200 Mot “sont” (147/444) a une proximité AVANT : est (101/305)
+2020-08-10 07:23:14 +0200 Mot “sont” (147/444) a une proximité APRÈS : sont (210/628)
+2020-08-10 07:23:14 +0200 Mot “parc” (188/562) a une proximité APRÈS : parc (332/967)
+2020-08-10 07:23:14 +0200 Mot “sont” (210/628) a une proximité AVANT : sont (147/444)
+2020-08-10 07:23:14 +0200 Mot “sont” (210/628) a une proximité APRÈS : seront (246/733)
+2020-08-10 07:23:14 +0200 Mot “viendront” (242/716) a une proximité APRÈS : venus (440/1265)
+2020-08-10 07:23:14 +0200 Mot “Quand” (244/727) a une proximité AVANT : Quand (59/166)
+2020-08-10 07:23:14 +0200 Mot “Quand” (244/727) a une proximité APRÈS : Quand (295/886)
+2020-08-10 07:23:14 +0200 Mot “seront” (246/733) a une proximité AVANT : sont (210/628)
+2020-08-10 07:23:14 +0200 Mot “seront” (246/733) a une proximité APRÈS : est (381/1112)
+2020-08-10 07:23:14 +0200 Mot “Encore” (251/749) a une proximité AVANT : Encore (138/415)
+2020-08-10 07:23:14 +0200 Mot “Encore” (251/749) a une proximité APRÈS : Encore (392/1140)
+2020-08-10 07:23:14 +0200 Mot “question” (255/760) a une proximité AVANT : question (142/426)
+2020-08-10 07:23:14 +0200 Mot “question” (255/760) a une proximité APRÈS : question (396/1151)
+2020-08-10 07:23:14 +0200 Mot “Till” (280/835) a une proximité APRÈS : Till (289/865)
+2020-08-10 07:23:14 +0200 Mot “sans” (282/841) a une proximité APRÈS : sans (346/1010)
+2020-08-10 07:23:14 +0200 Mot “interroger” (285/848) a une proximité AVANT : interroge (63/177)
+2020-08-10 07:23:14 +0200 Mot “Mais” (287/860) a une proximité AVANT : mais (91/278)
+2020-08-10 07:23:14 +0200 Mot “Till” (289/865) a une proximité AVANT : Till (280/835)
+2020-08-10 07:23:14 +0200 Mot “Till” (289/865) a une proximité APRÈS : Till (453/1299)
+2020-08-10 07:23:14 +0200 Mot “répondra” (291/870) a une proximité AVANT : répondu (19/55)
+2020-08-10 07:23:14 +0200 Mot “Quand” (295/886) a une proximité AVANT : Quand (244/727)
+2020-08-10 07:23:14 +0200 Mot “fait” (299/897) a une proximité APRÈS : ferait (485/1383)
+2020-08-10 07:23:14 +0200 Mot “dans” (328/959) a une proximité APRÈS : dans (671/1907)
+2020-08-10 07:23:14 +0200 Mot “parc” (332/967) a une proximité AVANT : parc (188/562)
+2020-08-10 07:23:14 +0200 Mot “voit” (338/981) a une proximité AVANT : voit (81/246)
+2020-08-10 07:23:14 +0200 Mot “sans” (346/1010) a une proximité AVANT : sans (282/841)
+2020-08-10 07:23:14 +0200 Mot “sans” (346/1010) a une proximité APRÈS : sans (504/1439)
+2020-08-10 07:23:14 +0200 Mot “pour” (352/1026) a une proximité AVANT : pour (35/99)
+2020-08-10 07:23:14 +0200 Mot “pour” (352/1026) a une proximité APRÈS : pour (492/1405)
+2020-08-10 07:23:14 +0200 Mot “pourquoi” (360/1048) a une proximité AVANT : pourquoi (25/69)
+2020-08-10 07:23:14 +0200 <- ExtraitTexte#output
+2020-08-10 07:23:26 +0200 Soumission de la commande "q"
