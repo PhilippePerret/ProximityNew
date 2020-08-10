@@ -162,7 +162,7 @@ class << self
     when 'show'
       from = cmd.shift.to_i
       Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
-      Runner.iextrait.output
+      Runner.iextrait.update
 
     when 'next'
       what = cmd.shift

@@ -9,14 +9,16 @@
 # de Q à M (de 0 à 9)
 # Cette fonctionnalité peut se désactiver dans les préférences de l'application
 COMMANDS_TO_MODE = {
+  'del '  => {mode: :chiffres_simples},
+  'ign '  => {mode: :chiffres_simples},
   'ins '  => {mode: :chiffres_simples},
+  'inj '  => {mode: :chiffres_simples},
   'rep '  => {mode: :chiffres_simples},
   'dep '  => {mode: :chiffres_simples},
   'mov '  => {mode: :chiffres_simples},
   'rem '  => {mode: :chiffres_simples},
-  'del '  => {mode: :chiffres_simples},
-  'sup '  => {mode: :chiffres_simples},
   'show ' => {mode: :chiffres_simples},
+  'sup '  => {mode: :chiffres_simples},
 }
 
 MODES_CLAVIER = {

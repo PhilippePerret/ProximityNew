@@ -132,7 +132,7 @@ end #/ write3lines
 # économiser le travail.
 #
 def update(first_modified_item = 0)
-  Runner.itexte.recompte(from: 0) # [1]
+  itexte.recompte # [1]
   @to_item += 10 # au cas où il y ait un ajout de 10 mots
   output
 end #/ update

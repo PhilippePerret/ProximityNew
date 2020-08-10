@@ -41,6 +41,10 @@ attr_reader :content
 attr_accessor :type, :index, :offset, :canon
 attr_accessor :icanon
 
+# Cette propriété est mise à true si le mot doit être ignoré des recherches
+# de proximité.
+attr_accessor :is_ignored
+
 # Pour les projets Scrivener, on enregistre l'identifiant du fichier
 # contenant le mot. Le chemin d'accès du fichier peut être retrouvé
 # grâce à la méthode ScrivFile.get_path_by_file_id(+file_id+). Cette information
@@ -368,7 +372,7 @@ def prox_apres
       next_item_in_canon = nil
       begin
         next_item_in_canon = icanon.items[ idx_next_item += 1 ]
-      end while next_item_in_canon && false next_item_in_canon.proximizable?
+      end while next_item_in_canon && false == next_item_in_canon.proximizable?
 
       if next_item_in_canon # il y a un mot après
         # log("Un item a été trouvé après : #{next_item_in_canon.cio}")

@@ -7,11 +7,18 @@ class ExtraitTexte
 # ---------------------------------------------------------------------
 
 def ignore(params)
+  log("-> ignore#{params.inspect}")
   params.merge!({
     real_at: AtStructure.new(params[:at], from_item),
     operation: 'ignore'
   })
-  params[:real_at].list { |titem| titem.is_ignored = true}
+  params[:real_at].list.each do |tid|
+    titem = itexte.items[tid]
+    titem.is_ignored = true
+    log("Titem #{titem.cio} est marqué à ignorer.", true)
+  end
+  update # pour actualiser l'affichage
+  itexte.save # TODO Plus tard, on sauvera seulement le mot
 end #/ ignore
 
 def unignore(params)
@@ -20,6 +27,8 @@ def unignore(params)
     operation: 'unignore'
   })
   params[:real_at].list { |titem| titem.is_ignored = false}
+  update # pour actualiser l'affichage
+  itexte.save # TODO Plus tard, on sauvera seulement le mot
 end #/ un_ignore
 
 # Remplacer un mot par un ou des autres
