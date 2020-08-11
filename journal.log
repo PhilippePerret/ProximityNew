@@ -1,0 +1,70 @@
+2020-08-11 20:53:30 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt")
+2020-08-11 20:53:30 +0200 Configuration enregistrée (:last_text_path)
+2020-08-11 20:53:30 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #24/contenant/23/in extrait:23/57 : #37/contient/36/in extrait:36/106
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #24 : ["", "|", "36"]
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #33/aujourd'hui/32/in extrait:32/90 : #87/aujourd'hui/86/in extrait:86/262
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #33 : ["", "|", "86"]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #37/contient/36/in extrait:36/106 avec : #24/contenant/23/in extrait:23/57
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #37/contient/36/in extrait:36/106 : #101/contient/100/in extrait:100/304
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #37 : ["23", "|", "100"]
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #43/paragraphes/42/in extrait:42/135 : #54/paragraphes/53/in extrait:53/169
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #43 : ["", "|", "53"]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #54/paragraphes/53/in extrait:53/169 avec : #43/paragraphes/42/in extrait:42/135
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #54/paragraphes/53/in extrait:53/169 : #73/paragraphes/72/in extrait:72/218
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #54 : ["42", "|", "72"]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #73/paragraphes/72/in extrait:72/218 avec : #43/paragraphes/42/in extrait:42/135
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #73/paragraphes/72/in extrait:72/218 : #139/paragraphe/138/in extrait:138/430
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #73 : ["42", "|", "138"]
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #81/plus/80/in extrait:80/247 : #95/plus/94/in extrait:94/289
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #81 : ["", "|", "94"]
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #83/long/82/in extrait:82/252 : #97/long/96/in extrait:96/294
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #83 : ["", "|", "96"]
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #85/pour/84/in extrait:84/257 : #121/pour/120/in extrait:120/376
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #85 : ["", "|", "120"]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #87/aujourd'hui/86/in extrait:86/262 avec : #33/aujourd'hui/32/in extrait:32/90
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #87 : ["32", "|", ""]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #95/plus/94/in extrait:94/289 avec : #81/plus/80/in extrait:80/247
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #95 : ["80", "|", ""]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #97/long/96/in extrait:96/294 avec : #83/long/82/in extrait:82/252
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #97 : ["82", "|", ""]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #101/contient/100/in extrait:100/304 avec : #24/contenant/23/in extrait:23/57
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #101 : ["23", "|", ""]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #121/pour/120/in extrait:120/376 avec : #85/pour/84/in extrait:84/257
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #121 : ["84", "|", ""]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #139/paragraphe/138/in extrait:138/430 avec : #43/paragraphes/42/in extrait:42/135
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #139 : ["42", "|", ""]
+2020-08-11 20:53:30 +0200 Proximity après trouvée pour #147/dialogue/146/in extrait:146/452 : #157/dialogue/156/in extrait:156/476
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #147 : ["", "|", "156"]
+2020-08-11 20:53:30 +0200 Proximity avant trouvée pour #157/dialogue/156/in extrait:156/476 avec : #147/dialogue/146/in extrait:146/452
+2020-08-11 20:53:30 +0200 Index(s) de proximité de #157 : ["146", "|", ""]
+2020-08-11 20:53:30 +0200 <- ExtraitTexte#output
+2020-08-11 20:53:34 +0200 Soumission de la commande "rem 38"
+2020-08-11 20:53:34 +0200 🔨 Commande jouée : "rem 38"
+2020-08-11 20:53:34 +0200 -> remove(params={:at=>"38", :cancellor=>#<OpeCancellor:0x00007fa1e39da580 @command="rem 38", @time=1597172014, @micro_operations=[]>, :real_at=>#<AtStructure:0x00007fa1e39da4b8 @at_init="38", @at=38, @to=38, @from=38, @first=38, @last=38, @list=[38]>, :titem_ref=>#<Mot:0x00007fa1e39744b0 @content="également", @mark_scrivener_start=nil, @mark_scrivener_end=nil, @type="ADV", @icanon=#<Canon:0x00007fa1e391dc50 @canon="également", @items=[#<Mot:0x00007fa1e391dd18 @content="également", @lemma="également", @type="ADV", @icanon=#<Canon:0x00007fa1e391dc50 ...>, @canon="également", @id=39, @f_content=nil, @is_not_proximizabe=nil, @prox_avant_calculed=nil, @prox_avant=nil, @prox_apres_calculed=nil, @prox_apres=nil, @has_canon_exclu=nil, @offset=115, @index=38, @indice_in_file=22, @length=9>], @offsets=[115]>, @canon="également", @id=39, @f_content="également", @is_not_proximizabe=:true, @prox_avant_calculed=true, @prox_avant=nil, @prox_apres_calculed=true, @prox_apres=nil, @has_canon_exclu=:false, @offset=115, @index=38, @indice_in_file=22, @length=9, @is_mot=true, @file_id=nil, @ignored=nil, @index_in_extrait=38, @f_length=9, @main_type="ADV">})
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #24/contenant/23/in extrait:23/57 : #37/contient/36/in extrait:36/106
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #24 : ["", "|", "36"]
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #33/aujourd'hui/32/in extrait:32/90 : #87/aujourd'hui/86/in extrait:84/262
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #33 : ["", "|", "84"]
+2020-08-11 20:53:34 +0200 Proximity avant trouvée pour #37/contient/36/in extrait:36/106 avec : #24/contenant/23/in extrait:23/57
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #37/contient/36/in extrait:36/106 : #101/contient/100/in extrait:98/304
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #37 : ["23", "|", "98"]
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #43/paragraphes/42/in extrait:40/135 : #54/paragraphes/53/in extrait:51/169
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #43 : ["", "|", "51"]
+2020-08-11 20:53:34 +0200 Proximity avant trouvée pour #54/paragraphes/53/in extrait:51/169 avec : #43/paragraphes/42/in extrait:40/135
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #54/paragraphes/53/in extrait:51/169 : #73/paragraphes/72/in extrait:70/218
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #54 : ["40", "|", "70"]
+2020-08-11 20:53:34 +0200 Proximity avant trouvée pour #73/paragraphes/72/in extrait:70/218 avec : #43/paragraphes/42/in extrait:40/135
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #73/paragraphes/72/in extrait:70/218 : #139/paragraphe/138/in extrait:136/430
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #73 : ["40", "|", "136"]
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #81/plus/80/in extrait:78/247 : #95/plus/94/in extrait:92/289
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #81 : ["", "|", "92"]
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #83/long/82/in extrait:80/252 : #97/long/96/in extrait:94/294
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #83 : ["", "|", "94"]
+2020-08-11 20:53:34 +0200 Proximity après trouvée pour #85/pour/84/in extrait:82/257 : #121/pour/120/in extrait:118/376
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #85 : ["", "|", "118"]
+2020-08-11 20:53:34 +0200 Proximity avant trouvée pour #87/aujourd'hui/86/in extrait:84/262 avec : #33/aujourd'hui/32/in extrait:32/90
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #87 : ["32", "|", ""]
+2020-08-11 20:53:34 +0200 Proximity avant trouvée pour #95/plus/94/in extrait:92/289 avec : #81/plus/80/in extrait:78/247
+2020-08-11 20:53:34 +0200 Index(s) de proximité de #95 : ["78", "|", ""]
+2020-08-11 20:53:34 +0200 Proximity avant trouvée pour #97/long/96/in extrait:94/294 avec : #83/long/82/in extrait:80/252

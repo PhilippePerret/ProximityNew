@@ -163,12 +163,13 @@ end #/ db_mark_scrivener_end
 # :index, il ne faut donc pas mettre ces propriétés dans cette liste. Ou
 # alors placer l'appel à reset autre part, pas dans le recomptage.
 def reset
+  @f_length = nil
   @f_content  = nil
   @is_not_proximizabe   = nil
-  @prox_avant_calculed  = nil
   @prox_avant = nil
-  @prox_apres_calculed  = nil
+  @prox_avant_calculed  = nil
   @prox_apres = nil
+  @prox_apres_calculed  = nil
   @has_canon_exclu = nil
 end #/ reset
 
@@ -402,9 +403,9 @@ def prox_avant
         # encore
       end
       unless titem_avant.nil?
-        log("Proximity avant trouvée pour #{self.cio} avec : #{titem.cio}")
+        log("Proximity avant trouvée pour #{self.cio} avec : #{titem_avant.cio}")
         @prox_avant = Proximite.new(avant:titem_avant, apres:self, distance:distance)
-        titem.prox_apres = @prox_avant
+        titem_avant.prox_apres = @prox_avant
       end
 
     end
@@ -432,15 +433,15 @@ def prox_apres
       liste_seek.reverse! # pour pouvoir pop(er) au lieu de shift(er)
 
       @prox_apres = nil
-      while titem = liste_seek.pop
-        next if not titem.proximizable?
-        next if titem.canon != canon
-        distance = titem.offset - offset
+      while titem_apres = liste_seek.pop
+        next if not titem_apres.proximizable?
+        next if titem_apres.canon != canon
+        distance = titem_apres.offset - offset
         break if distance > Canon[canon].distance_minimale
         # Si on passe ici c'est qu'un mot proche a été trouvé
-        log("Proximity après trouvée pour #{self.cio} : #{titem.cio}")
-        @prox_apres = Proximite.new(avant:self, apres:titem, distance:distance)
-        titem.prox_avant = @prox_apres
+        log("Proximity après trouvée pour #{self.cio} : #{titem_apres.cio}")
+        @prox_apres = Proximite.new(avant:self, apres:titem_apres, distance:distance)
+        titem_apres.prox_avant = @prox_apres
         break # on s'arrête là, puisque le prochain mot serait plus loin
       end
     end

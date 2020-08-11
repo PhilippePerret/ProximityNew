@@ -90,6 +90,13 @@ def update_text_item(hvalues)
   raise("udpate_text_item n'est pas encore implémenté.")
 end #/ update_text_item
 
+def update_prop_ignored(titem, value)
+  stm_update_ignored.execute(value ? 'TRUE' : 'FALSE', titem.id)
+end #/ update_prop_ignored
+def stm_update_ignored
+  @stm_update_ignored ||= db.prepare("UPDATE text_items SET Ignored = ? WHERE id = ?")
+end #/ stm_update_ignored
+
 # Requête préparée pour l'enregistrement d'un nouveau text-item dans text_items
 def stm_insert_titem
   @stm_insert_titem ||= begin

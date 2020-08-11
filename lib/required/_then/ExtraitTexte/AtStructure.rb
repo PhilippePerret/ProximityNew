@@ -11,11 +11,10 @@
 #
 # En sachant aussi que l'index donné est l'index relatif à la fenêtre
 class AtStructure
-  attr_reader :at, :from, :to, :nombre, :list, :at_init, :first_index, :last, :first
+  attr_reader :at, :from, :to, :nombre, :list, :at_init, :last, :first
   attr_reader :range # juste pour les message
-  def initialize(at_init, first_index)
+  def initialize(at_init)
     @at_init = at_init.to_s # quelquefois, on envoie un nombre (annulation)
-    @first_index = first_index
     parse
   end #/ initialize
 
@@ -38,7 +37,7 @@ class AtStructure
     if at_init.match?(TIRET) # => un rang
       @from, @to = at_init.split(TIRET).collect do |i|
         conforme?(i)
-        i.to_i + first_index
+        i.to_i
       end
       @last = @to
       @first = @from
@@ -53,7 +52,7 @@ class AtStructure
       @nombre = list.count
     elsif !list? # [1]
       conforme?(at_init)
-      @at = at_init.to_i + first_index
+      @at = at_init.to_i
       @last = @first = @from = @to = @at
       @list = [@at] # pour simplifier certaines méthodes
     end
@@ -85,7 +84,7 @@ private
     # On découpe d'abord pour prendre chaque élément
     @list = at_init.split(VG).collect do |i|
       conforme?(i)
-      i.strip.to_i + first_index
+      i.strip.to_i
     end
 
     # On met toujours la liste dans l'ordre et avec des valeurs uniques
@@ -126,6 +125,7 @@ private
     raise(ERRORS[:entier_required] % i.inspect) unless i.integer?
     i = i.to_i
     raise[ERRORS[:index_positif] % [i]] if i < 0
+    to_item = Runner.iextrait.to_item
     raise(ERRORS[:index_too_high] % [i, to_item]) if i > to_item # il doit être dans la fenêtre
 
     return true

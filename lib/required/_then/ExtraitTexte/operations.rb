@@ -19,26 +19,35 @@ end #/ debug_remove?
 def ignore(params)
   log("-> ignore#{params.inspect}")
   params.merge!({
-    real_at: AtStructure.new(params[:at], from_item),
+    real_at: AtStructure.new(params[:at]),
     operation: 'ignore'
   })
   params[:real_at].list.each do |tid|
-    titem = itexte.items[tid]
+    titem = extrait_titems[tid]
     titem.is_ignored = true
+    # Pour le moment, on l'enregistre tout de suite, ça ne devrait pas
+    # trop consommer
+    itexte.db.update_prop_ignored(titem, true)
+    # titem.modified = true # pour savoir qu'il faudra l'enregistrer
     log("Titem #{titem.cio} est marqué à ignorer.", true)
   end
-  update # pour actualiser l'affichage
-  itexte.save # TODO Plus tard, on sauvera seulement le mot
+  # Actualiser l'affichage, mais sans marquer l'extrait modifié
+  # (sinon, c'est la méthode `update` qu'il faut appeler)
+  update(save = false)
 end #/ ignore
 
 def unignore(params)
   params.merge!({
-    real_at: AtStructure.new(params[:at], from_item),
+    real_at: AtStructure.new(params[:at]),
     operation: 'unignore'
   })
-  params[:real_at].list { |titem| titem.is_ignored = false}
-  update # pour actualiser l'affichage
-  itexte.save # TODO Plus tard, on sauvera seulement le mot
+  params[:real_at].list do |titem|
+    titem.is_ignored = false
+    itexte.db.update_prop_ignored(titem, false)
+  end
+  # pour actualiser l'affichage mais sans marquer que l'extrait est à
+  # enregistrer
+  update(saveable = false)
 end #/ un_ignore
 
 # Remplacer un mot par un ou des autres
@@ -47,18 +56,18 @@ end #/ un_ignore
 #
 def replace(params)
   params.merge!({
-    real_at: AtStructure.new(params[:at], from_item),
+    real_at: AtStructure.new(params[:at]),
     operation: 'replace'
   })
 
   # Pour conserver le text-item de référence
-  params.merge!(titem_ref: itexte.items[params[:real_at].at])
+  params.merge!(titem_ref: extrait_titems[params[:real_at].at])
 
   if debug_replace?
     log("-> replace(params:#{params.inspect})")
   end
 
-  CWindow.log("Remplacement du/des mot/s #{params[:at]||params[:real_at].at} par “#{params[:content]}”")
+  CWindow.log("Remplacement du/des mot/s #{params[:real_at].at} par “#{params[:content]}”")
   if ['_space_', '_return_'].include?(params[:content])
     # Pas besoin de simulation pour ajouter une espace ou un retour chariot
     # Ça se fait directement
@@ -85,20 +94,20 @@ end #/ replace
 
 # Suppression d'un ou plusieurs mots
 def remove(params)
-  params[:real_at] ||= begin
-    AtStructure.new(params[:at], from_item).tap { |at| params.merge!(real_at: at) }
-  end
+  params[:real_at] ||= AtStructure.new(params[:at]).tap { |at| params.merge!(real_at: at) }
 
   # Le text-item de référence
   unless params.key?(:titem_ref)
-    params.merge!(titem_ref: itexte.items[params[:real_at].at])
+    params.merge!(titem_ref: extrait_titems[params[:real_at].at])
   end
 
   if debug_replace? || debug_remove?
     log("-> remove(params=#{params.inspect})")
   end
 
-  # Pour connaitre l'opération
+  # Pour connaitre l'opération, pour faire la distinction, plus tard, entre
+  # une pure suppression et un remplacement. Elle permet aussi d'enregistrer
+  # l'opération dans l'historique operations.txt
   unless params.key?(:operation)
     params.merge!(operation: 'remove')
   end
@@ -111,21 +120,33 @@ def remove(params)
     # fait une simple suppression d'un mot. C'est arrivé en essayant de
     # supprimer le dernier mot du simple_text.txt
   end
+
   at = params[:real_at]
-  # Dans tous les cas il faut retirer les mots de leur canon (si ce sont
-  # des mots)
-  at.list.each do |idx|
-    titem = Runner.itexte.items[idx]
-    Canon.remove(titem) if titem.mot?
-  end
+
+  # # Dans tous les cas il faut retirer les mots de leur canon (si ce sont
+  # # des mots)
+  # OBSOLETE maintenant, normalement, puisqu'on n'enregistre plus les mots
+  # dans les canons, on n'en a plus besoin puisque les proximités ne sont
+  # comptées que pour l'extrait courant, avec peu de valeurs.
+  # at.list.each do |idx|
+  #   titem = extrait_titems[idx]
+  #   log("Item à supprimer : #{titem.inspect}")
+  #   Canon.remove(titem) if titem.mot?
+  # end
 
   # Si c'est une vraie suppression (i.e. pas un remplacement), il faut
   # supprimer aussi l'espace après. S'il n'y a pas d'espace après, il faut
   # supprimer l'espace avant s'il existe.
-  # La formulaire est différente en fonction du fait qu'on ait un rang ou
+  # La formule est différente en fonction du fait qu'on ait un rang ou
   # un index seul et une liste discontinue d'index.
   # ATTENTION AUSSI : l'espace supplémentaire à supprimer est peut-être
-  # dans la liste des index à supprimer.
+  # dans la liste des index à supprimer et dans ce cas il faut étudier
+  # le mot suivant et le text-item non-mot suivant.
+  #
+  # Le but de cette partie est donc de produire la liste exacte des text-items
+  # qui doivent être finalement supprimé.
+  # Elle n'est valable que pour une suppression pure car pour un replacement,
+  # il faut garder tous les éléments autour du mot ou des mots remplacés.
   if params[:operation] == 'remove'
     if at.list?
       # Pour une liste, on doit faire un traitement particulier : il faut
@@ -133,7 +154,7 @@ def remove(params)
       liste_finale = at.list.dup
       at.list.each_with_index do |idx, idx_in_list|
         # Les non-mots doivent être passés
-        next if itexte.items[idx].non_mot?
+        next if extrait_titems[idx].non_mot?
         # On passe ce mot si le mot suivant appartient aussi à la liste
         next if at.list[idx_in_list + 1] == idx + 1
         # On passe ce mot si le mot précédent appartient aussi à la liste
@@ -142,10 +163,10 @@ def remove(params)
         # que la liste ne contient ni son mot juste après ni son mot
         # juste avant.
         next_index = idx + 1
-        next_titem = itexte.items[next_index]
+        next_titem = extrait_titems[next_index]
         prev_index = idx - 1
         prev_index = nil if prev_index < 0
-        prev_titem = prev_index.nil? ? nil : itexte.items[prev_index]
+        prev_titem = prev_index.nil? ? nil : extrait_titems[prev_index]
         if next_titem && next_titem.space?
           # On l'ajoute à la liste des items à supprimer
           liste_finale.insert(idx_in_list + 1, next_index)
@@ -156,7 +177,7 @@ def remove(params)
 
       # Si la liste finale a changé, il faut corrigé le at
       if liste_finale != at.list
-        params[:real_at] = at = AtStructure.new(liste_finale.join(VG), from_item)
+        params[:real_at] = at = AtStructure.new(liste_finale.join(VG))
       end
 
     else
@@ -168,16 +189,16 @@ def remove(params)
       next_index = at.last + 1
       prev_index = at.first - 1
       prev_index = nil if prev_index < 0
-      if itexte.items[next_index].space?
-        params[:real_at] = at = AtStructure.new("#{at.first}-#{next_index}", from_item)
-      elsif prev_index && itexte.items[prev_index].space?
-        params[:real_at] = at = AtStructure.new("#{prev_index}-#{at.last}", from_item)
+      if extrait_titems[next_index].space?
+        params[:real_at] = at = AtStructure.new("#{at.first}-#{next_index}")
+      elsif prev_index && extrait_titems[prev_index].space?
+        params[:real_at] = at = AtStructure.new("#{prev_index}-#{at.last}")
       end
     end
 
   end
 
-  # On mémorise l'opération pour pouvoir la refaire
+  # On mémorise l'opération pour pouvoir l'annuler
   if params.key?(:cancellor) # pas quand c'est une annulation
     at.list.each do |idx|
       params[:cancellor] << {operation: :insert, index: idx, content: itexte.items[idx].content}
@@ -189,9 +210,9 @@ def remove(params)
   # un rang ou une liste (note : un index unique a été mis dans une liste
   # pour simplifier les opérations)
   if at.range?
-    Runner.itexte.items.slice!(at.from, at.nombre)
+    extrait_titems.slice!(at.from, at.nombre)
   else
-    at.list.each {|idx| Runner.itexte.items.slice!(idx)}
+    at.list.each {|idx| extrait_titems.slice!(idx)}
   end
 
   # Si c'est vraiment une opération de destruction, on l'enregistre
@@ -202,14 +223,14 @@ def remove(params)
   end
 
   unless params[:noupdate]
-    update(params[:real_at].at)
-    Runner.itexte.save
+    # On actualise l'affichage en marquant qu'il faudra sauver l'extrait.
+    update(saveable = true)
   end
 end #/ remove
 
 # Insert un ou plusieurs mots
 def insert(params)
-  params[:real_at] ||= AtStructure.new(params[:at], from_item)
+  params[:real_at] ||= AtStructure.new(params[:at])
 
   params.merge!(operation: 'insert') unless params.key?(:operation)
   # On ajoute si nécessaire le text-item de référence, qui permettra,

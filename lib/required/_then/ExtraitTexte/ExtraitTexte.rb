@@ -70,6 +70,9 @@ def output
   # les text-items à afficher ici.
   extrait_titems.each_with_index do |titem, idx|
 
+    # On reset toujours le text-item pour forcer tous les recalculs
+    titem.reset
+
     # On doit calculer la longeur que ce text-item va occuper. Cette longueur
     # dépend :
     #
@@ -305,9 +308,44 @@ end #/ write3lines
 # du mot à partir duquel on devrait recompter si on voulait vraiment
 # économiser le travail.
 #
-def update(first_modified_item = 0)
-  itexte.recompte # [1]
-  @to_item += 10 # au cas où il y ait un ajout de 10 mots
+def update(to_save = nil)
+  # Pour indiquer que lorsqu'on passera à un autre extrait (ou tout de suite)
+  # il faudra enregistrer les nouvelles valeurs.
+  @modified = true if to_save === true
+  recompte # C'est TexteExtrait#recompte, ici, pas Texte#recompte
   output
 end #/ update
+
+# Pour actualiser l'affichage, quand les informations ont changé, il faut
+# principalement actualiser la donnée index_in_extrait
+def recompte
+
+  # Les items avant l'extrait
+  # -------------------------
+  # Ils n'ont pas besoin d'être recomptés au niveau de leur index, puisque
+  # cet index ne peut pas être modifié. En revanche, on peut les reset(ter)
+  # car leurs proximités peuvent avoir changé
+  extrait_pre_items.each do |titem|
+    titem.reset
+  end
+
+  # Les items de l'extrait
+  # -----------------------
+  extrait_titems.each_with_index do |titem, idx|
+    titem.index_in_extrait = idx
+  end
+
+
+  # Les items après l'extrait
+  # --------------------------
+  # Leur index peut évidemment avoir changé, si des mots ont été ajoutés
+  # ou supprimés par exemple.
+  idx = extrait_titems.count - 1 # -1 car on ajoute tout de suite 1
+  extrait_post_items.each do |titem|
+    titem.reset
+    titem.index_in_extrait = (idx += 1)
+  end
+
+end #/ recompte
+
 end #/ExtraitTexte
