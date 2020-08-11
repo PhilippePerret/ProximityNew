@@ -30,6 +30,7 @@ attr_accessor :lemma
 
 def non_mot? ; false end
 def mot? ; true end
+def is_mot ; true end
 def ponctuation?; false end
 def ignored?
   is_ignored === true

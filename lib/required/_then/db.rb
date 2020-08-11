@@ -19,6 +19,7 @@ end #/ initialize
 DATA_TABLE_TEXT_ITEMS = [
   {name:'Id',                 type:'INTEGER PRIMARY KEY AUTOINCREMENT', insert: false},
   {name:'Content',            type:'VARCHAR(30)'},
+  {name:'IsMot',              type:'BOOLEAN', property:'is_mot'},
   {name:'Canon',              type:'VARCHAR(30)'},
   {name:'Type',               type:'VARCHAR(15)'},
   {name:'`Index`',            type:'INTEGER', property:'index'},
@@ -34,11 +35,35 @@ DATA_TABLE_TEXT_ITEMS.each do |dcol|
   dcol.merge!(property_sym: dcol[:property].to_sym)
 end
 
+# *** Raccourcis ***
+def execute(req); db.execute(req) end
+def results_as_hash=(val); db.results_as_hash = val end
+
 def insert_text_item(values)
+  values = values.collect do |v|
+    case v
+    when true then 'TRUE'
+    when false then 'FALSE'
+    else v
+    end
+  end
   stm_insert_titem.execute(values)
 
   db.last_insert_row_id
 end #/ insert_text_item
+
+def get_titem_by_index(index, as_hash = false)
+  db.results_as_hash = as_hash
+  res = stm_titem_by_index.execute(index)
+  res.next
+end #/ get_titem_by_index
+
+def stm_titem_by_index
+  @stm_titem_by_index ||= begin
+    colonnes, interros = titems_colonnes_and_interrogations
+    db.prepare("SELECT #{colonnes} FROM text_items WHERE `Index` = ?")
+  end
+end #/ stm_titem_by_index
 
 def load_text_item(id)
   stm_load_titem.execute(id)
@@ -68,15 +93,22 @@ end #/ update_text_item
 # Requête préparée pour l'enregistrement d'un nouveau text-item dans text_items
 def stm_insert_titem
   @stm_insert_titem ||= begin
+    colonnes, interros = titems_colonnes_and_interrogations
+    db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})")
+  end
+end #/ stm_insert_titem
+
+def titems_colonnes_and_interrogations
+  @titems_colonnes_and_interrogations ||= begin
     colonnes = DATA_TABLE_TEXT_ITEMS.collect do |dcol|
       next if dcol[:insert] === false
       dcol[:name]
     end.compact
     interros = Array.new(colonnes.count, '?').join(VGE)
     colonnes = colonnes.join(VGE)
-    db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})")
+    [colonnes, interros]
   end
-end #/ stm_insert_titem
+end #/ titems_colonnes_and_interrogations
 
 # Appelée *au début de chaque parsing*
 def reset

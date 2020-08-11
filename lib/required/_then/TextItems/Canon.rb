@@ -34,6 +34,14 @@ class << self
     mot.icanon.remove(mot)
   end #/ remove
 
+  # Pour obtenir l'instance d'un canon par `Canon[canon]`
+  # Pour le moment, cette méthode n'est utilisée que pour la nouvelle formule
+  # qui fonctionne par extrait isolé.
+  def [] canon
+    @items_as_hash ||= {}
+    @items_as_hash[canon] ||= new(canon)
+  end #/
+
 end # /<< self
 # ---------------------------------------------------------------------
 #

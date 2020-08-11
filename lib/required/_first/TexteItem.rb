@@ -16,6 +16,27 @@ class << self
     return item
   end #/ create
 
+  # Pour instancier si nécessaire un text-item avec ses données
+  # En fonction de hdata["IsMot"] on fera des Mot ou des NonMot.
+  def instantiate(hdata)
+    @items_as_hash ||= {}
+    @items_as_hash[hdata['Id']] ||= begin
+      hdata.each do |k, v|
+        hdata[k] = case v
+        when "TRUE" then true
+        when "FALSE" then false
+        else v
+        end
+      end
+      if hdata['IsMot']
+        Mot.new(hdata.delete('Content'), hdata)
+      else
+        NonMot.new(hdata.delete('Content'), hdata)
+      end
+    end
+  end #/ instantiate
+  alias :instanciate :instantiate
+
   # Ça sert simplement pour la correspondance entre l'item Mot ici
   # et le mot dans le fichier lemmatisé (même index). Cette liste est
   # remise à zéro chaque fois qu'on traite le texte, donc il ne faut
@@ -39,7 +60,9 @@ end # /<< self
 attr_reader :id
 attr_reader :content
 attr_accessor :type, :index, :offset, :canon
-attr_accessor :icanon
+
+# Index du text-item (mot ou non nom) dans l'extrait affiché
+attr_accessor :index_in_extrait
 
 # Cette propriété est mise à true si le mot doit être ignoré des recherches
 # de proximité.
@@ -76,7 +99,7 @@ def initialize(content, params = nil)
   @content = content
   self.class.add(self)
   unless params.nil?
-    params.each { |k,v| instance_variable_set("@#{k}", v)}
+    params.each { |k,v| instance_variable_set("@#{k.decamelize}", v)}
   end
 end #/ initialize
 
@@ -89,7 +112,15 @@ def load_from_db
   end
 end #/ load_from_db
 
+def icanon
+  @icanon ||= Canon[canon]
+end #/ icanon
+def icanon=(v)
+  @icanon = v
+end #/ icanon=
+
 def insert_in_db
+  log("Insert in db de : #{db_values.inspect}")
   @id = Runner.itexte.db.insert_text_item(db_values)
   # log("@id pour le mot #{content.inspect} : #{id.inspect}")
 end #/ save_in_db
@@ -105,12 +136,17 @@ def update_in_db(data)
 end #/ update_in_db
 
 # @Return les valeurs pour la table text_items
+# Ci-dessous, on ne peut pas utiliser collect avec compact pour supprimer les
+# valeurs nil, car beaucoup de valeurs seraient supprimées dès qu'elles sont
+# nulles, ce qui se produit souvent au moment du parsing (is_mot, offset, index
+# etc. ne sont pas encore définis)
 def db_values
+  ary = []
   TextSQLite::DATA_TABLE_TEXT_ITEMS.collect do |dcol|
     next if dcol[:insert] === false
-    prop = (dcol[:property] || dcol[:name].downcase).to_sym
-    self.send(prop)
-  end.compact
+    ary << self.send(dcol[:property_sym])
+  end
+  ary
 end #/ db_values
 
 def db_mark_scrivener_start
@@ -216,12 +252,7 @@ end #/ f_index
 
 # Pour la deuxième ligne contenant le texte
 def f_content
-  @f_content ||= begin
-    c = ''
-    c << SPACE if f_length - length > 4
-    c << content
-    c.ljust(f_length)
-  end
+  @f_content ||= content.ljust(f_length)
 end #/ f_content
 
 # Retourne le contenu à inscrire dans le fichier reconstitué
@@ -241,73 +272,50 @@ end #/ content_rebuilt
 # Méthode qui retourne les proximités formatées
 # Les proximités sont calculées dans prox_avant et prox_apres
 def f_proximities
-  if !proximizable? || (prox_avant.nil? && prox_apres.nil?)
-    ' ' * f_length
+  if no_proximites?
+    SPACE * f_length
   else
-    dist_avant = ''
-    dist_apres = ''
-    if prox_avant
-      # log("Mot “#{content}” (#{index}/#{offset}) a une proximité AVANT : #{prox_avant.mot_avant.content} (#{prox_avant.mot_avant.index}/#{prox_avant.mot_avant.offset})")
-      dist_avant = (prox_avant.mot_avant.index - Runner.iextrait.from_item).to_s
-    end
-    if prox_apres
-      # log("Mot “#{content}” (#{index}/#{offset}) a une proximité APRÈS : #{prox_apres.mot_apres.content} (#{prox_apres.mot_apres.index}/#{prox_apres.mot_apres.offset})")
-      dist_apres = (prox_apres.mot_apres.index - Runner.iextrait.from_item).to_s
+    s = []
+    s << (prox_avant ? (prox_avant.mot_avant.index_in_extrait).to_s : '')
+    s << '|'
+    s << (prox_apres ? (prox_apres.mot_apres.index_in_extrait).to_s : '')
+
+    if s.join(EMPTY_STRING).length < f_length
+      s[0] = s[0].ljust((f_length / 2) - 1)
+      s[2] = s[2].ljust(f_length - s[0..1].join('').length)
     end
 
-    dist_avant_len = dist_avant.length || 0
-    dist_apres_len = dist_apres.length || 0
-
-    long_dist  = dist_avant_len + dist_apres_len
-
-    moitie_avant = (f_length / 2) - 1 # -1 pour la barre
-    moitie_apres = f_length - moitie_avant - 1
-    # Utile pour les autres calculs
-    if prox_avant && prox_apres
-      if "#{dist_avant}|#{dist_apres}".length >= f_length
-        "#{dist_avant}|#{dist_apres}".freeze
-      else
-        "#{dist_avant.ljust(moitie_avant)}|#{dist_apres.rjust(moitie_apres)}".freeze
-      end
-    elsif prox_avant
-      "#{dist_avant}|".ljust(f_length)
-    else
-      "|#{dist_apres}".rjust(f_length)
-    end
+    s.join(EMPTY_STRING)
   end
 end #/ f_proximities
 
-def calcule_longueurs
-
-  # Longueur occupée par le mot
-  if index.nil?
-    raise("index du mot #{cio} est nil… impossible normalement")
-  elsif Runner.iextrait.from_item.nil?
-    raise("Runner.iextrait.from_item est nil (dans le calcul des longueurs de #{cio})… Impossible normalement")
-  end
-  long_index  = (index - Runner.iextrait.from_item).to_s.length
-
+# Calcule les longueurs du text-item dans l'extrait +iextrait+
+def calcule_longueurs(iextrait)
   if non_mot?
-    @f_length = length
-  elsif is_colled === true
-    @f_length = [length, long_index].max
-  elsif !proximizable? || ( prox_avant.nil? && prox_apres.nil? )
-    # Si ce n'est pas un mot proximizable ou qu'il n'y a pas de proximité
-    # on compare juste la longueur de l'index et la longueur du mot
-    @f_length = [length, long_index].max
+    @f_length = content.length
   else
-    dist_avant = prox_avant ? (prox_avant.mot_avant.index - Runner.iextrait.from_item).to_s : nil
-    dist_apres = prox_apres ? (prox_apres.mot_apres.index - Runner.iextrait.from_item).to_s : nil
-
-    dist_avant_len = dist_avant&.length || 0
-    dist_apres_len = dist_apres&.length || 0
-
-    # Longueur occupée par les distances
-    long_dist  = dist_avant_len + dist_apres_len
-    long_proxs = long_dist + 1 # +1 pour la barre
-    @f_length = [long_index, length, long_proxs].max
+    candidats_longueurs = []
+    # La longueur du text-item est le premier candidat pour la longueur
+    candidats_longueurs << length
+    # Longueur occupée par l'index du mot
+    candidats_longueurs << index_in_extrait.to_s.length
+    # S'il y a des proximités, on définit la longueur au plus long des trois
+    candidats_longueurs << proximites_length if has_proximites?
+    @f_length = candidats_longueurs.max
   end
 end #/ calcule_longueurs
+
+# Calcule la longeur qu'occuperait l'indication des proximités par rapport
+# à l'extrait courant.
+# L'indication des proximités se fait avec l'index relatif du mot à l'écran
+#
+def proximites_length
+  dist = []
+  dist << (prox_avant.nil? ? 0 : (prox_avant.mot_avant.index_in_extrait).to_s.length)
+  dist << (prox_apres.nil? ? 0 : (prox_apres.mot_apres.index_in_extrait).to_s.length)
+
+  dist.inject(:+) + 1 # +1 pour la barre (dans tous les cas)
+end #/ proximites_length
 
 # Retourne true si le text-item peut être étudié au niveau de ses proximités
 def proximizable?
@@ -338,8 +346,11 @@ def space?
 end #/ space
 
 def no_proximites?
-  prox_avant.nil? && prox_apres.nil?
+  !proximizable? || (prox_avant.nil? && prox_apres.nil?)
 end #/ no_proximites?
+def has_proximites?
+  !no_proximites?
+end #/ has_proximites?
 
 # Renvoie l'indice de couleur en fonction des proximités
 # Note : pour le moment, on prend la plus grosse mais il sera toujours
@@ -360,48 +371,30 @@ def prox_color
   end
 end #/ prox_color
 
-def index_in_canon
-  icanon.offsets.index(offset)
-end #/ index_in_canon
-
 def prox_avant
   @prox_avant_calculed || begin
-    if !proximizable? || icanon.nil? || icanon.count == 1 || index_in_canon.nil?
+    if ! proximizable?
       @prox_avant = nil
     else
+      iext = Runner.iextrait
       # log("*** Recherche proximité avant de #{cio} ***")
       # log("Offsets du canon #{icanon.canon.inspect} : #{icanon.offsets.inspect}")
 
-      # On cherche l'index du mot courant dans son canon. Pour se faire, on
-      # se sert des offsets puisqu'ils sont enregistrés dans le canon.
-      # NOTE On pourrait aussi fonctionner avec les identifiants des mots, ce
-      # qui serait peut-être plus sûr (mais pour le moment, cet identifiant
-      # n'existe pas)
-      idx_canon = index_in_canon
+      # Maintenant qu'on travaille seulement avec l'extrait, il suffit de
+      # chercher le mot, dans les mots avant l'index du mot, qui ait le même
+      # canon et qui soit à la bonne distance.
+      liste_seek = iext.extrait_pre_items
+      liste_seek += iext.extrait_titems[0...index_in_extrait] if index_in_extrait > 0
 
-      # log("Index du mot courant dans icanon.offsets: #{idx_canon}")
-      if idx_canon > 0 # il peut y avoir un mot avant
-
-        # Il ne faut pas prendre en compte un mot non proximizable (par
-        # exemple ignoré)
-        idx_prev_item = idx_canon.dup
-        prev_item_in_canon = nil
-        begin
-          prev_item_in_canon = icanon.items[ idx_prev_item -= 1 ]
-        end while prev_item_in_canon && false == prev_item_in_canon.proximizable?
-
-        unless prev_item_in_canon.nil?
-          # log("Cet item est : #{prev_item_in_canon.cio}")
-          distance = offset - prev_item_in_canon.offset
-          # log("Ils sont séparés de #{distance}")
-          if distance < icanon.distance_minimale
-            # log("Ils sont en proximité")
-            @prox_avant = Proximite.new(avant:prev_item_in_canon, apres:self, distance:distance)
-            prev_item_in_canon.prox_apres = @prox_avant
-          end
-        end #/fin de si l'item précédent existe
-      else
-        # log("C'est le premier offset => pas d'item avant")
+      @prox_avant = nil
+      while titem = liste_seek.pop
+        next if not titem.proximizable?
+        next if titem.canon != canon
+        distance = offset - titem.offset
+        break if distance > Canon[canon].distance_minimale
+        # Si on passe ici, c'est qu'un item proche a été trouvé
+        @prox_avant = Proximite.new(avant:titem, apres:self, distance:distance)
+        titem.prox_apres = @prox_avant
       end
     end
     @prox_avant_calculed = true
@@ -412,31 +405,27 @@ def prox_avant=(prox); @prox_avant = prox end
 
 def prox_apres
    @prox_apres_calculed || begin
-    if !proximizable? || icanon.nil? || icanon.count == 1 || index_in_canon.nil?
+    if !proximizable?
       @prox_apres = nil
     else
-      # log("*** Recherche proximité APRÈS pour #{cio} ***")
-      idx_canon = index_in_canon
+      # Raccourci
+      iextr = Runner.iextrait
 
-      # Il ne faut pas prendre en compte un mot non proximizable (par
-      # exemple ignoré)
-      idx_next_item = idx_canon.dup
-      next_item_in_canon = nil
-      begin
-        next_item_in_canon = icanon.items[ idx_next_item += 1 ]
-      end while next_item_in_canon && false == next_item_in_canon.proximizable?
+      # La liste de tous les text-items dans lesquels il va falloir cherché
+      liste_seek = iextr.extrait_titems[index_in_extrait+1..-1]
+      liste_seek += iextr.extrait_post_items
 
-      if next_item_in_canon # il y a un mot après
-        # log("Un item a été trouvé après : #{next_item_in_canon.cio}")
-        distance = next_item_in_canon.offset - offset
-        # log("Distancié de #{distance}")
-        if distance < icanon.distance_minimale
-          # log("=> Ils sont en proximité")
-          @prox_apres = Proximite.new(avant:self, apres:next_item_in_canon, distance:distance)
-          next_item_in_canon.prox_avant = @prox_apres
-        end
-      else
-        # log("Pas d'item après")
+      liste_seek.reverse! # pour pouvoir pop(er) au lieu de shift(er)
+
+      @prox_apres = nil
+      while titem = liste_seek.pop
+        next if not titem.proximizable?
+        next if titem.canon != canon
+        distance = titem.offset - offset
+        break if distance > Canon[canon].distance_minimale
+        # Si on passe ici c'est qu'un mot proche a été trouvé
+        @prox_apres = Proximite.new(avant:self, apres:titem, distance:distance)
+        titem.prox_avant = @prox_apres
       end
     end
     @prox_apres_calculed = true
