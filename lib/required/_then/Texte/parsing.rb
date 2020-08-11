@@ -509,7 +509,7 @@ def traite_lemma_line(line, idx)
     # Si c'est le cas, on renseigne la table `lemmas` de la base de données
     unless PARSED_LEMMAS.key?(mot)
       PARSED_LEMMAS.merge!(mot => canon)
-      db.add_mot_and_canon(mot, canon)
+      db.add_mot_and_canon(mot, type, canon)
     end
   end
   return true

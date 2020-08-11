@@ -99,7 +99,7 @@ def initialize(content, params = nil)
   @content = content
   self.class.add(self)
   unless params.nil?
-    params.each { |k,v| instance_variable_set("@#{k.decamelize}", v)}
+    params.each { |k,v| instance_variable_set("@#{k.to_s.decamelize}", v)}
   end
 end #/ initialize
 

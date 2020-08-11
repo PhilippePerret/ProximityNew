@@ -237,7 +237,7 @@ def insert(params)
   # notamment, de renseigner les messages, de récupérer le file_id si c'est
   # un projet Scrivener, pour l'affecter aux nouveaux text-items et
   # d'enregistrer les messages d'opération.
-  params.merge!(titem_ref: itexte.items[params[:real_at].at]) unless params.key?(:titem_ref)
+  params.merge!(titem_ref: extrait_titems[params[:real_at].at]) unless params.key?(:titem_ref)
   # Sauf si :nosim, on crée la simulation pour voir si on va vraiment faire
   # cete opération.
   unless params[:nosim]
@@ -246,29 +246,32 @@ def insert(params)
   if params[:content] == '_space_' || params[:content] == '_return_'
     params.merge!(is_balise: true)
   end
-  msg = "Insertion de “#{params[:content]}” #{params[:real_at].to_s} (avant “#{Runner.itexte.items[params[:real_at].at].content}”)"
+  msg = "Insertion de “#{params[:content]}” #{params[:real_at].to_s} (avant “#{extrait_titems[params[:real_at].at].content}”)"
   log(msg, true)
 
   # :is_balise est true quand on donne '_space_' ou '_return_' comme texte
   # à utiliser pour l'opération.
+  new_items = params[:new_items]
+
   unless params[:is_balise]
-    begin
-      tempfile = Tempfile.new('getmots')
-      refonlymots = File.open(tempfile, 'a')
-      # Ici, il faut appliquer le nouveau découpage. Noter que l'insertion ne
-      # peut pas comporter des retours charriot, c'est déjà un repère.
-      # new_mots = Lemma.parse_str(params[:content], format: :instances)
-      Mot.init # remet la liste à vide, juste pour le contrôle des lemma
-      new_items = itexte.traite_line_of_texte(params[:content], refonlymots)
-    ensure
-      refonlymots.close
-    end
+  #   begin
+  #     tempfile = Tempfile.new('getmots')
+  #     refonlymots = File.open(tempfile, 'a')
+  #     # Ici, il faut appliquer le nouveau découpage. Noter que l'insertion ne
+  #     # peut pas comporter des retours charriot, puisqu'il est donné en console,
+  #     # donc on peut faire un traitement normalement par ligne.
+  #     # new_mots = Lemma.parse_str(params[:content], format: :instances)
+  #     Mot.init # remet la liste à vide, juste pour le contrôle des lemma
+  #     new_items = itexte.traite_line_of_texte(params[:content], refonlymots)
+  #   ensure
+  #     refonlymots.close
+  #   end
     # Si c'est une pure insertion, il faut ajouter une espace soit avant
     # soit après les nouveaux items. On l'ajoute après si le titem d'après
     # est un mot (.mot?) et on l'ajoute avant si le titem avant est un mot.
     if params[:operation] == 'insert'
-      next_titem = itexte.items[params[:real_at].at]
-      prev_titem = itexte.items[params[:real_at].first - 1]
+      next_titem = extrait_titems[params[:real_at].at]
+      prev_titem = extrait_titems[params[:real_at].first - 1]
       if next_titem && next_titem.mot? && new_items.last.mot?
         # Dans le cas où l'item suivant existe, que c'est un mot, et que
         # le dernier titem à insérer est aussi un mot, il faut ajouter
@@ -297,31 +300,16 @@ def insert(params)
     new_items.each {|titem| titem.file_id = params[:titem_ref].file_id}
   end
 
-  Runner.itexte.items.insert(params[:real_at].at, *new_items)
+  extrait_titems.insert(params[:real_at].at, *new_items)
   # Pour l'annulation (sauf si c'est justement une annulation)
   if params.key?(:cancellor)
     idx = params[:real_at].at
     new_items.each do |titem|
       content = titem.space? ? '_space_' : titem.content
-      params[:cancellor] << {operation: :remove, index: idx, content: content}
+      params[:cancellor] << {operation: :remove, index:idx, content:content}
       # Note : le content, ci-dessus, ne servira que pour la vérification
     end
   end
-
-  # Il faut traiter ces items qui n'ont été qu'instanciés pour le moment
-  unless params[:is_balise]
-    # Si c'est une balise (_space_ ou _return_) on n'a pas besoin
-    # de faire ce travail.
-    begin
-      Lemma.parse_str(File.read(tempfile)).split(RC).each_with_index do |line, idx|
-        log("Lemma line : #{line.inspect} (index : #{idx.inspect})")
-        index_mot = idx # + first_index_in_mots
-        itexte.traite_lemma_line(line, index_mot)
-      end
-    ensure
-      tempfile.delete
-    end
-  end #/sauf si c'est une balise
 
   # Si c'est vraiment une opération d'insertion, on l'enregistre
   # en tant qu'opération.
@@ -333,8 +321,7 @@ def insert(params)
   end
 
   unless params[:noupdate]
-    update(params[:real_at].at)
-    Runner.itexte.save
+    update(saveable = true)
   end
 end #/ insert
 
@@ -369,76 +356,111 @@ def simulation(params)
   debug("[Simulation] new_items = #{new_items.inspect}")
 
   # On prend seulement les mots parmi les nouveaux mot/non-mots créés
-  new_mots = new_items.select { |titem| titem.mot? }
+  # NON, il faut garder toujours la liste des items (new_items) pour
+  # pouvoir traiter les données ensuite.
+  # On crée deux listes, qui vont contenir toutes les deux le même nombre
+  # d'éléments, pour permettre de reconstituer une liste finale. Par exemple,
+  # on aura :
+  #   new_mots =    [ "un", nil, "pont", nil  ]
+  # new_non_mots =  [ nil,  ' ', nil,    " !" ]
+  #
+  # NOTE : normalement, on n'a pas besoin de ça, puisque ça doit fonctionner
+  # par référence.
+  new_mots = []
+  new_items.each do |titem|
+    new_mots << titem if titem.mot?
+  end
+
+  # Une liste dans laquelle on va mettre tous les nouveaux mots, comme
+  # instances avec canons, pour pouvoir les mettre dans params et ne pas
+  # avoir à les retrouver
+  new_mots_canonised = []
 
   debug("[Simulation] les mots gardés : #{new_mots.inspect}")
 
-  begin
-    Lemma.parse_str(File.read(tempfile)).split(RC).each_with_index do |line, idx|
+  # D'abord, il faut voir si les mots fournis ne sont pas déjà connus de la
+  # base de données, ce qui irait plus vite que TreeTagger
+  # Liste pour mettre les mots qu'il faudra passer à TreeTagger parce qu'ils
+  # ne sont pas encore connus de la table `lemma` du texte.
+  # Cette liste fonctionne comme new_mots et new_non_mots, avec des nils pour
+  # les non valeurs et la bonne place (le bon index) pour les mots qui devront
+  # être TreeTaggerisé.
+  new_mots_for_treetagger = []
+  # On boucle sur chaque mot pour voir celui qui est connu
+  new_mots.each_with_index do |new_mot, idx|
+    hcanon = itexte.db.get_canon(new_mot.content)
+    if hcanon.nil?
+      new_mots_for_treetagger << new_mot
+    else
+      log("Canon trouvé pour #{new_mot.inspect} : #{hcanon.inspect}")
+      new_mot.type  = hcanon['Type']
+      new_mot.canon = hcanon['Canon']
+    end
+  end
+
+  # S'il reste des mots inconnus de la table `lemmas`, on les recherche
+  # avec TreeTagger
+  unless new_mots_for_treetagger.empty?
+
+    motstr_for_treetagger = new_mots_for_treetagger.collect{|new_mot|new_mot.content}.join(SPACE)
+    Lemma.parse_str(motstr_for_treetagger).split(RC).each_with_index do |line, idx|
       mot, type, canon = line.strip.split(TAB)
-      # Traitement de quelques cas <unknown> connus… (sic)
-      if canon == LEMMA_UNKNOWN
-        type, canon = case mot
-        when 't' then ['PRO:PER', 'te']
-        else [type, canon]
-        end
-      end
-      new_mot = new_mots[idx]
+      new_mot = new_mots_for_treetagger[idx]
       new_mot.type    = type
       new_mot.canon   = canon
-      new_mot.icanon  = Canon.items_as_hash[canon] # peut être nil
       debug("[Simulation] Réglage de #{new_mot.cio}")
       debug("             Type: #{new_mot.type}")
-      debug("             Canon: #{canon} #{new_mot.icanon.inspect}")
+      debug("             Canon: #{canon}")
     end
-  ensure
-    tempfile.delete
-  end
+  end # / sauf si on a trouvé tous les mots
+
+  params.merge!(new_items: new_items)
 
   # *** ON peut vérifier ***
 
   confirmations = []
 
-  # Position à laquelle les mots doivent être insérés
-  insert_at_index     = params[:real_at].at
-  debug("[Simulation] insert_at_index : #{insert_at_index.inspect}")
-  inserted_at_offset  = itexte.items[insert_at_index].offset
-  debug("[Simulation] inserted_at_offset : #{inserted_at_offset.inspect}")
-
   # On regarde s'il y a des risques de proximité
-  new_mots.each do |new_mot|
+  new_items.each do |new_mot|
     debug("[Simulation] *** Étude du mot #{new_mot.cio}")
     # Si c'est un mot non proximizable, on le passe
     next if not new_mot.proximizable?
     # Si c'est un mot qui a un canon ignoré, on le passe
     next if new_mot.icanon.ignored?
-    # Distance minimale pour que deux mots ne soient pas en proximité
-    min_distance = new_mot.icanon.distance_minimale
-    debug("= Distance minimale attendue : #{min_distance.inspect}")
-    # Principe : si un offset du canon est à moins de cette distance, c'est
-    # que le mot risque d'entrer en proximité
-    new_mot.icanon.offsets.each_with_index do |offset, idx|
-      distance = (offset - (inserted_at_offset + new_mot.length / 2))
-      distance_abs = distance.abs
-      debug("= Distance avec le mot #{idx} du canon : #{distance}")
-      # Si c'est un mot trop loin vers la droite
-      if distance_abs > min_distance
-        break if distance > 0
-        # Si le mot est trop loin vers la gauche, on passe au suivant
-        next if distance < 0
-      end
-      # Si on passe ici, c'est que le mot est en proximité
-      # Pour la sémantique
-      is_mot_canon_avant = distance < 0
-      # Proximité trouvée !
-      debug("= Le mot #{idx} du canon crée une proximité !")
-      mot_en_prox = new_mot.icanon.items[idx]
-      confirmations << "#{new_mot.content.inspect} avec mot #{is_mot_canon_avant ? '<-' : '->'} #{mot_en_prox.content.inspect} (idx #{mot_en_prox.index - from_item} à #{distance_abs})."
+
+    # Principe pour rechercher les proximités avant et après :
+    # On utilise les méthodes #prox_avant et #prox_apres de l'instance qui
+    # n'a besoin maintenant que de connaitre l'index dans l'extrait de
+    # l'item. Il n'est pas défini pour le moment mais on peut le définir
+    # provisoirement le temps de cette recherche.
+    # Noter que pour le moment, comme ça, se pose le problème du remplacement,
+    # car les mots à supprimer pour le remplacement se trouveront toujours là.
+    # Ça se pose clairement lorsqu'on remplace un temps par un autre. Par exemple,
+    # dans la phrase :
+    #     "Il trouvera peut-être"
+    # TODO
+    # Si on veut remplacer "trouvera" par "a trouvé", le programme trouvera
+    # la proximité avec "trouvera" et signalera une erreur.
+    # Pour remédier à ce problème, il faudrait pouvoir faire la recherche sur
+    # une liste où les suppressions ont déjà été faites.
+
+    new_mot.reset
+    new_mot.index_in_extrait = params[:real_at].at
+
+    # On cherche avant
+    # ----------------
+    if new_mot.prox_avant
+      titem_avant = new_mot.prox_avant.mot_avant
+      confirmations << "PROX. AVANT : #{titem_avant.inspect} idx #{titem_avant.index_in_extrait}"
     end
-    # Le décalage du mot suivant s'il y en a plusieurs à insérer
-    # C'est une approximation
-    inserted_at_offset += new_mot.length + 1
-  end
+
+    # On cherche après
+    # ----------------
+    if new_mot.prox_apres
+      titem_apres = new_mot.prox_apres.mot_apres
+      confirmations << "PROX. APRÈS : #{titem_apres.inspect} idx #{titem_apres.index_in_extrait}"
+    end
+  end #/Fin de boucle sur tous les nouveaux items
 
   unless confirmations.empty?
     CWindow.log("Risque proximités : #{confirmations.join(VGE)}.#{RC}'o' ou 'y' ou ENTRÉE => confirmer / 'z' ou 'n' => renoncer.")

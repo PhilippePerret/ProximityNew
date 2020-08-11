@@ -57,7 +57,6 @@ def get_titem_by_index(index, as_hash = false)
   res = stm_titem_by_index.execute(index)
   res.next
 end #/ get_titem_by_index
-
 def stm_titem_by_index
   @stm_titem_by_index ||= begin
     colonnes, interros = titems_colonnes_and_interrogations
@@ -65,12 +64,24 @@ def stm_titem_by_index
   end
 end #/ stm_titem_by_index
 
+def get_canon(mot)
+  db.results_as_hash = true
+  res = stm_get_canon.execute(mot.downcase)
+  db.results_as_hash = false
+
+  res.next
+end #/ get_canon
+def stm_get_canon
+  @stm_get_canon ||= db.prepare("SELECT * FROM lemmas WHERE mot = ? LIMIT 1")
+end #/ stm_get_canon
+
+
 def load_text_item(id)
   stm_load_titem.execute(id)
   stm_load_titem.next
 end #/ load_text_item
 def stm_load_titem
-  @stm_load_titem ||= db.prepare("SELECT * FROM text_items WHERE id = ?")
+  @stm_load_titem ||= db.prepare("SELECT * FROM text_items WHERE id = ? LIMIT 1")
 end #/ stm_load_titem
 
 # Méthode publique pour actualiser l'offset et l'index d'un text-item
@@ -129,25 +140,12 @@ end #/ reset
 
 
 # Pour ajouter un mot-canon à la table lemmas
-def add_mot_and_canon(mot, canon)
-  stm_set_lemma.execute(mot,canon)
+def add_mot_and_canon(mot, type, canon)
+  stm_set_lemma.execute(mot, type, canon)
 end #/ add_mot_and_canon
-
 def stm_set_lemma
-  @stm_set_lemma ||= db.prepare("INSERT INTO lemmas (mot, canon) VALUES (?, ?)".freeze)
+  @stm_set_lemma ||= db.prepare("INSERT INTO lemmas (mot, type, canon) VALUES (?, ?, ?)".freeze)
 end #/ stm_lemma
-
-# @Return le canon du mot +mot+ s'il existe, Nil dans le cas contraire
-def get_canon_of_mot(mot)
-  res = stm_get_lemma.execute(mot)
-  # log("Resultat de get_canon_of_mot(#{mot}) : #{res.inspect}")
-  res = res.next
-  return if res.nil?
-  res[0]
-end #/ get_canon_of_mot
-def stm_get_lemma
-  @stm_get_lemma ||= db.prepare("SELECT canon FROM lemmas WHERE mot = ? LIMIT 1".freeze)
-end #/ stm_get_lemma
 
 # Table pour créer la table des text-items
 #
@@ -163,7 +161,7 @@ end #/ create_table_text_items
 
 def create_table_lemmas
   db.execute("DROP TABLE IF EXISTS lemmas".freeze)
-  db.execute("CREATE TABLE IF NOT EXISTS lemmas (Mot VARCHAR(30), Canon VARCHAR(30))".freeze)
+  db.execute("CREATE TABLE IF NOT EXISTS lemmas (Mot VARCHAR(30), Type VARCHAR(15), Canon VARCHAR(30))".freeze)
   db.execute("CREATE INDEX idxmot ON lemmas(mot)".freeze)
 end #/ create_table_lemmas
 
