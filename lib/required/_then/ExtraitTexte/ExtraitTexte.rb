@@ -66,9 +66,9 @@ def output
   # *** fin des préparations préliminaires ***
 
   # On boucle sur toutes les notes de l'extrait pour les afficher
+  # Note : c'est la méthode propriété +extrait_titems+ qui va recueillir
+  # les text-items à afficher ici.
   extrait_titems.each_with_index do |titem, idx|
-
-    titem.index_in_extrait = idx
 
     # On doit calculer la longeur que ce text-item va occuper. Cette longueur
     # dépend :
@@ -77,12 +77,16 @@ def output
     #   b) de l'index dans la page courante (3 si "234")
     #   c) des proximités s'il y en a.
     #
+    # Noter que c'est ce calcul des longueurs qui va définir les proximités
+    # du mot si c'est un mot et qu'elles existent.
     titem.calcule_longueurs(self)
 
-    titem.instance_variable_set("@f_length", titem.content.length)
-
+    # On prend déjà le prochain offset pour voir si on doit passer à la
+    # ligne avant d'ajouter de text-item.
     next_offset = offset + titem.length
 
+    # On a besoin de savoir si c'est le dernier text-item pour savoir ce que
+    # l'on devra faire en cas d'ajout de blancs.
     is_last_titem = extrait_titems[idx+1].nil?
 
     # Si le prochain offset obtenu est supérieur à la longueur maximale
@@ -92,7 +96,7 @@ def output
       # On finit la ligne avec les caractères manquants
       finir_ligne(top_line_index, offset)
 
-      # Si c'est le dernier item, on peut s'arrêtre là.
+      # Si c'est le dernier item, on peut s'arrêter là.
       if is_last_titem
         break
       else
@@ -120,8 +124,12 @@ def output
 
   end # Fin de boucle sur tous les items à afficher
 
-  # On finit la dernière ligne
+  # On finit la dernière ligne pour que ce soit plus propre
   finir_ligne(top_line_index, offset)
+
+  # On peut définir le dernier index d'item de l'extrait, c'est utile pour
+  # d'autres méthodes.
+  @to_item = extrait_titems.last.index
 
   #
   # # On boucle sur chaque item qui doit être affiché
@@ -184,8 +192,6 @@ def output
   #   end
   # end
 
-  @to_item = extrait_titems.last.index
-
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
   log("<- ExtraitTexte#output")
@@ -227,7 +233,7 @@ def extrait_titems
     itexte.db.results_as_hash = true
 
     hfrom_item = itexte.db.get_titem_by_index(from_item, true)
-    log("from_item_offset: #{hfrom_item.inspect}")
+    # log("from_item_offset: #{hfrom_item.inspect}")
     # On doit récupérer tous les items qui ont un offset de la distance minimale
     # commune avant
     offset_first = hfrom_item['Offset']
@@ -253,6 +259,13 @@ def extrait_titems
     # On ajoute les instances des titems après (non affichés) aux titems de l'extrait
     extitems += titems_dedans.collect { |hdata| TexteItem.instanciate(hdata) }
 
+    # On définit l'index dans l'extrait de chaque text-item.
+    # Noter qu'il ne faut pas le faire au fur et à mesure de la composition
+    # de la page (dans `output`) car sinon, si l'item 34 est en proximité avec
+    # l'item 39, au moment où on écrit #34 et ses proximités, l'index n'est pas
+    # encore défini pour #39.
+    extitems.each_with_index { |i, idx| i.index_in_extrait = idx }
+
     offset_last = titems_dedans.last['Offset']
     last_offset_apres = offset_last + itexte.distance_minimale_commune
     titems_apres = itexte.db.db.execute("SELECT * FROM text_items WHERE Offset > ? AND Offset <= ? ORDER BY Offset ASC".freeze, offset_last, last_offset_apres)
@@ -266,6 +279,8 @@ def extrait_titems
       titem
     end
 
+    # On remet les résultats de la base de données sans table, comme c'est par
+    # défaut. Cela permet d'accélerer les traitements.
     itexte.db.results_as_hash = false
 
     extitems

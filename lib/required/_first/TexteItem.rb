@@ -174,7 +174,7 @@ end #/ reset
 
 # Pour info, le content/index/offset
 def cio
-  "#{content.gsub(/\n/,'\n').inspect}/#{index}/#{offset}#{"/#{file_id}"unless file_id.nil?}"
+  "##{id}/#{content.gsub(/\n/,'\n')}/#{index}/in extrait:#{index_in_extrait}/#{offset}#{"/#{file_id}"unless file_id.nil?}"
 end #/ cio
 
 # Pour débugguer le texte item
@@ -276,13 +276,15 @@ def f_proximities
     SPACE * f_length
   else
     s = []
-    s << (prox_avant ? (prox_avant.mot_avant.index_in_extrait).to_s : '')
+    s << (prox_avant.nil? ? '' : (prox_avant.mot_avant.index_in_extrait).to_s)
     s << '|'
-    s << (prox_apres ? (prox_apres.mot_apres.index_in_extrait).to_s : '')
+    s << (prox_apres.nil? ? '' : (prox_apres.mot_apres.index_in_extrait).to_s)
+
+    log("Index(s) de proximité de ##{id} : #{s.inspect}")
 
     if s.join(EMPTY_STRING).length < f_length
       s[0] = s[0].ljust((f_length / 2) - 1)
-      s[2] = s[2].ljust(f_length - s[0..1].join('').length)
+      s[2] = s[2].rjust(f_length - s[0..1].join('').length)
     end
 
     s.join(EMPTY_STRING)
@@ -387,21 +389,33 @@ def prox_avant
       liste_seek += iext.extrait_titems[0...index_in_extrait] if index_in_extrait > 0
 
       @prox_avant = nil
+      titem_avant = nil
       while titem = liste_seek.pop
         next if not titem.proximizable?
         next if titem.canon != canon
         distance = offset - titem.offset
         break if distance > Canon[canon].distance_minimale
         # Si on passe ici, c'est qu'un item proche a été trouvé
-        @prox_avant = Proximite.new(avant:titem, apres:self, distance:distance)
+        titem_avant = titem.dup
+        # Noter qu'ici, contrairement au canon après, on poursuit la boucle
+        # et @prox_avant pourra être remplacé par un text-item plus proche
+        # encore
+      end
+      unless titem_avant.nil?
+        log("Proximity avant trouvée pour #{self.cio} avec : #{titem.cio}")
+        @prox_avant = Proximite.new(avant:titem_avant, apres:self, distance:distance)
         titem.prox_apres = @prox_avant
       end
+
     end
     @prox_avant_calculed = true
   end
   @prox_avant
 end #/ prox_avant
-def prox_avant=(prox); @prox_avant = prox end
+def prox_avant=(prox)
+  @prox_avant = prox
+  @prox_avant_calculed = true
+end
 
 def prox_apres
    @prox_apres_calculed || begin
@@ -424,8 +438,10 @@ def prox_apres
         distance = titem.offset - offset
         break if distance > Canon[canon].distance_minimale
         # Si on passe ici c'est qu'un mot proche a été trouvé
+        log("Proximity après trouvée pour #{self.cio} : #{titem.cio}")
         @prox_apres = Proximite.new(avant:self, apres:titem, distance:distance)
         titem.prox_avant = @prox_apres
+        break # on s'arrête là, puisque le prochain mot serait plus loin
       end
     end
     @prox_apres_calculed = true
@@ -433,6 +449,9 @@ def prox_apres
   @prox_apres
 end #/ prox_apres
 
-def prox_apres=(prox); @prox_apres = prox end
+def prox_apres=(prox)
+  @prox_apres = prox
+  @prox_apres_calculed = true
+end
 
 end #/TexteItem
