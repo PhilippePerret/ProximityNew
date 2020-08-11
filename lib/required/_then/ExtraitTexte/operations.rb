@@ -1,6 +1,16 @@
 # encoding: UTF-8
 class ExtraitTexte
 # ---------------------------------------------------------------------
+#     Méthodes pour le débuggage
+# ---------------------------------------------------------------------
+def debug_replace?
+  true
+end #/ debug_replace?
+def debug_remove?
+  false
+end #/ debug_remove?
+
+# ---------------------------------------------------------------------
 #
 #   Opérations sur le texte
 #
@@ -34,6 +44,7 @@ end #/ un_ignore
 # Remplacer un mot par un ou des autres
 # Le remplacement consiste à supprimer l'élément courant et à insérer le
 # nouvel élément à la place (ou *les* nouveaux éléments)
+#
 def replace(params)
   params.merge!({
     real_at: AtStructure.new(params[:at], from_item),
@@ -43,13 +54,19 @@ def replace(params)
   # Pour conserver le text-item de référence
   params.merge!(titem_ref: itexte.items[params[:real_at].at])
 
+  if debug_replace?
+    log("-> replace(params:#{params.inspect})")
+  end
+
   CWindow.log("Remplacement du/des mot/s #{params[:at]||params[:real_at].at} par “#{params[:content]}”")
-  if params[:content] == '_space_' || params[:content] == '_return_'
+  if ['_space_', '_return_'].include?(params[:content])
     # Pas besoin de simulation pour ajouter une espace ou un retour chariot
     # Ça se fait directement
+    log("   C'est une balise, simulation inutile. is_balise est aussi mis à true")
     params.merge!(nosim: true)
     params.merge!(is_balise: true)
   end
+
   unless params[:nosim]
     simulation(params) || return
     params.merge!(nosim:true)
@@ -71,11 +88,21 @@ def remove(params)
   params[:real_at] ||= begin
     AtStructure.new(params[:at], from_item).tap { |at| params.merge!(real_at: at) }
   end
+
   # Le text-item de référence
-  params.merge!(titem_ref: itexte.items[params[:real_at].at]) unless params.key?(:titem_ref)
+  unless params.key?(:titem_ref)
+    params.merge!(titem_ref: itexte.items[params[:real_at].at])
+  end
+
+  if debug_replace? || debug_remove?
+    log("-> remove(params=#{params.inspect})")
+  end
 
   # Pour connaitre l'opération
-  params.merge!(operation: 'remove') unless params.key?(:operation)
+  unless params.key?(:operation)
+    params.merge!(operation: 'remove')
+  end
+
   # Il faut simuler la suppression si nécessaire (note : ça n'arrive pas
   # pour une pure suppression — i.e. sans remplacement)
   unless params[:nosim]
@@ -199,8 +226,7 @@ def insert(params)
     params.merge!(is_balise: true)
   end
   msg = "Insertion de “#{params[:content]}” #{params[:real_at].to_s} (avant “#{Runner.itexte.items[params[:real_at].at].content}”)"
-  log(msg)
-  CWindow.log(msg)
+  log(msg, true)
 
   # :is_balise est true quand on donne '_space_' ou '_return_' comme texte
   # à utiliser pour l'opération.

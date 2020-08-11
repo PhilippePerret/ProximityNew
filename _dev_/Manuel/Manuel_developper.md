@@ -48,6 +48,80 @@ Pour le fonctionnement des proximités, on trouve :
 
 
 
+## Nouveau fonctionnement complet (db)
+
+Le nouveau fonctionnement complet inauguré le 11 août est le suivant :
+
+* on utilise la base (table `text_items` pour enregistrer tous les mots,
+* on utilise la base (table `lemmas`) pour enregistrer seulement mot unique et canon,
+* on utilise une table générale (table `infos`) pour les données générales, par exemple l’identifiant ou l’index du premier mot du panneau courant.
+* on utilise une table provisoire qui contient toutes les informations du panneau courant, à commencer par tous les mots.
+
+### Parsing complet du texte
+
+Au cours du parsing complet du texte, les mots sont enregistrés dans la base `db.sqlite` du dossier prox du texte. Dans `Runner.itexte.items` on ne met plus que les identifiants obtenus des insertions. On renseigne également la table `lemmas` qui contient « un mot = un canon » qui permettra d’obtenir plus tard un grand nombre de canons sans passer par TreeTagger.
+
+Pour ne pas répéter les appels à la table `lemmas` pour savoir si un mot est déjà enregistré, on tient à jour, au cours du parsing, une table `PARSED_LEMMAS` qui listera les mots déjà traités dans leur forme exacte. Cette table contiendra par exemple :
+
+~~~ruby
+PARSED_LEMMAS = {
+  # ...
+  "seraient" => "être",
+  "sera" => "être",
+  # ...
+ }
+~~~
+
+
+
+### Affichage et modification d’une page
+
+On part du principe qu’on ne peut que modifier les mots d’une page affichée (la modification d’un mot non affiché doit donc être interdit). Donc quand on demande l’affichage d’une page (à partir d’un index de mot) voilà ce qui se passe :
+
+1. Si `offset_first_mot` est l’offset absolu du premier mot à voir, `offset_last_mot` est l’offset absolu du dernier mot à voir et que `distance_minimale_commune` est la distance qui doit séparer deux mots pour qu’ils ne soient pas en proximité, il faut charger les mots dont l’offset est supérieur ou égal à `offset_first_titem - distance_minimale_commune` et l’offset inférieur ou égal à `offset_last_titem + distance_minimale_commune`. 
+2. Ces mots sont chargés (comme instances `TextItem`) dans une table qu’on peut appeler `TABLE_TEXT_ITEMS` dont la propriété `items` contient tous les mots chargés.
+3. Quand on modifie des mots du panneau courant, on les modifie seulement dans cette table `TABLE_TEXT_ITEMS`.
+4. Le fait de ne travailler qu’avec les mots courants permet d’accélérer toutes les modifications et surtout de simplifier les requêtes.
+5. On peut même imaginer que cette table soit une table SQL qu’on crée et casse à chaque fois (pour bénéficier par exemple des recherches de proximités comme on le voit plus bas).
+6. Dès qu’on change l’index du premier mot affiché, on actualise les données :
+   1. les données de `TABLE_TEXT_ITEMS` sont injectés dans la table des `text_items`
+   2. la table est détruite
+   3. tous les items suivants sont recalculés pour tenir compte des modifications (est-ce que ça n’est pas trop coûteux au niveau des requêtes SQL car il faudrait alors une requête par mot — c’est le seul élément épineux du programme, qu’il faudrait benchmarquer après une première injection des données.)
+
+### Obtenir le canon d’un mot
+
+Au cours du travail (pas au cours du premier parsing), quand on veut obtenir le canon d’un mot, on utilise en premier recours la base. Si le mot a déjà été traité, on obtient tout de suite son canon. S’il n’a pas été traité, on utilise TreeTagger pour l’obtenir.
+
+### Recherche des proximités
+
+Si on utilise la base de données pour mettre le panneau courant, on peut utiliser une requête pour trouver rapidement les mots en proximité, de tel sorte qu’il n’est même plus nécessaire de travailler avec la classe `Canon`. Par exemple, c’est cette requête qui permettra d’obtenir le mot recherché :
+
+~~~ruby
+stm = db.prepare <<-SQL.freeze
+SELECT id 
+	( offset - ? ) AS distance
+	FROM current_page 
+	WHERE offset > ? AND offset < ?
+	ORDER BY distance ASC
+	LIMIT 1
+SQL
+
+stm = db.bind_param 3, 1210, 1010, 1410
+res = stm.execute
+row = res.next 
+# => [ID du text-items] ou [] si aucune proximité
+~~~
+
+
+
+
+
+
+
+---
+
+
+
 ## Sauvegarde des données
 
 Elles sont sauvées de deux façons principales :

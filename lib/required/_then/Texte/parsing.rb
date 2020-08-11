@@ -14,6 +14,11 @@ REG_APO_OR_TIRET = /[#{APO}#{TIRET}]/.freeze
 
 REG_APO_OR_TIRET_CAP = /([#{APO}#{TIRET}])/.freeze
 
+# Table qui va contenir en clé les mots trouvés dans le texte et en valeur
+# leur canon. Cette table permet de n'enregistrer qu'un seul mot dans la
+# table sqlite `lemmas` qui permet de retrouver très vite un canon de mot.
+PARSED_LEMMAS = {}
+
 # Pour les erreurs à enregistrer
 ParsingError = Struct.new(:message, :where)
 
@@ -45,6 +50,8 @@ def parse
   self.init
   Canon.init
   Mot.init
+  PARSED_LEMMAS.clear
+  db.reset
 
   # Parser en fonction du type du document (simple texte ou projet
   # Scrivener)
@@ -54,6 +61,7 @@ def parse
   else
     parse_simple_texte || return
   end
+
   return true # en cas de succès du parsing
 end #/ parse
 
@@ -475,8 +483,15 @@ def traite_lemma_line(line, idx)
     expose_erreur_desynchro(mot:mot, titem:titem, idx:idx, canon:canon)
   else
     # Quand le mot lemmatisé correspond au mot enregistré dans Mot.items (cas
-    # normal), on peut définir le canon du mot.
+    # normal)
+    # on peut définir le canon du mot. (sera supprimé dans les version ultérieures)
     Canon.add(Mot.items[idx], canon)
+    # On regarde s'il faut enregistrer cette forme lemmatisée
+    # Si c'est le cas, on renseigne la table `lemmas` de la base de données
+    unless PARSED_LEMMAS.key?(mot)
+      PARSED_LEMMAS.merge!(mot => canon)
+      db.add_mot_and_canon(mot, canon)
+    end
   end
   return true
 end #/ traite_lemma_line

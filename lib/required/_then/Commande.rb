@@ -13,10 +13,19 @@ class << self
 
     case cmd_name
 
+    when 'canon'
+      mot = cmd.shift
+      canon = Runner.itexte.db.get_canon_of_mot(mot)
+      if canon
+        log("Le canon de #{mot.inspect} est #{canon.inspect}", true)
+      else
+        log("Le mot #{mot.inspect} n'a pas de canon enregistré.", true)
+      end
 
     when 'essai'
 
-      Lemma.parse_str("Bonjour tout le monde !", system: true)
+
+
 
     when 'rebuild' # reconstruire le texte final
       Runner.itexte.rebuild

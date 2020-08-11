@@ -1,48 +1,15 @@
-2020-08-10 18:10:37 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples_errones/pour_erreur.scriv")
-2020-08-10 18:10:37 +0200 -- Projet Scrivener --
-2020-08-10 18:10:37 +0200 Projet Scrivener instancié.
-2020-08-10 18:10:37 +0200 Configuration enregistrée (:last_text_path)
-2020-08-10 18:10:38 +0200 Instanciation @extrait (à partir de l'item 0)
-2020-08-10 18:10:38 +0200 -> ExtraitTexte#output
-2020-08-10 18:10:38 +0200 On doit afficher les items de 0 à 400 (nombre total : 79179)
-2020-08-10 18:10:38 +0200 <- ExtraitTexte#output
-2020-08-10 18:10:49 +0200 Soumission de la commande "show 2119"
-2020-08-10 18:10:49 +0200 🔨 Commande jouée : "show 2119"
-2020-08-10 18:10:49 +0200 -> ExtraitTexte#output
-2020-08-10 18:10:49 +0200 On doit afficher les items de 2119 à 2529 (nombre total : 79179)
-2020-08-10 18:10:49 +0200 <- ExtraitTexte#output
-2020-08-10 18:11:36 +0200 Soumission de la commande "rep 236-238 l'eau"
-2020-08-10 18:11:36 +0200 🔨 Commande jouée : "rep 236-238 l'eau"
-2020-08-10 18:11:36 +0200 parse_str par le système
-2020-08-10 18:11:38 +0200 Insertion de “l'eau” de 2355 à 2357 (3) (avant “ ”)
-2020-08-10 18:11:38 +0200 parse_str par le système
-2020-08-10 18:11:40 +0200 Lemma line : "l'\tDET:ART\tle" (index : 0)
-2020-08-10 18:11:40 +0200 Lemma line : "eau\tNOM\teau" (index : 1)
-2020-08-10 18:11:40 +0200 -> ExtraitTexte#output
-2020-08-10 18:11:40 +0200 On doit afficher les items de 2119 à 2459 (nombre total : 79178)
-2020-08-10 18:11:40 +0200 <- ExtraitTexte#output
-2020-08-10 18:12:17 +0200 Soumission de la commande "rep 245-248 faire de vague"
-2020-08-10 18:12:17 +0200 🔨 Commande jouée : "rep 245-248 faire de vague"
-2020-08-10 18:12:17 +0200 parse_str par le système
-2020-08-10 18:12:18 +0200 Insertion de “faire de vague” de 2364 à 2367 (4) (avant “ ”)
-2020-08-10 18:12:18 +0200 parse_str par le système
-2020-08-10 18:12:20 +0200 Lemma line : "faire\tVER:infi\tfaire" (index : 0)
-2020-08-10 18:12:20 +0200 Lemma line : "de\tPRP\tde" (index : 1)
-2020-08-10 18:12:20 +0200 Lemma line : "vague\tNOM\tvague" (index : 2)
-2020-08-10 18:12:20 +0200 -> ExtraitTexte#output
-2020-08-10 18:12:20 +0200 On doit afficher les items de 2119 à 2460 (nombre total : 79179)
-2020-08-10 18:12:20 +0200 <- ExtraitTexte#output
-2020-08-10 18:13:03 +0200 Soumission de la commande "show 2119"
-2020-08-10 18:13:03 +0200 🔨 Commande jouée : "show 2119"
-2020-08-10 18:13:03 +0200 -> ExtraitTexte#output
-2020-08-10 18:13:03 +0200 On doit afficher les items de 2119 à 2529 (nombre total : 79179)
-2020-08-10 18:13:03 +0200 <- ExtraitTexte#output
-2020-08-10 18:14:26 +0200 Soumission de la commande "debug mot 245"
-2020-08-10 18:14:26 +0200 🔨 Commande jouée : "debug mot 245"
-2020-08-10 18:14:46 +0200 Soumission de la commande "debug canon faire"
-2020-08-10 18:14:46 +0200 🔨 Commande jouée : "debug canon faire"
-2020-08-10 18:16:12 +0200 Soumission de la commande "debug mot 245"
-2020-08-10 18:16:12 +0200 🔨 Commande jouée : "debug mot 245"
-2020-08-10 18:16:19 +0200 Soumission de la commande "debug canon faire"
-2020-08-10 18:16:19 +0200 🔨 Commande jouée : "debug canon faire"
-2020-08-10 18:21:40 +0200 Soumission de la commande "q"
+2020-08-11 09:21:21 +0200 -> open_texte (text_path:"/Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text.txt")
+2020-08-11 09:21:21 +0200 Configuration enregistrée (:last_text_path)
+2020-08-11 09:21:21 +0200 Instanciation @extrait (à partir de l'item 0)
+2020-08-11 09:21:21 +0200 -> ExtraitTexte#output
+2020-08-11 09:21:21 +0200 On doit afficher les items de 0 à 400 (nombre total : 163)
+2020-08-11 09:21:21 +0200 <- ExtraitTexte#output
+2020-08-11 09:21:26 +0200 Soumission de la commande "canon aura"
+2020-08-11 09:21:26 +0200 🔨 Commande jouée : "canon aura"
+2020-08-11 09:21:26 +0200 Resultat de get_canon_of_mot(aura) : #<SQLite3::ResultSet:0x00007ffdc28a3de8 @db=#<SQLite3::Database:0x00007ffdc28a8668 @tracefunc=nil, @authorizer=nil, @encoding=nil, @busy_handler=nil, @collations={}, @functions={}, @results_as_hash=nil, @type_translation=nil, @type_translator=#<Proc:0x00007ffdc301e398 /usr/local/lib/ruby/gems/2.7.0/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:722 (lambda)>, @readonly=false>, @stmt=#<SQLite3::Statement:0x00007ffdc28a8438 @connection=#<SQLite3::Database:0x00007ffdc28a8668 @tracefunc=nil, @authorizer=nil, @encoding=nil, @busy_handler=nil, @collations={}, @functions={}, @results_as_hash=nil, @type_translation=nil, @type_translator=#<Proc:0x00007ffdc301e398 /usr/local/lib/ruby/gems/2.7.0/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:722 (lambda)>, @readonly=false>, @remainder="", @columns=nil, @types=nil, @results=#<SQLite3::ResultSet:0x00007ffdc28a3de8 ...>>>
+2020-08-11 09:21:26 +0200 Le canon de "aura" est "avoir"
+2020-08-11 09:21:29 +0200 Soumission de la commande "canon perturbe"
+2020-08-11 09:21:29 +0200 🔨 Commande jouée : "canon perturbe"
+2020-08-11 09:21:29 +0200 Resultat de get_canon_of_mot(perturbe) : #<SQLite3::ResultSet:0x00007ffdc28a2380 @db=#<SQLite3::Database:0x00007ffdc28a8668 @tracefunc=nil, @authorizer=nil, @encoding=#<Encoding:UTF-8>, @busy_handler=nil, @collations={}, @functions={}, @results_as_hash=nil, @type_translation=nil, @type_translator=#<Proc:0x00007ffdc301e398 /usr/local/lib/ruby/gems/2.7.0/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:722 (lambda)>, @readonly=false>, @stmt=#<SQLite3::Statement:0x00007ffdc28a8438 @connection=#<SQLite3::Database:0x00007ffdc28a8668 @tracefunc=nil, @authorizer=nil, @encoding=#<Encoding:UTF-8>, @busy_handler=nil, @collations={}, @functions={}, @results_as_hash=nil, @type_translation=nil, @type_translator=#<Proc:0x00007ffdc301e398 /usr/local/lib/ruby/gems/2.7.0/gems/sqlite3-1.4.2/lib/sqlite3/database.rb:722 (lambda)>, @readonly=false>, @remainder="", @columns=["Canon"], @types=["VARCHAR(30)"], @results=#<SQLite3::ResultSet:0x00007ffdc28a2380 ...>>>
+2020-08-11 09:21:29 +0200 Le mot "perturbe" n'a pas de canon enregistré.
+2020-08-11 09:21:39 +0200 Soumission de la commande "q"

@@ -128,6 +128,11 @@ def reproximitize
   return true
 end #/ reproximitize
 
+# Instance base de donnée propre au texte/projet
+def db
+  @db ||= TextSQLite.new(self)
+end #/ db
+
 def save
   data = {
     items: items,
