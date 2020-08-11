@@ -36,7 +36,7 @@ end # /<< self
 #
 # ---------------------------------------------------------------------
 
-
+attr_reader :id
 attr_reader :content
 attr_accessor :type, :index, :offset, :canon
 attr_accessor :icanon
@@ -79,6 +79,47 @@ def initialize(content, params = nil)
     params.each { |k,v| instance_variable_set("@#{k}", v)}
   end
 end #/ initialize
+
+def load_from_db
+  data = Runner.itexte.db.load_text_item(id)
+  data.reverse! # pour poper
+  DATA_TABLE_TEXT_ITEMS.each do |dcol|
+    next if dcol[:insert] === false
+    self.send(dcol[:property_sym].to_sym, data.pop)
+  end
+end #/ load_from_db
+
+def insert_in_db
+  @id = Runner.itexte.db.insert_text_item(db_values)
+  # log("@id pour le mot #{content.inspect} : #{id.inspect}")
+end #/ save_in_db
+
+def update_offset_and_index
+  # log("UPDATE ##{id.inspect.ljust(4)} index:#{index.to_s.ljust(4)} offset:#{offset.to_s.ljust(6)}")
+  Runner.itexte.db.update_offset_index_titem(id:id, offset:offset, index:index, indice_in_file:indice_in_file)
+end #/ update_offset_and_index
+
+# Pour updater les valeurs +data+ dans la base de données
+def update_in_db(data)
+  Runner.itexte.db.update_text_item(data.merge!(id: id))
+end #/ update_in_db
+
+# @Return les valeurs pour la table text_items
+def db_values
+  TextSQLite::DATA_TABLE_TEXT_ITEMS.collect do |dcol|
+    next if dcol[:insert] === false
+    prop = (dcol[:property] || dcol[:name].downcase).to_sym
+    self.send(prop)
+  end.compact
+end #/ db_values
+
+def db_mark_scrivener_start
+  mark_scrivener_start.values.join(VG) unless mark_scrivener_start.nil?
+end #/ db_mark_scrivener_start
+
+def db_mark_scrivener_end
+  mark_scrivener_end.values.join(VG) unless mark_scrivener_end.nil?
+end #/ db_mark_scrivener_end
 
 # Méthode appelée avant tout recomptage (donc dès qu'une opération est
 # exécutée sur le texte)

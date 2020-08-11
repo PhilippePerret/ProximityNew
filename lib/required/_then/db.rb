@@ -16,6 +16,68 @@ def initialize(owner = nil)
   @owner = owner
 end #/ initialize
 
+DATA_TABLE_TEXT_ITEMS = [
+  {name:'Id',                 type:'INTEGER PRIMARY KEY AUTOINCREMENT', insert: false},
+  {name:'Content',            type:'VARCHAR(30)'},
+  {name:'Canon',              type:'VARCHAR(30)'},
+  {name:'Type',               type:'VARCHAR(15)'},
+  {name:'`Index`',            type:'INTEGER', property:'index'},
+  {name:'Offset',             type:'INTEGER'},
+  {name:'FileId',             type:'TINYINT', property:'file_id'},
+  {name:'IndiceInFile',       type:'TINYINT', property:'indice_in_file'},
+  {name:'MarkScrivenerStart', type:'VARCHAR(10)', property:'db_mark_scrivener_start'},
+  {name:'MarkScrivenerEnd',   type:'VARCHAR(10)', property:'db_mark_scrivener_end'},
+  {name:'Ignored',            type:'BOOLEAN', property:'is_ignored'}
+]
+DATA_TABLE_TEXT_ITEMS.each do |dcol|
+  dcol[:property] ||= dcol[:name].downcase
+  dcol.merge!(property_sym: dcol[:property].to_sym)
+end
+
+def insert_text_item(values)
+  stm_insert_titem.execute(values)
+
+  db.last_insert_row_id
+end #/ insert_text_item
+
+def load_text_item(id)
+  stm_load_titem.execute(id)
+  stm_load_titem.next
+end #/ load_text_item
+def stm_load_titem
+  @stm_load_titem ||= db.prepare("SELECT * FROM text_items WHERE id = ?")
+end #/ stm_load_titem
+
+# Méthode publique pour actualiser l'offset et l'index d'un text-item
+# @Params
+#   @hdata    {Hash} {:id, :offset, :index}
+def update_offset_index_titem(hdata)
+  stm_update_offset_index.execute(hdata[:offset], hdata[:index], hdata[:indice_in_file], hdata[:id])
+end #/ update_offset_index_titem
+
+# Requête préparée pour actualiser l'offset et l'index d'un text-item du
+# texte courant.
+def stm_update_offset_index
+  @stm_update_offset_index ||= db.prepare("UPDATE text_items SET Offset = ?, `Index` = ?, IndiceInFile = ? WHERE id = ?")
+end #/ stm_update_offset_index
+
+def update_text_item(hvalues)
+  raise("udpate_text_item n'est pas encore implémenté.")
+end #/ update_text_item
+
+# Requête préparée pour l'enregistrement d'un nouveau text-item dans text_items
+def stm_insert_titem
+  @stm_insert_titem ||= begin
+    colonnes = DATA_TABLE_TEXT_ITEMS.collect do |dcol|
+      next if dcol[:insert] === false
+      dcol[:name]
+    end.compact
+    interros = Array.new(colonnes.count, '?').join(VGE)
+    colonnes = colonnes.join(VGE)
+    db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})")
+  end
+end #/ stm_insert_titem
+
 # Appelée *au début de chaque parsing*
 def reset
   # On ne crée la table de configuration que si elle n'est pas encore créée
@@ -26,16 +88,8 @@ def reset
   create_table_lemmas
 end #/ reset
 
-# Pour ajouter un mot et son canon dans la table `lemmas` qui permettra
-# d'accélérer la recherche de canons.
-def add_mots_et_canons(liste_doubles)
-  # log("add_mot_et_canon(mot=#{mot.inspect}, canon=#{canon.inspect})")
-  liste_doubles.each do |double|
-    stm_set_lemma.execute(*double)
-  end
-  # stm_set_lemma.bind_params(*liste_doubles)
-end #/ add_mot_et_canon
 
+# Pour ajouter un mot-canon à la table lemmas
 def add_mot_and_canon(mot, canon)
   stm_set_lemma.execute(mot,canon)
 end #/ add_mot_and_canon
@@ -62,8 +116,10 @@ end #/ stm_get_lemma
 # parsing du texte, ainsi que la table des text-items affichés (page courante)
 def create_table_text_items(db_name = 'text_items'.freeze, dropping = false)
   db.execute("DROP TABLE IF EXISTS #{db_name}") if dropping
-  # db.execute("CREATE TABLE #{db_name}(Id INTEGER PRIMARY KEY, Content VARCHAR(30), Canon VARCHAR(30), Type VARCHAR(15), Index INTEGER, FileId TINYINT, IndiceInFile TINYINT, Offset INTEGER, MarkScrivenerStart VARCHAR(10), MarkScrivenerEnd VARCHAR(10), Ignored BOOLEAN)".freeze)
-  db.execute("CREATE TABLE #{db_name}(Id INTEGER PRIMARY KEY AUTOINCREMENT, Content VARCHAR(30), Canon VARCHAR(30), Type VARCHAR(15), `Index` INTEGER, FileId TINYINT, IndiceInFile TINYINT, Offset INTEGER, MarkScrivenerStart VARCHAR(10), MarkScrivenerEnd VARCHAR(10), Ignored BOOLEAN)".freeze)
+  colonnes = DATA_TABLE_TEXT_ITEMS.collect do |dcol|
+    "#{dcol[:name]} #{dcol[:type]}".freeze
+  end.join(VGE).freeze
+  db.execute("CREATE TABLE #{db_name}(#{colonnes})".freeze)
 end #/ create_table_text_items
 
 def create_table_lemmas

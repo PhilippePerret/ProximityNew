@@ -17,7 +17,7 @@ class << self
       mot = cmd.shift
       canon = Runner.itexte.db.get_canon_of_mot(mot)
       if canon
-        log("Le canon de #{mot.inspect} est #{canon.inspect}", true)
+        log("Le canon enregistré de #{mot.inspect} est #{canon.inspect}", true)
       else
         log("Le mot #{mot.inspect} n'a pas de canon enregistré.", true)
       end

@@ -68,6 +68,7 @@ def recompte(params = nil)
         canons_to_update.merge!(titem.canon => titem.icanon) # canon à calculer
       end
     end
+    has_changed = titem.offset != offset || titem.index != idx
     titem.offset = offset
     titem.index  = idx
     # Pour gérer l'index dans le fichier (projet Scrivener)
@@ -75,7 +76,19 @@ def recompte(params = nil)
       current_file_id = titem.file_id.dup
       idx_mot_in_file = 0
     end
-    titem.indice_in_file = (idx_mot_in_file += 1) if titem.mot?
+    if titem.mot?
+      indice_in_file = (idx_mot_in_file += 1)
+      has_changed = has_changed || titem.indice_in_file != indice_in_file
+      titem.indice_in_file = indice_in_file
+    end
+
+    # Si l'offset, l'index ou l'indice du mot dans le fichier a changé,
+    # on actualiser le mot dans la base de données
+    if has_changed
+      titem.update_offset_and_index
+      log("Le mot #{titem.cio} a été actualisé")
+    end
+
     # Le nouvel offset. Maintenant, il est très juste puisque l'intégralité
     # du texte, non-mot compris, est enregistré dans Texte@items.
     offset += titem.length

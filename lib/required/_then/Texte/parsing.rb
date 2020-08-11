@@ -103,6 +103,12 @@ def parse_simple_texte
     return false
   end
 
+  save_titems_in_db || begin
+    log("# Interruption du parsing au niveau du sauvetage des mots dans la DB…".freeze, true)
+    log.close
+    return false
+  end
+
   # On doit recalculer tout le texte. C'est-à-dire définir les
   # offsets de tous les éléments
   recompte || begin
@@ -130,6 +136,13 @@ ensure
   File.delete(corrected_text_path) if File.exists?(corrected_text_path)
 end
 
+# On crée toutes les instances mots dans la base de données ici
+def save_titems_in_db
+  self.items.each do |titem|
+    titem.insert_in_db
+  end
+  return true
+end #/ save_titems_in_db
 # = main =
 #
 # Parsing d'un projet scrivener.
@@ -182,6 +195,12 @@ def parse_projet_scrivener(projet)
   # mot à son canon.
   lemmatize || begin
     log("# Interruption du parsing au niveau de la lemmatisation…".freeze, true)
+    return false
+  end
+
+  save_titems_in_db || begin
+    log("# Interruption du parsing au niveau du sauvetage des mots dans la DB…".freeze, true)
+    log.close
     return false
   end
 
