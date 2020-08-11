@@ -22,7 +22,8 @@ class AtStructure
   # Analyse le 'at' fourni pour l'index.
   #
   # Noter que dans tous les cas @list est défini et contient les
-  # éléments voulus.
+  # éléments voulus, que ce soit pour un index seul, une liste d'index
+  # ou un range d'index.
   #
   # [1] On peut passer par ici, lorsque l'utilisateur a donné
   #     une "fausse" liste, par exemple "12,12"
@@ -122,17 +123,17 @@ private
 
   # +i+ doit être un nombre correspondant à un index du texte
   def conforme?(i)
-    @nombre_total_items ||= Runner.itexte.items.count - 1
     raise(ERRORS[:entier_required] % i.inspect) unless i.integer?
     i = i.to_i
-    raise(ERRORS[:index_too_high] % i) if i > @nombre_total_items
-    raise[ERRORS[:index_positif] % i.inspect] if i < 0
+    raise[ERRORS[:index_positif] % [i]] if i < 0
+    raise(ERRORS[:index_too_high] % [i, to_item]) if i > to_item # il doit être dans la fenêtre
+
     return true
   end #/ conforme?
 
 ERRORS = {
   entier_required: "L'index %s devrait être un entier.".freeze,
-  index_too_high: "L'index %i est trop grand.".freeze,
-  index_positif: "L'index %s devrait être un nombre positif.".freeze
+  index_too_high: "L'index %i est trop grand (il doit être compris entre 0 et %i).".freeze,
+  index_positif: "L'index doit être un nombre positif, de 0 à %i.".freeze
 }
 end
