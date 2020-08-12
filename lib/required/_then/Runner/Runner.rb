@@ -134,7 +134,7 @@ class << self
   def check_if_current_texte_saved
     return true if itexte.saved? && !iextrait.modified
     # log("itexte.saved? = #{itexte.saved?.inspect} / iextrait.modified = #{iextrait.modified.inspect}")
-    choix = CWindow.wait_for_user(keys:['X', 'Z','Y'], message:"Le texte courant n'a pas été sauvé. Si vous le fermez maintenant, toutes les modifications seront perdues. X : poursuivre et tout perdre, Z : annuler, Y : enregistrer.")
+    choix = CWindow.wait_for_user(keys:['X', 'Z','Y'], message:"Le texte courant n'a pas été sauvé. Si vous le fermez maintenant, toutes les modifications seront perdues.#{RC}X : poursuivre et tout perdre, Z : annuler, Y : enregistrer.".freeze)
     case choix.downcase
     when 'x'
       return true
