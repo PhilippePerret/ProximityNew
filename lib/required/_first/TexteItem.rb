@@ -199,12 +199,16 @@ def debug(options = nil)
 end #/ debug
 
 def to_s
-  "Content:'#{content}'/offset:#{offset.inspect}/length:#{length.inspect}/index:#{index.inspect}"
+  "Content:'#{content}'/Offset:#{offset.inspect}/Length:#{length.inspect}/Index:#{index.inspect}"
 end #/ to_s
 
 def length
   @length ||= content.length
 end #/ length
+
+def downcase
+  @downcase ||= content.downcase
+end #/ downcase
 
 def main_type
   @main_type ||= begin
@@ -323,6 +327,8 @@ end #/ proximites_length
 # Retourne true si le text-item peut être étudié au niveau de ses proximités
 def proximizable?
   @is_not_proximizabe ||= begin
+    # Note : il ne faut pas ajouter la condition `canon == LEMMA_UNKNOWN` car
+    # dans ce cas, on peut comparer le contenu lui-même.
     if non_mot? || ignored? || length < 4 || icanon.nil? || main_type == 'PRO' || main_type == 'DET' || is_exclu?
       :false
     else
@@ -395,6 +401,9 @@ def prox_avant
       titem_avant = nil
       while titem = liste_seek.pop
         next if not titem.proximizable?
+        # Quand le canon du mot est inconnu, on compare les mots entre eux,
+        # minusculisés
+        next if titem.canon == LEMMA_UNKNOWN && titem.downcase != downcase
         next if titem.canon != canon
         distance = offset - titem.offset
         break if distance > Canon[canon].distance_minimale

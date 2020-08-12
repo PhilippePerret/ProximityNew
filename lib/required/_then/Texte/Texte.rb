@@ -51,16 +51,27 @@ end #/ save
 #   [3] Indiquer que le texte a été modifié pour pouvoir le sauvegarder
 #
 def update
+  # log("-> Texte#update")
   extr = Runner.iextrait
   # [1]
   titems_avant = extr.from_item > 0 ? items[0...(extr.from_item)] : []
   titems_apres = items[(extr.to_item+1)..-1]
   @items = titems_avant + extr.extrait_titems + titems_avant
+
+  # Débug
+  # debug_items("après insertion extrait (avant recomptage)")
+
   # [2]
   recompte
+  # debug_items("après recomptage")
   # [3]
   self.modified = true
 end #/ update
+
+# Méthode de débuggage pour voir les items du texte
+def debug_items(quand = nil)
+  debug_titems(items, titre: "#{RC*2}Text-items du texte #{quand} :")
+end #/ debug_items
 
 # Méthode qui recompte tout, les offsets, les index, etc.
 def recompte(params = nil)

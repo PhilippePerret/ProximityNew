@@ -162,9 +162,7 @@ class << self
     when 'show'
       from = cmd.shift.to_i # 0 si rien
       Runner.itexte.update if Runner.iextrait.modified
-      Runner.iextrait = nil # Nécessaire ?
-      Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
-      Runner.iextrait.output
+      Runner.show_extrait(from)
 
     when 'next'
       what = cmd.shift
@@ -174,9 +172,7 @@ class << self
           CWindow.log("C'est la dernière page !".freeze)
         else
           Runner.itexte.update if Runner.iextrait.modified
-          from = Runner.iextrait.to_item + 1
-          Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
-          Runner.iextrait.output
+          Runner.show_extrait(Runner.iextrait.to_item + 1)
         end
       end
 

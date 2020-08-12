@@ -6,14 +6,17 @@ class ExtraitTexte
 # Régler les trois valeurs ci-dessous en fonction des envies et
 # des besoins.
 # ---------------------------------------------------------------------
+def debug_ignore?
+  false
+end #/ debug_ignore?
 def debug_replace?
-  true
+  false
 end #/ debug_replace?
 def debug_remove?
   false
 end #/ debug_remove?
 def debug_insert?
-  true
+  false
 end #/ debug_insert?
 
 # ---------------------------------------------------------------------
@@ -23,7 +26,7 @@ end #/ debug_insert?
 # ---------------------------------------------------------------------
 
 def ignore(params)
-  log("-> ignore#{params.inspect}")
+  log("-> ignore#{params.inspect}") if debug_ignore?
   params.merge!({
     real_at: AtStructure.new(params[:at]),
     operation: 'ignore'

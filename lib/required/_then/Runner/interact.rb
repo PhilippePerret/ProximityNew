@@ -130,7 +130,7 @@ def interact_with_user
     # Faut-il passer dans un mode clavier particulier ?
     if start_command && COMMANDS_TO_MODE[command]
       @mode_clavier = MODES_CLAVIER[COMMANDS_TO_MODE[command][:mode]]
-      CWindow.init_status_and_cursor(@mode_clavier[:dim])
+      CWindow.init_status_and_cursor(mode_clavier: @mode_clavier[:dim])
     end
   end #/ tanq que rien ne sort
 end #/ interact_with_user

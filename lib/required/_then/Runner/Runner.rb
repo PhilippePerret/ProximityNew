@@ -118,6 +118,7 @@ class << self
     # log("-> show_extrait(from:#{from.inspect})")
     @iextrait = ExtraitTexte.new(itexte, from: from)
     @iextrait.output
+    CWindow.init_status_and_cursor(clear:true)
   end #/ show_extrait
 
   # Méthode appelée quand on va quitter l'application (de façon normale, avec

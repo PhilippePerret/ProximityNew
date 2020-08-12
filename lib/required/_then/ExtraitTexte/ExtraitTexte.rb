@@ -57,7 +57,6 @@ def output
   #   jusque
   #   le titem d'offset offset-dernier + distance_minimale_commune
 
-
   CWindow.textWind.clear
 
   # *** Définitions préliminaires ***
@@ -73,7 +72,7 @@ def output
   # On boucle sur toutes les notes de l'extrait pour les afficher
   # Note : c'est la méthode propriété +extrait_titems+ qui va recueillir
   # les text-items à afficher ici.
-  log("extrait_titems:#{extrait_titems.inspect}")
+  # log("extrait_titems:#{extrait_titems.inspect}") # ATTENTION : prend de la place si gros texte
   extrait_titems.each_with_index do |titem, idx|
 
     # On reset toujours le text-item pour forcer tous les recalculs
@@ -140,9 +139,6 @@ def output
   # d'autres méthodes.
   @to_item = extrait_titems.last.index
 
-  # On actualise le nombre dans la barre de statut
-  CWindow.init_status_and_cursor
-
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
   log("<- ExtraitTexte#output")
@@ -194,7 +190,6 @@ def extrait_titems
     offset_first = hfrom_item['Offset']
     first_offset_avant = offset_first - itexte.distance_minimale_commune
     titems_avant = itexte.db.db.execute("SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze, first_offset_avant, offset_first)
-    log("#{RC*3}+++ titems_avant : #{titems_avant.inspect}")
 
     # On ajoute les instances des titems courant aux titems de l'extrait
     idx = titems_avant.count

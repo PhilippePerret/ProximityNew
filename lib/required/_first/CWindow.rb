@@ -127,12 +127,16 @@ class << self
   # = main =
   #
   # Méthode principale qui actualise le statut affiché.
+  # La méthode place également le curseur au bon endroit et nettoie
+  # la fenêtre log si options[:clear] est true.
   #
-  def init_status_and_cursor(data_mode_clavier = nil)
-    set_mode_clavier(data_mode_clavier)
+  def init_status_and_cursor(params = nil)
+    params ||= {}
+    set_mode_clavier(params[:mode_clavier])
     set_distance_minimale_defaut
     set_statut_extrait
     set_titre_texte
+    logWind.clear if params[:clear]
     # Pour remettre le curseur au bon endroit
     uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
   end #/ init_status_and_cursor
@@ -185,6 +189,7 @@ class << self
   def wait_for_user(params = nil)
     params ||= {}
     params[:window] ||= @uiWind
+    logWind.clear
     logWind.write(params[:message])
     uiWind.clear
     uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)

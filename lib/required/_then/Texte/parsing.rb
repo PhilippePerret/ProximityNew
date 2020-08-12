@@ -483,23 +483,15 @@ end #/ lemmatize
 # à travailler, soit aucun d'une insertion/remplacement
 def traite_lemma_line(line, idx)
   mot, type, canon = line.strip.split(TAB)
-  # Traitement de quelques cas <unknown> connus… (sic)
-  if canon == LEMMA_UNKNOWN
-    log("+++ canon inconnu pour : #{line}")
-    type, canon = case mot
-    when 't' then ['PRO:PER', 'te']
-    else [type, canon]
-    end
-  end
   titem = Mot.items[idx]
-  titem.type = type
   if mot != (titem.lemma || titem.content.downcase)
     expose_erreur_desynchro(mot:mot, titem:titem, idx:idx, canon:canon)
   else
     # Quand le mot lemmatisé correspond au mot enregistré dans Mot.items (cas
     # normal)
-    # on peut définir le canon du mot. (sera supprimé dans les version ultérieures)
-    Canon.add(Mot.items[idx], canon)
+    # on peut définir le canon du mot et son type.
+    titem.type  = type
+    titem.canon = canon
     # On regarde s'il faut enregistrer cette forme lemmatisée
     # On le sait de deux manières : en consultant la table des mots qui ont
     # déjà été lemmatisés au cours de ce parsing (pour aller plus vite) et en

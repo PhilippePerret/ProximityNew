@@ -13,6 +13,29 @@ def debug(str, options = nil)
   Debugger.add(str, options)
 end #/ debug
 
+# Méthode pour débugger une liste de text-items
+#
+# @Params
+#     @titems   Array   Liste des instances text-item (mots ou non-mots)
+#     @options  Hash
+#       :from   Depuis cet index (sinon 0)
+#       :to     Jusqu'à cet index (sinon le dernier)
+#       :titre  Titre à donner à la liste.
+#
+def debug_titems(titems, options = nil)
+  options ||= {}
+  options[:from]  ||= 0
+  options[:to]    ||= titems.count -1
+  delimitation = (RC*3 + TIRET*80 + RC*3).freeze
+  log(delimitation)
+  log(options[:titre]||"Débuggage d'une liste de text-items")
+  temp = '%s%s%s%s'.freeze
+  items.each do |titem|
+    log(temp % [titem.content.ljust(20), (titem.index||'nil').to_s.ljust(8), (titem.offset||'nil').to_s.ljust(10), titem.canon.to_s.ljust(20)])
+  end
+  log(delimitation)
+end #/ debug_titems
+
 # Quand +str+ est nil, c'est un appel à l'instance, par exemple pour
 # fermer l'accès au fichier journal.log avec `log.close`. Sinon c'est un
 # appel "normal" avec écriture dans le fichier journal.
