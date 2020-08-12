@@ -136,9 +136,9 @@ ensure
   File.delete(corrected_text_path) if File.exists?(corrected_text_path)
 end
 
-# On crée toutes les instances mots dans la base de données ici
+# On crée toutes les instances mots dans la base de données du texte
 def save_titems_in_db
-  self.items.each do |titem|
+  self.items.each_with_index do |titem, idx|
     titem.insert_in_db
   end
   return true

@@ -123,7 +123,7 @@ def insert_in_db
   log("Insert in db de : #{db_values.inspect}")
   @id = Runner.itexte.db.insert_text_item(db_values)
   # log("@id pour le mot #{content.inspect} : #{id.inspect}")
-end #/ save_in_db
+end #/ insert_in_db
 
 def update_offset_and_index
   # log("UPDATE ##{id.inspect.ljust(4)} index:#{index.to_s.ljust(4)} offset:#{offset.to_s.ljust(6)}")

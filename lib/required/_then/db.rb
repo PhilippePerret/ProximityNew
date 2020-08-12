@@ -49,15 +49,19 @@ def insert_text_item(values)
   db.last_insert_row_id
 end #/ insert_text_item
 
-def get_titem_by_index(index, as_hash = false)
-  db.results_as_hash = as_hash
+def get_titem_by_index(index, as_hash = nil)
+  db.results_as_hash = as_hash unless as_hash.nil?
+  log("-> get_titem_by_index(index:#{index.inspect}, as_hash:#{as_hash.inspect})")
   res = stm_titem_by_index.execute(index)
+
   res.next
 end #/ get_titem_by_index
 def stm_titem_by_index
   @stm_titem_by_index ||= begin
     colonnes, interros = titems_colonnes_and_interrogations
-    db.prepare("SELECT #{colonnes} FROM text_items WHERE `Index` = ?")
+    cmd = "SELECT #{colonnes} FROM text_items WHERE `Index` = ? LIMIT 1".freeze
+    # log("Requête préparée pour récupérer un titem par son index : #{cmd.inspect}")
+    db.prepare(cmd)
   end
 end #/ stm_titem_by_index
 

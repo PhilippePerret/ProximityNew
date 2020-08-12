@@ -35,6 +35,7 @@ def save
   }
   File.open(data_path,'wb'){|f| Marshal.dump(data,f)}
   # raise "Il faut revoir la procédure de sauvarde du texte."
+  self.modified = false
 end #/ save
 
 # Actualise le texte
@@ -52,7 +53,7 @@ end #/ save
 def update
   extr = Runner.iextrait
   # [1]
-  titems_avant = items[0...(extr.from_item)]
+  titems_avant = extr.from_item > 0 ? items[0...(extr.from_item)] : []
   titems_apres = items[(extr.to_item+1)..-1]
   @items = titems_avant + extr.extrait_titems + titems_avant
   # [2]
@@ -67,7 +68,6 @@ def recompte(params = nil)
   params  ||= {}
   offset  = 0
   nb      = 0 # pour connaitre le nombre de text-items traités
-  canons_to_update = {} # Les canons qu'il faudra actualiser
   # Premier index
   # -------------
   # En fait, ça va tellement vite, même avec un texte long, qu'on repart
@@ -96,6 +96,8 @@ def recompte(params = nil)
         error_canon_inexistant(titem, idx)
       end
     end
+    # Pour savoir si l'item a changé. Il a changé si son index ou son
+    # offset ont changé.
     has_changed = titem.offset != offset || titem.index != idx
     titem.offset = offset
     titem.index  = idx
@@ -114,7 +116,7 @@ def recompte(params = nil)
     # on actualise le mot dans la base de données
     if has_changed
       titem.update_offset_and_index
-      log("Le mot #{titem.cio} a été actualisé")
+      log("Le mot #{titem.cio} a été actualisé".freeze)
     end
 
     # Le nouvel offset. Maintenant, il est très juste puisque l'intégralité
@@ -199,7 +201,7 @@ end #/ distance_minimale_commune
 # Retourne true si le texte est enregistré (si ses modifications ont été
 # enregistrés)
 def saved?
-  !(modified === true)
+  !(self.modified === true)
 end #/ saved?
 
 def projet_scrivener?

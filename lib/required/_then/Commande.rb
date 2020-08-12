@@ -161,8 +161,9 @@ class << self
 
     when 'show'
       from = cmd.shift.to_i
+      Runner.itexte.update if Runner.iextrait.modified
       Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
-      Runner.iextrait.update
+      Runner.iextrait.output
 
     when 'next'
       what = cmd.shift
@@ -186,8 +187,7 @@ class << self
           CWindow.log("C'est la première page !".freeze)
         else
           Runner.itexte.update if Runner.iextrait.modified
-          from = Runner.iextrait.from_item - 150
-          from = 0 if from < 0
+          from = 0 if (from = Runner.iextrait.from_item - 150) < 0
           Runner.show_extrait(from)
         end
       end

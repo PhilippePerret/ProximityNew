@@ -17,7 +17,8 @@ attr_accessor :modified
 def initialize itexte, params
   # log("params: #{params.inspect}")
   @itexte     = itexte
-  @from_item  = params[:from] || 0
+  @from_item  = params[:from]
+  @form_item = 0 if @from_item.nil? || @from_item < 0
   @to_item    = params[:to]
 end #/ initialize
 
@@ -72,6 +73,7 @@ def output
   # On boucle sur toutes les notes de l'extrait pour les afficher
   # Note : c'est la méthode propriété +extrait_titems+ qui va recueillir
   # les text-items à afficher ici.
+  log("extrait_titems:#{extrait_titems.inspect}")
   extrait_titems.each_with_index do |titem, idx|
 
     # On reset toujours le text-item pour forcer tous les recalculs
@@ -147,7 +149,6 @@ def output
 end #/ output
 
 def finir_ligne(top_line_index, offset)
-  log("-> finir_ligne(top_line_index:#{top_line_index.inspect}, offset:#{offset.inspect}) / max_line_length:#{max_line_length.inspect}")
   manque = (SPACE * (max_line_length - offset)).freeze
   write3lines([manque,manque,manque], top_line_index, offset)
 end #/ finir_ligne
@@ -182,14 +183,18 @@ def extrait_titems
     #   * les noms de colonnes sont avec capitales ("Offset", "Content", etc.)
     itexte.db.results_as_hash = true
 
-    hfrom_item = itexte.db.get_titem_by_index(from_item, true)
-    # log("from_item_offset: #{hfrom_item.inspect}")
+    hfrom_item = itexte.db.get_titem_by_index(from_item)
+    if hfrom_item.nil?
+      raise "Grave erreur, le text-item d'index #{from_item.inspect} est introuvable dans la DB"
+    end
+    # log("DB: #{itexte.db.path}")
+    # log("hfrom_item (index #{from_item.inspect}): #{hfrom_item.inspect}")
     # On doit récupérer tous les items qui ont un offset de la distance minimale
     # commune avant
     offset_first = hfrom_item['Offset']
     first_offset_avant = offset_first - itexte.distance_minimale_commune
     titems_avant = itexte.db.db.execute("SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze, first_offset_avant, offset_first)
-    # log("#{RC*3}+++ titems_avant : #{titems_avant.inspect}")
+    log("#{RC*3}+++ titems_avant : #{titems_avant.inspect}")
 
     # On ajoute les instances des titems courant aux titems de l'extrait
     idx = titems_avant.count

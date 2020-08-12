@@ -61,7 +61,7 @@ class << self
     # Si un texte est présentement ouvert, il faut vérifier qu'il soit
     # bien sauvé. Et demander de le faire le cas échéant.
     unless @itexte.nil?
-      check_if_current_texte_if_saved || return # annulation ou problème de sauvegarde
+      check_if_current_texte_saved || return # annulation ou problème de sauvegarde
     end
 
     if File.exists?(text_path)
@@ -105,7 +105,7 @@ class << self
   # L'extrait courant
   def iextrait
     @iextrait ||= begin
-      log("Instanciation @extrait (à partir de l'item #{itexte.current_first_item})")
+      # log("Instanciation @extrait (à partir de l'item #{itexte.current_first_item})")
       ExtraitTexte.new(itexte, from: itexte.current_first_item)
     end
   end #/ iextrait
@@ -115,22 +115,24 @@ class << self
 
   # Pour montrer un extrait
   def show_extrait(from)
-    self.iextrait = ExtraitTexte.new(itexte, from: from)
-    self.iextrait.output
+    # log("-> show_extrait(from:#{from.inspect})")
+    @iextrait = ExtraitTexte.new(itexte, from: from)
+    @iextrait.output
   end #/ show_extrait
 
   # Méthode appelée quand on va quitter l'application (de façon normale, avec
   # la command “:q”)
   def finish
-    check_if_current_texte_if_saved
+    check_if_current_texte_saved
   end #/ finish
 
   # Cette méthode, appelée quand on quitte l'application ou quand on
   # ouvre un autre texte, permet de vérifier que le texte courant ait
   # bien été sauvé.
   # Note : elle est toujours appelée quand un texte courant existe.
-  def check_if_current_texte_if_saved
-    return true if itexte.saved? && false == iextrait.modified
+  def check_if_current_texte_saved
+    return true if itexte.saved? && !iextrait.modified
+    # log("itexte.saved? = #{itexte.saved?.inspect} / iextrait.modified = #{iextrait.modified.inspect}")
     choix = CWindow.wait_for_user(keys:['X', 'Z','Y'], message:"Le texte courant n'a pas été sauvé. Si vous le fermez maintenant, toutes les modifications seront perdues. X : poursuivre et tout perdre, Z : annuler, Y : enregistrer.")
     case choix.downcase
     when 'x'
@@ -141,7 +143,7 @@ class << self
       itexte.update if iextrait.modified
       itexte.save
     end
-  end #/ check_if_current_texte_if_saved
+  end #/ check_if_current_texte_saved
 
   # Pour afficher l'aide
   def display_help(options = nil)
