@@ -36,7 +36,9 @@ end #/ initialize
 # Longueur en signes du texte qu'on peut afficher dans la fenêtre de
 # texte.
 # LENGTH_TEXT_IN_TEXT_WINDOW = 2000
-LENGTH_TEXT_IN_TEXT_WINDOW = 1000 # pour essai
+# LENGTH_TEXT_IN_TEXT_WINDOW = 1000 # pour essai
+# LENGTH_TEXT_IN_TEXT_WINDOW = 800 # pour essai
+LENGTH_TEXT_IN_TEXT_WINDOW = 1500 # pour essai
 def output
 
   # Dans la nouvelle formule, on récolte les items dans la base de données
@@ -111,6 +113,12 @@ def output
         # Si ce n'est pas le dernier text-item à afficher, on doit passer à la
         # ligne suivante et ajouter une espace au début (pour la lisibilité)
         top_line_index += 3
+        # Mais si ce nombre n'est plus inférieur à la hauteur du texte (écran),
+        # on doit s'arrêter là
+        if top_line_index + 3 > CWindow.hauteur_texte - 1
+          break
+        end
+        # Sinon, on peut poursuivre sur la ligne suivante
         write_indentation(top_line_index)
         offset = 1 # car l'indentation est de 1 caractère
         next if titem.new_paragraphe?
@@ -132,8 +140,8 @@ def output
 
   end # Fin de boucle sur tous les items à afficher
 
-  # On finit la dernière ligne pour que ce soit plus propre
-  finir_ligne(top_line_index, offset)
+  # On ajoute une dernière ligne blanche pour que ce soit mieux
+  CWindow.textWind.writepos([top_line_index,0], SPACE*max_line_length, CWindow::INDEX_COLOR)
 
   # On peut définir le dernier index d'item de l'extrait, c'est utile pour
   # d'autres méthodes.
@@ -189,6 +197,7 @@ def extrait_titems
     # commune avant
     offset_first = hfrom_item['Offset']
     first_offset_avant = offset_first - itexte.distance_minimale_commune
+    log("On doit prendre les items avant l'offset #{offset_first} depuis exactement l'offset #{first_offset_avant}")
     titems_avant = itexte.db.db.execute("SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze, first_offset_avant, offset_first)
 
     # On ajoute les instances des titems courant aux titems de l'extrait
@@ -201,6 +210,7 @@ def extrait_titems
 
     # On ajoute le premier items à la liste des items de l'extrait
     extitems << TexteItem.instanciate(hfrom_item)
+    log("Premier item de l'extrait (de hfrom_item) : #{extitems.first.inspect}")
 
     offset_last_mot = offset_first + LENGTH_TEXT_IN_TEXT_WINDOW
     titems_dedans = itexte.db.db.execute("SELECT * FROM text_items WHERE Offset > ? AND Offset < ? ORDER BY Offset ASC".freeze, offset_first, offset_last_mot)

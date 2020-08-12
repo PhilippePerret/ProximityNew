@@ -83,7 +83,7 @@ FIN_VERBALE = /((?:\-t)?\-(?:ils|il|elles|elle|on|je|tu|les|le|la|moi|toi|lui|no
 FIN_DEMONSTRATIVE = /(\-(?:là|ci|ce))$/i.freeze
 
 # Début pronominal, par exemple pour "qu'en penser" ou "d'aujourd'hui"
-DEBUT_PRONOMINAL = /^((?:d|t|m|s|n|l|c|j|qu|lorsqu|presqu|jusqu)')/i.freeze
+DEBUT_PRONOMINAL = /^((?:d|t|m|s|n|l|c|j|qu|lorsqu|presqu|jusqu|puisqu)')/i.freeze
 
 # *** les expressions où ON NE DOIT PAS découper les mots ***
 

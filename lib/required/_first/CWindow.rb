@@ -33,7 +33,7 @@ WHITE_ON_BLACK = 0
 class << self
   attr_reader :textWind, :statusWind, :uiWind, :logWind
   attr_reader :top_ligne_texte_max
-  attr_accessor :hauteur_texte
+  attr_reader :hauteur_texte
 
   HAUTEUR_LOG     = 4
   HAUTEUR_STATUS  = 1
@@ -64,16 +64,14 @@ class << self
 
     init_curses
 
-    deadLines = 0 # Pour essayer d'empêcher l'écran de sauter
-    self.hauteur_texte   = Curses.lines - (HAUTEUR_STATUS + HAUTEUR_UI + HAUTEUR_LOG) - deadLines
     # La hauteur (de texte) à prendre en compte pour les autres fenêtres
     # que la fenêtre de texte.
-    hTextRef = hauteur_texte + deadLines
+    hTextRef = @hauteur_texte = (Curses.lines - (HAUTEUR_STATUS + HAUTEUR_UI + HAUTEUR_LOG)).freeze
 
-    @textWind   = new([hauteur_texte, Curses.cols-2, 0,0])
-    @logWind    = new([HAUTEUR_LOG,   Curses.cols, hTextRef, 0])
-    @statusWind = new([HAUTEUR_STATUS, Curses.cols, hTextRef+HAUTEUR_LOG,0])
-    @uiWind     = new([HAUTEUR_UI,    Curses.cols, hTextRef+HAUTEUR_LOG+HAUTEUR_STATUS, 0])
+    @textWind   = new([hauteur_texte,   Curses.cols-2, 0,0])
+    @logWind    = new([HAUTEUR_LOG,     Curses.cols, hTextRef, 0])
+    @statusWind = new([HAUTEUR_STATUS,  Curses.cols, hTextRef+HAUTEUR_LOG,0])
+    @uiWind     = new([HAUTEUR_UI,      Curses.cols, hTextRef+HAUTEUR_LOG+HAUTEUR_STATUS, 0])
 
     @top_ligne_texte_max = hauteur_texte - 1
 
