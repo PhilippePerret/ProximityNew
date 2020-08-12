@@ -76,6 +76,11 @@ class AtStructure
     end
   end #/ to_s
 
+  # Retourne le contenu couvert par cette structure-at
+  def content
+    list.collect { |idx| Runner.iextrait.extrait_titems[idx].content }.join(EMPTY_STRING)
+  end #/ content
+
 private
 
   # On traite la donnée fournie comme une liste, de façon séparée, car

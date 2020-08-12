@@ -88,6 +88,9 @@ def replace(params)
     params[:new_titems] = new_titems
   end
 
+  msg = "Remplacement de #{params[:real_at].content.inspect} (index #{params[:real_at].at}) par #{params[:content].inspect}."
+  log(msg, true)
+
   # On enregistre cette opération sur le texte
   # Noter qu'il faut le faire avant les opérations elles-mêmes pour que les
   # index et indices ne soient pas encore recalculés suite à l'opération.
@@ -117,6 +120,11 @@ def remove(params)
   # Un débug (régler les valeurs en haut de ce module)
   if debug_replace? || debug_remove?
     log("-> remove(params=#{params.inspect})")
+  end
+
+  if params[:operation] == 'remove'
+    msg = "Suppression de #{extrait_titems[params[:real_at].at].content.inspect} (index #{params[:real_at].at})."
+    log(msg, true)
   end
 
 
@@ -235,8 +243,10 @@ def insert(params)
     new_titems = simulation(params.merge(debug: debug_insert?)) || return
   end
 
-  msg = "Insertion de “#{params[:content]}” #{params[:real_at].to_s} (avant “#{extrait_titems[params[:real_at].at].content}”)"
-  log(msg, true)
+  if params[:operation] == 'insert'
+    msg = "Insertion de “#{params[:content]}” à l’index #{params[:real_at].at} (avant “#{extrait_titems[params[:real_at].at].content}”)"
+    log(msg, true)
+  end
 
   # :is_balise est true quand on donne '_space_' ou '_return_' comme texte
   unless params[:is_balise]
@@ -442,18 +452,13 @@ def simulation(params)
     CWindow.log("RISQUE PROXIMITÉS :", pos:[0,0], color: CWindow::RED_COLOR)
     CWindow.log(" #{confirmations.join(SPACE)}.#{RC}", pos: :keep, color: CWindow::BLUE_COLOR)
     CWindow.log("o/y/Entrée => confirmer         z/n => renoncer.", pos:[2,2])
-    while true
-      s = CWindow.uiWind.wait_for_char
-      case s
-      when 'y', 'o', 27
-        log("Confirmation.", true)
-        return new_titems
-      when 'z', 'n'
-        log("Annulation.", true)
-        return false
-      else
-        CWindow.log(s)
-      end
+    case CWindow.wait_for_user(keys: ['y','o',27,'z','n'])
+    when 'y', 'o', 27
+      log("Confirmation.", true)
+      return new_titems
+    when 'z', 'n'
+      log("Annulation.", true)
+      return false
     end
   else
     # Aucune proximité

@@ -177,7 +177,7 @@ class << self
   # Permet d'attendre une touche de l'utilisateur
   # +params+
   #   :window     La fenêtre dans laquelle le cursor doit attendre. Par défaut
-  #               c'est toujours la fenêtre ui
+  #               c'est la fenêtre ui
   #   :message    Le message à afficher dans la fenêtre de log
   #   :keys       Une liste des touches admises, qui produira le retour
   #               de l'attente. Si non fournie, c'est qu'on attend un texte.

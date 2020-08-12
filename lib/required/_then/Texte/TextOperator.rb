@@ -30,16 +30,17 @@ end #/ add_text_operation
 # Cela consiste principalement à indiquer la relation entre le file_id et
 # le nom du dossier du fichier et le libellé des colonnes
 def init_operations_file
-  if itexte.projet_scrivener?
-    # Correspondance entre le file_id et le path
-    File.open(path,'a') do |f|
+  File.open(path,'a') do |f|
+    if itexte.projet_scrivener?
+      # Correspondance entre le file_id et le path
       f.puts "file_id        UUID du Binder"
       f.puts "-"*80
       ScrivFile.each do |scrivfile|
         f.puts "#{scrivfile.id.to_s.ljust(4)}#{scrivfile.uuid}"
       end
-      f.puts RC*2+header
+      f.puts RC*2
     end
+    f.puts header
   end
 end #/ init_operations_file
 
@@ -75,11 +76,11 @@ class TextOperations
   def modification
     case operation
     when 'insert'
-      "<<< #{content} >>> #{titem_ref.content}"
+      "<<< #{content} >>> #{real_at.content}"
     when 'remove'
-      "-#{titem_ref.content}"
+      "-#{real_at.content}"
     when 'replace'
-      "#{titem_ref.content} <<< #{content}"
+      "#{real_at.content} <<< #{content}"
     else
       "-- modification inconnue --"
     end
