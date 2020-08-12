@@ -18,22 +18,19 @@ class << self
 
   # Pour instancier si nécessaire un text-item avec ses données
   # En fonction de hdata["IsMot"] on fera des Mot ou des NonMot.
-  def instantiate(hdata)
-    @items_as_hash ||= {}
-    @items_as_hash[hdata['Id']] ||= begin
-      hdata.each do |k, v|
-        hdata[k] = case v
-        when "TRUE" then true
-        when "FALSE" then false
-        else v
-        end
-      end
-      if hdata['IsMot']
-        Mot.new(hdata.delete('Content'), hdata)
-      else
-        NonMot.new(hdata.delete('Content'), hdata)
+  def instantiate(hdata, index_in_extrait = nil)
+    hdata.each do |k, v|
+      hdata[k] = case v
+      when "TRUE"   then true
+      when "FALSE"  then false
+      else v
       end
     end
+    if hdata['IsMot']
+      Mot.new(hdata.delete('Content'), hdata)
+    else
+      NonMot.new(hdata.delete('Content'), hdata)
+    end.tap { |i| i.index_in_extrait = index_in_extrait }
   end #/ instantiate
   alias :instanciate :instantiate
 

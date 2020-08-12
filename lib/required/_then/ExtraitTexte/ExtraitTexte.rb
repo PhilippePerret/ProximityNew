@@ -34,11 +34,10 @@ end #/ initialize
 #   - ligne des distances
 
 # Longueur en signes du texte qu'on peut afficher dans la fenêtre de
-# texte.
-# LENGTH_TEXT_IN_TEXT_WINDOW = 2000
-# LENGTH_TEXT_IN_TEXT_WINDOW = 1000 # pour essai
-# LENGTH_TEXT_IN_TEXT_WINDOW = 800 # pour essai
+# texte. Ce nombre peut être élevé puisque c'est en fait le nombre de
+# lignes occupées qui va décider du nombre de mots.
 LENGTH_TEXT_IN_TEXT_WINDOW = 1500 # pour essai
+
 def output
 
   # Dans la nouvelle formule, on récolte les items dans la base de données
@@ -68,6 +67,9 @@ def output
   # On décale toujours d'une espace pour la lisibilité
   write_indentation(top_line_index)
   offset = 1
+
+  # La liste dans laquelle on va mettre la liste des items
+  @extrait_titems = nil
 
   # *** fin des préparations préliminaires ***
 
@@ -187,63 +189,111 @@ def extrait_titems
     #   * les noms de colonnes sont avec capitales ("Offset", "Content", etc.)
     itexte.db.results_as_hash = true
 
+    # On prend dans la DB le tout premier mot qui doit être affiché dans la
+    # fenêtre. Cet text-item doit obligatoirement exister, sinon on lève une
+    # exception.
+    # +hfrom+ est un Hash contenant les données du mot.
     hfrom_item = itexte.db.get_titem_by_index(from_item)
+    # Si ce n'est pas un mot, on prend le précédent, car on commence toujours
+    # par un mot (pour l'esthétique)
+    if hfrom_item['IsMot'] == 'FALSE'
+      log("On doit prendre l'item d'avant pour avoir un Mot.")
+      @from_item -= 1
+      hfrom_item = itexte.db.get_titem_by_index(from_item)
+    end
     if hfrom_item.nil?
       raise "Grave erreur, le text-item d'index #{from_item.inspect} est introuvable dans la DB"
     end
+
     # log("DB: #{itexte.db.path}")
     # log("hfrom_item (index #{from_item.inspect}): #{hfrom_item.inspect}")
-    # On doit récupérer tous les items qui ont un offset de la distance minimale
-    # commune avant
-    offset_first = hfrom_item['Offset']
-    first_offset_avant = offset_first - itexte.distance_minimale_commune
-    log("On doit prendre les items avant l'offset #{offset_first} depuis exactement l'offset #{first_offset_avant}")
-    titems_avant = itexte.db.db.execute("SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze, first_offset_avant, offset_first)
 
-    # On ajoute les instances des titems courant aux titems de l'extrait
-    idx = titems_avant.count
+    # On doit récupérer dans la base de données tous les text-items qui ont
+    # un offset de la distance minimale commune avant
+    # +offset_first+ Integer Décalage absolu du mot dans le texte. Cette valeur
+    # est toujours juste puisqu'elle est recalculée chaque fois
+    offset_first = hfrom_item['Offset']
+    log("Offset du tout premier mot affiché : #{offset_first.inspect} (mot “#{hfrom_item['Content']}” d'index #{from_item})")
+    first_offset_avant = offset_first - itexte.distance_minimale_commune
+    log("On doit prendre les text-items avant jusqu'à l'offset #{first_offset_avant.inspect}")
+    # La requête String permettant de récupérer ces text-items
+    request = "SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze
+    titems_avant = itexte.db.db.execute(request, first_offset_avant, offset_first)
+    log("Nombre de titems trouvés : #{titems_avant.count}")
+
+    # On instancie les text-items avant pour en faire des instances et
+    # on règle sur index dans l'extrait affiché.
+    idx = titems_avant.count + 1 # pour que le dernier soit à -1
     @extrait_pre_items = titems_avant.collect do |hdata|
-      titem = TexteItem.instanciate(hdata)
-      titem.index_in_extrait = -(idx -= 1)
-      titem
+      TexteItem.instanciate(hdata, -(idx -= 1))
     end
 
     # On ajoute le premier items à la liste des items de l'extrait
-    extitems << TexteItem.instanciate(hfrom_item)
+    extitems << TexteItem.instanciate(hfrom_item, 0)
     log("Premier item de l'extrait (de hfrom_item) : #{extitems.first.inspect}")
 
+    # On cherche les text-items qui vont se trouver peut-être dans la fenêtre
+    # (en sachant que la vraie limite sera déterminée par le nombre de lignes
+    # car on ne peut pas faire autrement : une longueur ne prend aucun compte
+    # des retours chariots, par exemple. On pourrait calculer ici en tenant
+    # compte de ces retours chariots, mais ce serait alors assez risqué.)
     offset_last_mot = offset_first + LENGTH_TEXT_IN_TEXT_WINDOW
-    titems_dedans = itexte.db.db.execute("SELECT * FROM text_items WHERE Offset > ? AND Offset < ? ORDER BY Offset ASC".freeze, offset_first, offset_last_mot)
+    request = "SELECT * FROM text_items WHERE Offset > ? AND Offset < ? ORDER BY Offset ASC".freeze
+    titems_dedans = itexte.db.db.execute(request, offset_first, offset_last_mot)
     # log("#{RC*3}+++ titems_dedans: #{titems_dedans.inspect}")
 
-    # On ajoute les instances des titems après (non affichés) aux titems de l'extrait
-    extitems += titems_dedans.collect { |hdata| TexteItem.instanciate(hdata) }
-
-    # On définit l'index dans l'extrait de chaque text-item.
+    # On instancie tous les items qui peuvent appartenir à l'extrait
+    # On définit aussi l'index dans l'extrait de chaque text-item.
     # Noter qu'il ne faut pas le faire au fur et à mesure de la composition
     # de la page (dans `output`) car sinon, si l'item 34 est en proximité avec
     # l'item 39, au moment où on écrit #34 et ses proximités, l'index n'est pas
     # encore défini pour #39.
-    extitems.each_with_index { |i, idx| i.index_in_extrait = idx }
+    idx = 0 # on commencera à 1 car c'est le premier text-item qui porte
+            # l'index 0
+    extitems += titems_dedans.collect do |hdata|
+      TexteItem.instanciate(hdata, idx += 1)
+    end
 
     offset_last = titems_dedans.last['Offset']
     last_offset_apres = offset_last + itexte.distance_minimale_commune
-    titems_apres = itexte.db.db.execute("SELECT * FROM text_items WHERE Offset > ? AND Offset <= ? ORDER BY Offset ASC".freeze, offset_last, last_offset_apres)
+    request = "SELECT * FROM text_items WHERE Offset > ? AND Offset <= ? ORDER BY Offset ASC".freeze
+    titems_apres = itexte.db.db.execute(request, offset_last, last_offset_apres)
     # log("titems_apres : #{titems_apres.inspect}")
 
     # On ajoute les instances des titems après (non affichés) aux titems de l'extrait
-    idx = titems_avant.count + extitems.count - 1 # -1 car on ajoute tout de suite 1
     @extrait_post_items = titems_apres.collect do |hdata|
-      titem = TexteItem.instanciate(hdata)
-      titem.index_in_extrait = (idx += 1)
-      titem
+      TexteItem.instanciate(hdata, idx += 1)
     end
 
     # On remet les résultats de la base de données sans table, comme c'est par
     # défaut. Cela permet d'accélerer les traitements.
     itexte.db.results_as_hash = false
 
-    extitems
+    # Pour débugger tous les items qui seront dans l'extrait, avant ou
+    # après
+    if true
+      delimitation = TIRET*80
+      log("#{RC*2}#{delimitation}#{RC}Text-items dans l'extrait courant (from_item #{from_item})#{RC}")
+      log("--- @extrait_pre_items ---")
+      mots = extrait_pre_items.collect do |titem|
+        "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
+      end.join(RC)
+      log(RC + mots)
+      log("--- @extrait_titems ---")
+      mots = extitems.collect do |titem|
+        "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
+      end.join(RC)
+      log(RC + mots)
+      log("--- @extrait_post_items ---")
+      mots = extrait_post_items.collect do |titem|
+        "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
+      end.join(RC)
+      log(RC + mots)
+      log(delimitation)
+      log(RC*3)
+    end
+
+    extitems # => @extrait_titems
   end
 end #/ extrait_titems
 

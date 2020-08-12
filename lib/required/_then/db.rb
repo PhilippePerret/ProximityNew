@@ -59,7 +59,7 @@ end #/ get_titem_by_index
 def stm_titem_by_index
   @stm_titem_by_index ||= begin
     colonnes, interros = titems_colonnes_and_interrogations
-    cmd = "SELECT #{colonnes} FROM text_items WHERE `Index` = ? LIMIT 1".freeze
+    cmd = "SELECT Id, #{colonnes} FROM text_items WHERE `Index` = ? LIMIT 1".freeze
     # log("Requête préparée pour récupérer un titem par son index : #{cmd.inspect}")
     db.prepare(cmd)
   end
