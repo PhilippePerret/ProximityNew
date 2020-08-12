@@ -400,9 +400,9 @@ def prox_avant
         break if distance > Canon[canon].distance_minimale
         # Si on passe ici, c'est qu'un item proche a été trouvé
         titem_avant = titem.dup
-        # Noter qu'ici, contrairement au canon après, on poursuit la boucle
-        # et @prox_avant pourra être remplacé par un text-item plus proche
-        # encore
+        # Puisqu'on lisait la liste à l'envers (pop), le premier titem trouvé
+        # est forcément le plus proche. On peut breaker
+        break
       end
       unless titem_avant.nil?
         # log("Proximity avant trouvée pour #{self.cio} avec : #{titem_avant.cio}")

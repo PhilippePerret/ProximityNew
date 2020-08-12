@@ -89,13 +89,6 @@ def recompte(params = nil)
 
     titem.reset # pour forcer les recalculs
 
-    # Si le décalage du mot change et que son canon n'est pas encore à
-    # actualiser, il faut l'enregistrer pour l'actualiser
-    if titem.mot? && titem.offset != offset && !canons_to_update.key?(titem.canon)
-      if titem.canon.nil? || titem.icanon.nil?
-        error_canon_inexistant(titem, idx)
-      end
-    end
     # Pour savoir si l'item a changé. Il a changé si son index ou son
     # offset ont changé.
     has_changed = titem.offset != offset || titem.index != idx

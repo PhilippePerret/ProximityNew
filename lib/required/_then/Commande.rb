@@ -160,8 +160,9 @@ class << self
       # *** Méthodes d'affichage ***
 
     when 'show'
-      from = cmd.shift.to_i
+      from = cmd.shift.to_i # 0 si rien
       Runner.itexte.update if Runner.iextrait.modified
+      Runner.iextrait = nil # Nécessaire ?
       Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
       Runner.iextrait.output
 
