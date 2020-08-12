@@ -13,6 +13,10 @@ class << self
 
     case cmd_name
 
+    when 'essai'
+      # Pour faire des essais et les lancer par ":essai"
+
+
     when 'canon'
       mot = cmd.shift
       canon = Runner.db.get_canon(mot)
@@ -21,10 +25,6 @@ class << self
       else
         log("Le mot #{mot.inspect} n'a pas de canon enregistré dans Proximity.", true)
       end
-
-    when 'essai'
-
-
 
 
     when 'rebuild' # reconstruire le texte final

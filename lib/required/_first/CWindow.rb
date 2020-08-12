@@ -194,11 +194,11 @@ class << self
       if params[:keys] && params[:keys].include?(s)
         choix = s
         break
-      elsif s == 10 # touche entrée
-        break
       elsif s == 127 # annulation
         choix = nil
         break
+      elsif params[:keys]
+        uiWind.write("Il faut choisir une lettre parmi : #{params[:keys].inspect}".freeze)
       else
         choix ||= ''
         choix << s.to_s

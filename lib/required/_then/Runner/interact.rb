@@ -73,7 +73,8 @@ def interact_with_user
       log("Soumission de la commande #{command.inspect}")
       case command
       when 'q'
-        break
+        Runner.finish
+        break # C'est la fin
       else
         reset_mode_clavier
         wind.clear

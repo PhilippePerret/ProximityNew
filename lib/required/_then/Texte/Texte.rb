@@ -13,11 +13,11 @@ attr_reader :items
 # Le premier mot (ou non mot) courant
 attr_accessor :current_first_item
 
+# Mis à true quand une modification a été opérée
+attr_accessor :modified
+
 def initialize(path)
   @path = path
-  # db.create_base_if_necessary
-  # db.execute("UPDATE configuration SET value = #{Time.now.to_i} WHERE name = 'LastOpening'")
-  # db.db.close if db.db
 rescue Exception => e
   erreur(e)
 end #/ initialize
@@ -26,9 +26,16 @@ def reset(key)
   instance_variable_set("@#{key}", nil)
 end #/ reset
 
-# def db
-#   @db ||= TextSQLite.new(self)
-# end #/ db
+def save
+  data = {
+    items: items,
+    path:  path,
+    updated_at: Time.now,
+    created_at: Time.now
+  }
+  File.open(data_path,'wb'){|f| Marshal.dump(data,f)}
+  raise "Il faut revoir la procédure de sauvarde du texte."
+end #/ save
 
 # Méthode qui recompte tout, les offsets, les index, etc.
 def recompte(params = nil)
@@ -146,29 +153,18 @@ def db
   @db ||= TextSQLite.new(self)
 end #/ db
 
-def save
-  data = {
-    items: items,
-    canons:  Canon.items_as_hash,
-    path:  path,
-    updated_at: Time.now,
-    created_at: Time.now
-  }
-  File.open(data_path,'wb'){|f| Marshal.dump(data,f)}
-end #/ save
-
 def load
   @data = Marshal.load(File.read(data_path))
   @items = @data[:items]
   @current_first_item = config[:last_first_index]
-  Canon.items_as_hash = @data[:canons]
   return true
 rescue Exception => e
   erreur(e)
   return false
 end #/ load
 
-# L'instance operator (qui sert pour le moment pour enregistrer les opérations)
+# L'instance operator (qui sert pour le moment à enregistrer toutes les
+# opérations de modification du texte).
 def operator
   @operator ||= TextOperator.new(self)
 end #/ operator
@@ -193,6 +189,13 @@ end #/ distance_minimale_commune
 #  Question methods
 #
 # ---------------------------------------------------------------------
+
+# Retourne true si le texte est enregistré (si ses modifications ont été
+# enregistrés)
+def saved?
+  !(modified === true)
+end #/ saved?
+
 def projet_scrivener?
   extension == '.scriv'
 end #/ projet_scrivener?

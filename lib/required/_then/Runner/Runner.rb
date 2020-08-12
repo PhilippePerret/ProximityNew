@@ -8,7 +8,6 @@ class << self
 
   include ConfigModule
 
-
   # = main =
   #
   # Lancement de l'application
@@ -58,6 +57,13 @@ class << self
   # Pour ouvrir le texte de chemin d'accès +text_path+
   def open_texte text_path, commands = nil
     log("-> open_texte (text_path:#{text_path.inspect})")
+
+    # Si un texte est présentement ouvert, il faut vérifier qu'il soit
+    # bien sauvé. Et demander de le faire le cas échéant.
+    unless @itexte.nil?
+      check_if_current_texte_if_saved || return # annulation ou problème de sauvegarde
+    end
+
     if File.exists?(text_path)
       @itexte = Texte.new(text_path)
       @iextrait = nil
@@ -112,6 +118,29 @@ class << self
     self.iextrait = ExtraitTexte.new(itexte, from: from)
     self.iextrait.output
   end #/ show_extrait
+
+  # Méthode appelée quand on va quitter l'application (de façon normale, avec
+  # la command “:q”)
+  def finish
+    check_if_current_texte_if_saved
+  end #/ finish
+
+  # Cette méthode, appelée quand on quitte l'application ou quand on
+  # ouvre un autre texte, permet de vérifier que le texte courant ait
+  # bien été sauvé.
+  # Note : elle est toujours appelée quand un texte courant existe.
+  def check_if_current_texte_if_saved
+    return true if itexte.saved?
+    choix = CWindow.wait_for_user(keys:['X', 'Z','Y'], message:"Le texte courant n'a pas été sauvé. Si vous le fermez maintenant, toutes les modifications seront perdues. X : poursuivre et tout perdre, Z : annuler, Y : enregistrer.")
+    case choix.downcase
+    when 'x'
+      return true
+    when 'z'
+      return nil
+    when 'y'
+      itexte.save
+    end
+  end #/ check_if_current_texte_if_saved
 
   # Pour afficher l'aide
   def display_help(options = nil)

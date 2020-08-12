@@ -78,9 +78,8 @@ class << self
 
   end #/ parse_str
 
-
   def lemma_error_path
-    @lemma_error_path ||= File.join(APP_FOLDER,'error_lemma.log')
+    @lemma_error_path ||= File.join(APP_FOLDER,'logs','feedback_lemma.log')
   end #/ lemma_error_path
 
 end # /<< self

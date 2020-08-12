@@ -134,67 +134,6 @@ def output
   # d'autres méthodes.
   @to_item = extrait_titems.last.index
 
-  #
-  # # On boucle sur chaque item qui doit être affiché
-  # log("On doit afficher les items de #{from_item} à #{to_item} (nombre total : #{itexte.items.count})")
-  # (from_item..to_item).each_with_index do |idx, idx_extrait|
-  #   # S'il n'y a plus de text-item, on arrête
-  #   titem = itexte.items[idx] || begin
-  #     break
-  #   end
-  #   real_last_idx = idx
-  #
-  #   # On doit calculer les longueurs du mot (index, mot, proximités)
-  #   titem.calcule_longueurs
-  #
-  #   # log("titem: #{titem.inspect}")
-  #   # Si la ligne, avec ce titem, dépasse la valeur maximale, on
-  #   # passe à la ligne suivante
-  #   if (offset + titem.f_length > max_line_length) || titem.new_paragraphe?
-  #     manque = (SPACE * (max_line_length - offset)).freeze
-  #     write3lines([manque,manque,manque], top_line_index, offset)
-  #     # On passe à la ligne (seulement si on n'est pas sur le dernier titem)
-  #     unless itexte.items[idx + 1].nil?
-  #       top_line_index += 3
-  #       break if top_line_index + 2 > CWindow.top_ligne_texte_max
-  #       offset = 0
-  #       write3lines([SPACE,SPACE,SPACE], top_line_index, offset)
-  #       offset = 1
-  #       next if titem.new_paragraphe?
-  #     else
-  #       break
-  #     end
-  #   end
-  #   # C'est ici que sont véritablement écrite les 3 lignes du mot/nonmot
-  #   write3lines(
-  #     [
-  #       titem.f_index(idx_extrait),
-  #       titem.f_content,
-  #       titem.f_proximities
-  #     ],
-  #     top_line_index, offset, titem.prox_color
-  #   )
-  #   offset += titem.f_length
-  #
-  #   # Pour voir chaque titem s'afficher l'un après l'autre
-  #   # break if CWindow.textWind.curse.getch.to_s == 'q'
-  # end #/loop sur les mots à voir
-  #
-  # # Si on n'est pas arrivé au bout de la ligne, on ajoute ce
-  # # qu'il faut.
-  # if offset < max_line_length
-  #   manque = (SPACE * (max_line_length - offset)).freeze
-  #   write3lines([manque,manque,manque], top_line_index, offset)
-  #   # Et on ajoute quelques lignes si on est trop haut
-  #   if top_line_index < 4
-  #     manque = (SPACE * max_line_length).freeze
-  #     (top_line_index+1..4).each do |line_index|
-  #       top_line_index = line_index * 3
-  #       write3lines([manque,manque,manque], top_line_index, 0)
-  #     end
-  #   end
-  # end
-
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
   log("<- ExtraitTexte#output")
@@ -311,7 +250,7 @@ end #/ write3lines
 def update(to_save = nil)
   # Pour indiquer que lorsqu'on passera à un autre extrait (ou tout de suite)
   # il faudra enregistrer les nouvelles valeurs.
-  @modified = true if to_save === true
+  itexte.modified = true if to_save === true
   recompte # C'est TexteExtrait#recompte, ici, pas Texte#recompte
   output
 end #/ update

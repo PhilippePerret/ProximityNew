@@ -10,7 +10,7 @@
 
 lib/data.db
 
-config/
+config/config.json
 
 # Ignore Byebug command history file.
 .byebug_history
