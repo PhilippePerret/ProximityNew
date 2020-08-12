@@ -18,7 +18,7 @@ def initialize itexte, params
   # log("params: #{params.inspect}")
   @itexte     = itexte
   @from_item  = params[:from] || 0
-  @to_item    = params[:to] || (@from_item + DEFAULT_NOMBRE_ITEMS)
+  @to_item    = params[:to]
 end #/ initialize
 
 # Sortie de l'extrait
@@ -35,7 +35,7 @@ end #/ initialize
 # Longueur en signes du texte qu'on peut afficher dans la fenêtre de
 # texte.
 # LENGTH_TEXT_IN_TEXT_WINDOW = 2000
-LENGTH_TEXT_IN_TEXT_WINDOW = 650 # pour essai
+LENGTH_TEXT_IN_TEXT_WINDOW = 1000 # pour essai
 def output
 
   # Dans la nouvelle formule, on récolte les items dans la base de données
@@ -137,6 +137,9 @@ def output
   # On peut définir le dernier index d'item de l'extrait, c'est utile pour
   # d'autres méthodes.
   @to_item = extrait_titems.last.index
+
+  # On actualise le nombre dans la barre de statut
+  CWindow.init_status_and_cursor
 
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
