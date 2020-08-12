@@ -34,14 +34,37 @@ def save
     created_at: Time.now
   }
   File.open(data_path,'wb'){|f| Marshal.dump(data,f)}
-  raise "Il faut revoir la procédure de sauvarde du texte."
+  # raise "Il faut revoir la procédure de sauvarde du texte."
 end #/ save
+
+# Actualise le texte
+# ------------------
+# Cette méthode est appelée lorsqu'on quitte une page (pour passer à la suivante
+# ou pour quitter l'application) et que la page courante a été modifiée. Il faut
+# à présent reporter les modifications sur le texte lui-même.
+# Ces modifications portent essentiellement sur les items ajoutés/supprimés/
+# modifiés. En fait, il faut :
+#   [1] Remplacer les items actuels (itexte.items) correspondant à l'extrait
+#       (donc de iextrait.from_item à iextrait.to_item) par les nouveaux items
+#   [2] Procéder au recomptage des index et offsets de tous les mots.
+#   [3] Indiquer que le texte a été modifié pour pouvoir le sauvegarder
+#
+def update
+  extr = Runner.iextrait
+  # [1]
+  titems_avant = items[0...(extr.from_item)]
+  titems_apres = items[(extr.to_item+1)..-1]
+  @items = titems_avant + extr.extrait_titems + titems_avant
+  # [2]
+  recompte
+  # [3]
+  self.modified = true
+end #/ update
 
 # Méthode qui recompte tout, les offsets, les index, etc.
 def recompte(params = nil)
   start_time = Time.now.to_f
   params  ||= {}
-  params.merge!(from: 0) unless params.key?(:from)
   offset  = 0
   nb      = 0 # pour connaitre le nombre de text-items traités
   canons_to_update = {} # Les canons qu'il faudra actualiser
@@ -71,8 +94,6 @@ def recompte(params = nil)
     if titem.mot? && titem.offset != offset && !canons_to_update.key?(titem.canon)
       if titem.canon.nil? || titem.icanon.nil?
         error_canon_inexistant(titem, idx)
-      else
-        canons_to_update.merge!(titem.canon => titem.icanon) # canon à calculer
       end
     end
     has_changed = titem.offset != offset || titem.index != idx
@@ -90,7 +111,7 @@ def recompte(params = nil)
     end
 
     # Si l'offset, l'index ou l'indice du mot dans le fichier a changé,
-    # on actualiser le mot dans la base de données
+    # on actualise le mot dans la base de données
     if has_changed
       titem.update_offset_and_index
       log("Le mot #{titem.cio} a été actualisé")
@@ -100,21 +121,6 @@ def recompte(params = nil)
     # du texte, non-mot compris, est enregistré dans Texte@items.
     offset += titem.length
     nb += 1
-  end
-
-  # Actualisation des canons
-  # ------------------------
-  erreurs = []
-  canons_to_update.each do |canon, icanon|
-    if icanon.nil?
-      erreurs << "ERREUR CANON: Le canon #{canon.inspect} est nul"
-    else
-      icanon.update
-    end
-  end
-  unless erreurs.empty?
-    CWindow.error("Une erreur est survenue avec les canons. Quitter et consulter le journal.")
-    log("### ERREUR UPDATE CANON ####{RC}#{erreurs.join(RC)}")
   end
 
   end_time = Time.now.to_f

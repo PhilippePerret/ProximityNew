@@ -281,7 +281,7 @@ def f_proximities
     s << '|'
     s << (prox_apres.nil? ? '' : (prox_apres.mot_apres.index_in_extrait).to_s)
 
-    log("Index(s) de proximité de ##{id} : #{s.inspect}")
+    # log("Index(s) de proximité de ##{id} : #{s.inspect}")
 
     if s.join(EMPTY_STRING).length < f_length
       s[0] = s[0].ljust((f_length / 2) - 1)
@@ -405,7 +405,7 @@ def prox_avant
         # encore
       end
       unless titem_avant.nil?
-        log("Proximity avant trouvée pour #{self.cio} avec : #{titem_avant.cio}")
+        # log("Proximity avant trouvée pour #{self.cio} avec : #{titem_avant.cio}")
         @prox_avant = Proximite.new(avant:titem_avant, apres:self, distance:distance)
         titem_avant.prox_apres = @prox_avant
       end
@@ -441,7 +441,7 @@ def prox_apres
         distance = titem_apres.offset - offset
         break if distance > Canon[canon].distance_minimale
         # Si on passe ici c'est qu'un mot proche a été trouvé
-        log("Proximity après trouvée pour #{self.cio} : #{titem_apres.cio}")
+        # log("Proximity après trouvée pour #{self.cio} : #{titem_apres.cio}")
         @prox_apres = Proximite.new(avant:self, apres:titem_apres, distance:distance)
         titem_apres.prox_avant = @prox_apres
         break # on s'arrête là, puisque le prochain mot serait plus loin

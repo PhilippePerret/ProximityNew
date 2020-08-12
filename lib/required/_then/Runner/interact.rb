@@ -107,17 +107,9 @@ def interact_with_user
       wind.resetpos
       wind.write(':')
     when 261 # RIGHT ARROW
-      if iextrait.to_item + 1 >= itexte.items.count
-        CWindow.log("C'est la dernière page !".freeze)
-      else
-        Commande.run('next page')
-      end
+      Commande.run('next page')
     when 260 # LEFT ARROW
-      if iextrait.from_item == 0
-        CWindow.log("C'est la première page !".freeze)
-      else
-        Commande.run('prev page')
-      end
+      Commande.run('prev page')
     when 258 # BOTTOM ARROW
       wind.write("Aller en bas")
     when 259 # TOP ARROW

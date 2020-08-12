@@ -130,7 +130,7 @@ class << self
   # bien été sauvé.
   # Note : elle est toujours appelée quand un texte courant existe.
   def check_if_current_texte_if_saved
-    return true if itexte.saved?
+    return true if itexte.saved? && false == iextrait.modified
     choix = CWindow.wait_for_user(keys:['X', 'Z','Y'], message:"Le texte courant n'a pas été sauvé. Si vous le fermez maintenant, toutes les modifications seront perdues. X : poursuivre et tout perdre, Z : annuler, Y : enregistrer.")
     case choix.downcase
     when 'x'
@@ -138,6 +138,7 @@ class << self
     when 'z'
       return nil
     when 'y'
+      itexte.update if iextrait.modified
       itexte.save
     end
   end #/ check_if_current_texte_if_saved

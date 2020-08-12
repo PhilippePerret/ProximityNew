@@ -117,16 +117,6 @@ class << self
         CWindow.log("Ajouter --confirmed à la commande pour confirmer l'opération, qui va DÉTRUIRE TOUTES LES TRANSFORMATIONS déjà opérées pour repartir du texte initial.")
       end
 
-    when 'reprox'
-      if cmd.shift == '--force'
-        # On peut le faire puisque ça a été confirmé
-        Runner.itexte.reproximitize
-        log("Commande : reprox (relancer le calcul de proximité)")
-      else
-        CWindow.uiWind.write("Attention, cette opération va détruire tous les changements opérés à tout jamais. Ajouter `--force` à la commande pour confirmer que vous voulez tout perdre et repartir à zéro.")
-      end
-
-
     when 'ref', 'refresh'
       # Pour rafraichir l'affichage
       CWindow.textWind.write(Runner.iextrait.output)
@@ -178,18 +168,28 @@ class << self
       what = cmd.shift
       case what
       when 'page'
-        from = Runner.iextrait.to_item + 1
-        Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
-        Runner.iextrait.output
+        if Runner.iextrait.to_item + 1 >= Runner.itexte.items.count
+          CWindow.log("C'est la dernière page !".freeze)
+        else
+          Runner.itexte.update if Runner.iextrait.modified
+          from = Runner.iextrait.to_item + 1
+          Runner.iextrait = ExtraitTexte.new(Runner.itexte, from: from)
+          Runner.iextrait.output
+        end
       end
 
     when 'prev'
       what = cmd.shift
       case what
       when 'page' #  prev page
-        from = Runner.iextrait.from_item - 150
-        from = 0 if from < 0
-        Runner.show_extrait(from)
+        if Runner.iextrait.from_item == 0
+          CWindow.log("C'est la première page !".freeze)
+        else
+          Runner.itexte.update if Runner.iextrait.modified
+          from = Runner.iextrait.from_item - 150
+          from = 0 if from < 0
+          Runner.show_extrait(from)
+        end
       end
 
       # *** Commandes d'information ***

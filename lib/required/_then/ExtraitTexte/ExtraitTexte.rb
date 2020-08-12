@@ -10,6 +10,10 @@ TEXTE_COLS_WIDTH      = 100
 #
 # ---------------------------------------------------------------------
 attr_reader :itexte, :from_item, :to_item
+
+# Pour indiquer que l'extrait a été modifié
+attr_accessor :modified
+
 def initialize itexte, params
   # log("params: #{params.inspect}")
   @itexte     = itexte
@@ -86,7 +90,7 @@ def output
 
     # On prend déjà le prochain offset pour voir si on doit passer à la
     # ligne avant d'ajouter de text-item.
-    next_offset = offset + titem.length
+    next_offset = offset + titem.f_length
 
     # On a besoin de savoir si c'est le dernier text-item pour savoir ce que
     # l'on devra faire en cas d'ajout de blancs.
@@ -140,6 +144,7 @@ def output
 end #/ output
 
 def finir_ligne(top_line_index, offset)
+  log("-> finir_ligne(top_line_index:#{top_line_index.inspect}, offset:#{offset.inspect}) / max_line_length:#{max_line_length.inspect}")
   manque = (SPACE * (max_line_length - offset)).freeze
   write3lines([manque,manque,manque], top_line_index, offset)
 end #/ finir_ligne
@@ -249,8 +254,12 @@ end #/ write3lines
 #
 def update(to_save = nil)
   # Pour indiquer que lorsqu'on passera à un autre extrait (ou tout de suite)
-  # il faudra enregistrer les nouvelles valeurs.
-  itexte.modified = true if to_save === true
+  # il faudra enregistrer les nouvelles valeurs. Noter qu'ici on n'indique pas
+  # que le texte a été modifié. Car on peut abandonner toutes les modifications
+  # en passant à une autre page ou en quittant l'application.
+  if to_save === true
+    self.modified = true
+  end
   recompte # C'est TexteExtrait#recompte, ici, pas Texte#recompte
   output
 end #/ update
