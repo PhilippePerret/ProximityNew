@@ -83,9 +83,18 @@ class << self
   end #/ prepare_windows
 
   # Pour écrire dans la fenêtre de log
-  def log(str)
-    @logWind.resetpos
-    @logWind.write(str)
+  def log(str, options = nil)
+    options ||= {}
+    if options.key?(:pos)
+      if options[:pos] == :keep
+        # On reste à la même place
+      else # sinon, on se place à l'endroit voulu
+        @logWind.setpos(options[:pos])
+      end
+    else
+      @logWind.resetpos
+    end
+    @logWind.write(str, options[:color]||options[:couleur])
     init_status_and_cursor
   end #/ log
 
@@ -222,6 +231,9 @@ def write(str, color = nil)
   end
   curse.refresh
 end #/ puts
+def setpos(pos)
+  curse.setpos(*pos)
+end #/ setpos
 def writepos(pos, str, color = nil)
   if pos.count == 3
     str_width = pos.pop
@@ -232,7 +244,7 @@ def writepos(pos, str, color = nil)
 end #/ writepos
 def resetpos
   clear
-  curse.setpos(0,0)
+  setpos([0,0])
 end #/ resetpos
 alias :reset :resetpos
 def clear

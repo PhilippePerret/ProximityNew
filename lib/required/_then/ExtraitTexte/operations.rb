@@ -2,6 +2,9 @@
 class ExtraitTexte
 # ---------------------------------------------------------------------
 #     Méthodes pour le débuggage
+#
+# Régler les trois valeurs ci-dessous en fonction des envies et
+# des besoins.
 # ---------------------------------------------------------------------
 def debug_replace?
   true
@@ -9,6 +12,9 @@ end #/ debug_replace?
 def debug_remove?
   false
 end #/ debug_remove?
+def debug_insert?
+  true
+end #/ debug_insert?
 
 # ---------------------------------------------------------------------
 #
@@ -72,13 +78,14 @@ def replace(params)
     # Pas besoin de simulation pour ajouter une espace ou un retour chariot
     # Ça se fait directement
     log("   C'est une balise, simulation inutile. is_balise est aussi mis à true")
-    params.merge!(nosim: true)
     params.merge!(is_balise: true)
   end
 
-  unless params[:nosim]
-    simulation(params) || return
-    params.merge!(nosim:true)
+  # Si c'est une balise _space_ ou _return_, aucune simulation n'est nécessaire
+  # Mais on doit la faire dans le cas contraire.
+  unless params[:is_balise]
+    new_titems = simulation(params.merge(debug: debug_replace?)) || return
+    params[:new_titems] = new_titems
   end
 
   # On enregistre cette opération sur le texte
@@ -86,9 +93,8 @@ def replace(params)
   # index et indices ne soient pas encore recalculés suite à l'opération.
   itexte.operator.add_text_operation(params)
 
-  remove(params.merge(noupdate: true))
-  insert(params.merge)
-
+  remove(params)
+  insert(params)
 
 end #/ replace
 
@@ -101,10 +107,6 @@ def remove(params)
     params.merge!(titem_ref: extrait_titems[params[:real_at].at])
   end
 
-  if debug_replace? || debug_remove?
-    log("-> remove(params=#{params.inspect})")
-  end
-
   # Pour connaitre l'opération, pour faire la distinction, plus tard, entre
   # une pure suppression et un remplacement. Elle permet aussi d'enregistrer
   # l'opération dans l'historique operations.txt
@@ -112,27 +114,11 @@ def remove(params)
     params.merge!(operation: 'remove')
   end
 
-  # Il faut simuler la suppression si nécessaire (note : ça n'arrive pas
-  # pour une pure suppression — i.e. sans remplacement)
-  unless params[:nosim]
-    # simulation(params) || return # Essai aucune simulation
-    # Note : si je remets cette simulation, ça va poser problème lorsqu'on
-    # fait une simple suppression d'un mot. C'est arrivé en essayant de
-    # supprimer le dernier mot du simple_text.txt
+  # Un débug (régler les valeurs en haut de ce module)
+  if debug_replace? || debug_remove?
+    log("-> remove(params=#{params.inspect})")
   end
 
-  at = params[:real_at]
-
-  # # Dans tous les cas il faut retirer les mots de leur canon (si ce sont
-  # # des mots)
-  # OBSOLETE maintenant, normalement, puisqu'on n'enregistre plus les mots
-  # dans les canons, on n'en a plus besoin puisque les proximités ne sont
-  # comptées que pour l'extrait courant, avec peu de valeurs.
-  # at.list.each do |idx|
-  #   titem = extrait_titems[idx]
-  #   log("Item à supprimer : #{titem.inspect}")
-  #   Canon.remove(titem) if titem.mot?
-  # end
 
   # Si c'est une vraie suppression (i.e. pas un remplacement), il faut
   # supprimer aussi l'espace après. S'il n'y a pas d'espace après, il faut
@@ -147,6 +133,7 @@ def remove(params)
   # qui doivent être finalement supprimé.
   # Elle n'est valable que pour une suppression pure car pour un replacement,
   # il faut garder tous les éléments autour du mot ou des mots remplacés.
+  at = params[:real_at]
   if params[:operation] == 'remove'
     if at.list?
       # Pour une liste, on doit faire un traitement particulier : il faut
@@ -205,6 +192,8 @@ def remove(params)
     end
   end
 
+  # SUPPRESSION
+  # ------------
   # On procède vraiment à la suppression des mots dans le texte
   # lui-même, avec une formule différente en fonction du fait que c'est
   # un rang ou une liste (note : un index unique a été mis dans une liste
@@ -216,21 +205,22 @@ def remove(params)
   end
 
   # Si c'est vraiment une opération de destruction, on l'enregistre
-  # en tant qu'opération
+  # en tant qu'opération et on actualise l'affichage en indiquant que
+  # l'extrait a changé
   if params[:operation] == 'remove'
-    # On enregistre cette opération sur le texte
     itexte.operator.add_text_operation(params)
-  end
-
-  unless params[:noupdate]
-    # On actualise l'affichage en marquant qu'il faudra sauver l'extrait.
     update(saveable = true)
   end
+
 end #/ remove
 
 # Insert un ou plusieurs mots
 def insert(params)
   params[:real_at] ||= AtStructure.new(params[:at])
+
+  if ['_space_', '_return_'].include?(params[:content])
+    params.merge!(is_balise: true)
+  end
 
   params.merge!(operation: 'insert') unless params.key?(:operation)
   # On ajoute si nécessaire le text-item de référence, qui permettra,
@@ -238,21 +228,17 @@ def insert(params)
   # un projet Scrivener, pour l'affecter aux nouveaux text-items et
   # d'enregistrer les messages d'opération.
   params.merge!(titem_ref: extrait_titems[params[:real_at].at]) unless params.key?(:titem_ref)
-  # Sauf si :nosim, on crée la simulation pour voir si on va vraiment faire
+  # Sauf si c'est une balise (*), on crée la simulation pour voir si on va vraiment faire
   # cete opération.
-  unless params[:nosim]
-    simulation(params) || return
+  # (*) Car on ne peut pas occasionner de proximités quand c'est une balise.
+  unless params[:is_balise]
+    new_titems = simulation(params.merge(debug: debug_insert?)) || return
   end
-  if params[:content] == '_space_' || params[:content] == '_return_'
-    params.merge!(is_balise: true)
-  end
+
   msg = "Insertion de “#{params[:content]}” #{params[:real_at].to_s} (avant “#{extrait_titems[params[:real_at].at].content}”)"
   log(msg, true)
 
   # :is_balise est true quand on donne '_space_' ou '_return_' comme texte
-  # à utiliser pour l'opération.
-  new_items = params[:new_items]
-
   unless params[:is_balise]
   #   begin
   #     tempfile = Tempfile.new('getmots')
@@ -262,7 +248,7 @@ def insert(params)
   #     # donc on peut faire un traitement normalement par ligne.
   #     # new_mots = Lemma.parse_str(params[:content], format: :instances)
   #     Mot.init # remet la liste à vide, juste pour le contrôle des lemma
-  #     new_items = itexte.traite_line_of_texte(params[:content], refonlymots)
+  #     new_titems = itexte.traite_line_of_texte(params[:content], refonlymots)
   #   ensure
   #     refonlymots.close
   #   end
@@ -272,16 +258,16 @@ def insert(params)
     if params[:operation] == 'insert'
       next_titem = extrait_titems[params[:real_at].at]
       prev_titem = extrait_titems[params[:real_at].first - 1]
-      if next_titem && next_titem.mot? && new_items.last.mot?
+      if next_titem && next_titem.mot? && new_titems.last.mot?
         # Dans le cas où l'item suivant existe, que c'est un mot, et que
         # le dernier titem à insérer est aussi un mot, il faut ajouter
         # une espace à la fin des nouveaux items.
-        new_items << NonMot.new(SPACE, type: 'space')
-      elsif prev_titem && prev_titem.mot? && new_items.first.mot?
+        new_titems << NonMot.new(SPACE, type: 'space')
+      elsif prev_titem && prev_titem.mot? && new_titems.first.mot?
         # Sinon, dans le cas où l'item précédent existe, que c'est un mot
         # et que le premier item à insérer est aussi un mot, il faut ajouter
         # une espace au début des nouveaux items
-        new_items.unshift(NonMot.new(SPACE, type:'space'))
+        new_titems.unshift(NonMot.new(SPACE, type:'space'))
       end
     end
   else
@@ -289,22 +275,22 @@ def insert(params)
     when '_space_'  then NonMot.new(SPACE, type:'space')
     when '_return_' then NonMot.new(RC, type:'paragraphe')
     end
-    new_items = [new_item]
+    new_titems = [new_item]
   end
-  # log("Nouveaux items ajoutés (#{new_items.count}) : ")
-  # log(new_items.inspect)
+  # log("Nouveaux items ajoutés (#{new_titems.count}) : ")
+  # log(new_titems.inspect)
 
   # Si c'est un projet Scrivener, il faut ajouter le file_id de l'item
   # de référence aux nouveaux items
   if itexte.projet_scrivener?
-    new_items.each {|titem| titem.file_id = params[:titem_ref].file_id}
+    new_titems.each {|titem| titem.file_id = params[:titem_ref].file_id}
   end
 
-  extrait_titems.insert(params[:real_at].at, *new_items)
+  extrait_titems.insert(params[:real_at].at, *new_titems)
   # Pour l'annulation (sauf si c'est justement une annulation)
   if params.key?(:cancellor)
     idx = params[:real_at].at
-    new_items.each do |titem|
+    new_titems.each do |titem|
       content = titem.space? ? '_space_' : titem.content
       params[:cancellor] << {operation: :remove, index:idx, content:content}
       # Note : le content, ci-dessus, ne servira que pour la vérification
@@ -316,7 +302,6 @@ def insert(params)
   # Noter qu'il faut le faire avant l'update suivant, sinon tous les
   # index et indices seront recalculés et donc faux.
   if params[:operation] == 'insert'
-    # On enregistre cette opération sur le texte
     itexte.operator.add_text_operation(params)
   end
 
@@ -333,50 +318,25 @@ end #/ insert
 #   :content        Le contenu à insérer
 #   :operation      Opération ('insert','replace' ou 'insert')
 def simulation(params)
-  debug("-> simulation avec paramètres : #{params.inspect}")
+  debug("-> simulation. Quelques paramètres : content:#{params[:content].inspect}, operation:#{params[:operation]}, at:#{params[:at]}") if params[:debug]
   # Si on a besoin de connaitre l'opération, elle se trouve dans
   # params[:operation]
 
-  # On ré-initialise la liste des mots, pour pouvoir lemmatiser
-  # Rappel : cette liste des mots sera comparée à la liste des mots relevés
-  # par TreeTagger dans le fichier des seuls mots. La comparaison permettra
-  # d'affecter les canons aux Mots.
+  # On ré-initialise la liste des mots, pour pouvoir synchroniser la liste
+  # des mots du fichier lemmatisé et les mots relevés ici. Cette comparaison
+  # permet d'affecter les canons (s'ils ne sont pas trouvés dans la table
+  # lemmas des canons du texte).
   Mot.init
   begin
-    # On crée un fichier temporaire pour enregistrer les nouveaux mots.
-    # Note : très souvent, il y a un seul mot.
+    # Fichier temporaire pour enregistrer les mots.
     tempfile = Tempfile.new('getmots')
     refonlymots = File.open(tempfile, 'a')
-    # On traite le(s) nouveau(x) mot(s) comme une ligne
-    new_items = itexte.traite_line_of_texte(params[:content], refonlymots)
+    new_titems = itexte.traite_line_of_texte(params[:content], refonlymots)
   ensure
     refonlymots.close
   end
 
-  debug("[Simulation] new_items = #{new_items.inspect}")
-
-  # On prend seulement les mots parmi les nouveaux mot/non-mots créés
-  # NON, il faut garder toujours la liste des items (new_items) pour
-  # pouvoir traiter les données ensuite.
-  # On crée deux listes, qui vont contenir toutes les deux le même nombre
-  # d'éléments, pour permettre de reconstituer une liste finale. Par exemple,
-  # on aura :
-  #   new_mots =    [ "un", nil, "pont", nil  ]
-  # new_non_mots =  [ nil,  ' ', nil,    " !" ]
-  #
-  # NOTE : normalement, on n'a pas besoin de ça, puisque ça doit fonctionner
-  # par référence.
-  new_mots = []
-  new_items.each do |titem|
-    new_mots << titem if titem.mot?
-  end
-
-  # Une liste dans laquelle on va mettre tous les nouveaux mots, comme
-  # instances avec canons, pour pouvoir les mettre dans params et ne pas
-  # avoir à les retrouver
-  new_mots_canonised = []
-
-  debug("[Simulation] les mots gardés : #{new_mots.inspect}")
+  debug("[Simulation] new_titems = #{new_titems.inspect}") if params[:debug]
 
   # D'abord, il faut voir si les mots fournis ne sont pas déjà connus de la
   # base de données, ce qui irait plus vite que TreeTagger
@@ -387,46 +347,55 @@ def simulation(params)
   # être TreeTaggerisé.
   new_mots_for_treetagger = []
   # On boucle sur chaque mot pour voir celui qui est connu
-  new_mots.each_with_index do |new_mot, idx|
-    hcanon = itexte.db.get_canon(new_mot.content)
+  new_titems.each_with_index do |new_titem, idx|
+    next if not new_titem.mot?
+    hcanon = itexte.db.get_canon(new_titem.content)
     if hcanon.nil?
-      new_mots_for_treetagger << new_mot
+      new_mots_for_treetagger << new_titem
     else
-      log("Canon trouvé pour #{new_mot.inspect} : #{hcanon.inspect}")
-      new_mot.type  = hcanon['Type']
-      new_mot.canon = hcanon['Canon']
+      debug("Canon trouvé pour #{new_titem.inspect} : #{hcanon.inspect}") if params[:debug]
+      new_titem.type  = hcanon['Type']
+      new_titem.canon = hcanon['Canon']
     end
   end
 
-  # S'il reste des mots inconnus de la table `lemmas`, on les recherche
-  # avec TreeTagger
-  unless new_mots_for_treetagger.empty?
+  debug("Mots dans canon dans la db (#{new_mots_for_treetagger.count}) : #{new_mots_for_treetagger.inspect}") if params[:debug]
 
-    motstr_for_treetagger = new_mots_for_treetagger.collect{|new_mot|new_mot.content}.join(SPACE)
-    Lemma.parse_str(motstr_for_treetagger).split(RC).each_with_index do |line, idx|
+  # +new_mots_for_treetagger+ contient la liste des instances des nouveaux mots
+  # pour lesquels on n'a pas trouvé de canon dans la table `lemmas`. On doit
+  # rechercher leur canon à l'aide de TreeTagger
+  unless new_mots_for_treetagger.empty?
+    mots_as_string = new_mots_for_treetagger.collect{|new_mot|new_mot.content}.join(SPACE)
+    Lemma.parse_str(mots_as_string).split(RC).each_with_index do |line, idx|
       mot, type, canon = line.strip.split(TAB)
       new_mot = new_mots_for_treetagger[idx]
       new_mot.type    = type
       new_mot.canon   = canon
-      debug("[Simulation] Réglage de #{new_mot.cio}")
-      debug("             Type: #{new_mot.type}")
-      debug("             Canon: #{canon}")
+      if params[:debug]
+        debug("[Simulation] Canonisation de #{new_mot.to_s}")
+        debug("             Type: #{new_mot.type}")
+        debug("             Canon: #{canon}")
+      end
     end
   end # / sauf si on a trouvé tous les mots
 
-  params.merge!(new_items: new_items)
+  # On peut mettre tous les nouveaux titems dans les paramètres, ce qui
+  # permettra de ne pas avoir à les recalculer dans la méthode.
+  params.merge!(new_titems: new_titems)
+  debug("Nouveaux text-items mis dans params: #{new_titems.inspect}") if params[:debug]
 
-  # *** ON peut vérifier ***
+  # *** On peut vérifier enfin les proximités ***
 
   confirmations = []
 
   # On regarde s'il y a des risques de proximité
-  new_items.each do |new_mot|
-    debug("[Simulation] *** Étude du mot #{new_mot.cio}")
-    # Si c'est un mot non proximizable, on le passe
+  new_titems.each do |new_mot|
+    # Si c'est un mot non proximizable, on le passe. Les non-mots seront
+    # donc automatiquement passés. C'est également le cas si le mot est
+    # trop court, si son canon est ignoré.
     next if not new_mot.proximizable?
-    # Si c'est un mot qui a un canon ignoré, on le passe
-    next if new_mot.icanon.ignored?
+
+    debug("[Simulation] *** Étude des proximités du mot #{new_mot.cio}") if params[:debug]
 
     # Principe pour rechercher les proximités avant et après :
     # On utilise les méthodes #prox_avant et #prox_apres de l'instance qui
@@ -444,34 +413,43 @@ def simulation(params)
     # Pour remédier à ce problème, il faudrait pouvoir faire la recherche sur
     # une liste où les suppressions ont déjà été faites.
 
+    # On règle les valeurs du nouveau mot pour pouvoir calculer ses proximités
+    # avant et après. L'index dans l'extrait permet de savoir de où il faut
+    # partir pour regarder et l'offset (pris dans le text-item de référence)
+    # permet de calculer la distance entre les mots.
     new_mot.reset
     new_mot.index_in_extrait = params[:real_at].at
+    new_mot.offset = params[:titem_ref].offset
 
     # On cherche avant
     # ----------------
+    debug("[Simulation] Prox avant du mot : #{new_mot.prox_avant.inspect}") if params[:debug]
     if new_mot.prox_avant
       titem_avant = new_mot.prox_avant.mot_avant
-      confirmations << "PROX. AVANT : #{titem_avant.inspect} idx #{titem_avant.index_in_extrait}"
+      confirmations << "#{titem_avant.content.inspect} (#{titem_avant.index_in_extrait}) <- "
     end
 
     # On cherche après
     # ----------------
+    debug("[Simulation] Prox après du mot : #{new_mot.prox_apres.inspect}") if params[:debug]
     if new_mot.prox_apres
       titem_apres = new_mot.prox_apres.mot_apres
-      confirmations << "PROX. APRÈS : #{titem_apres.inspect} idx #{titem_apres.index_in_extrait}"
+      confirmations << " -> #{titem_apres.content.inspect} (#{titem_apres.index_in_extrait})"
     end
   end #/Fin de boucle sur tous les nouveaux items
 
-  unless confirmations.empty?
-    CWindow.log("Risque proximités : #{confirmations.join(VGE)}.#{RC}'o' ou 'y' ou ENTRÉE => confirmer / 'z' ou 'n' => renoncer.")
+  if not confirmations.empty?
+    CWindow.log("RISQUE PROXIMITÉS :", pos:[0,0], color: CWindow::RED_COLOR)
+    CWindow.log(" #{confirmations.join(SPACE)}.#{RC}", pos: :keep, color: CWindow::BLUE_COLOR)
+    CWindow.log("o/y/Entrée => confirmer         z/n => renoncer.", pos:[2,2])
     while true
       s = CWindow.uiWind.wait_for_char
       case s
       when 'y', 'o', 27
-        CWindow.log("Confirmation.")
-        return true
-      when 'z', 'n' then
-        CWindow.log("Annulation.")
+        log("Confirmation.", true)
+        return new_titems
+      when 'z', 'n'
+        log("Annulation.", true)
         return false
       else
         CWindow.log(s)
@@ -479,7 +457,8 @@ def simulation(params)
     end
   else
     # Aucune proximité
-    return true
+    debug("= Aucune proximité trouvée =") if params[:debug]
+    return new_titems
   end
 end #/ simulation
 

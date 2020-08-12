@@ -374,6 +374,8 @@ def prox_color
   end
 end #/ prox_color
 
+# Définit et retourne l'instance Proximity d'une proximité avec un mot
+# avant, si elle existe. Renvoie nil otherwise.
 def prox_avant
   @prox_avant_calculed || begin
     if ! proximizable?

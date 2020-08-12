@@ -67,9 +67,10 @@ end #/ stm_titem_by_index
 def get_canon(mot)
   db.results_as_hash = true
   res = stm_get_canon.execute(mot.downcase)
+  res = res.next
   db.results_as_hash = false
 
-  res.next
+  res
 end #/ get_canon
 def stm_get_canon
   @stm_get_canon ||= db.prepare("SELECT * FROM lemmas WHERE mot = ? LIMIT 1")

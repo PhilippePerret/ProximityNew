@@ -10,6 +10,13 @@ def initialize(data)
   @distance   = data[:distance]
 end #/ initialize
 
+# Ré-écriture de la méthode par défaut
+def inspect
+  "mot_avant: #{mot_avant.nil? ? 'nil' : mot_avant.cio}, " +
+  "mot_apres: #{mot_apres.nil? ? 'nil' : mot_apres.cio}, " +
+  "distance: #{distance}, pourcentage_distance: #{pourcentage_distance}, couleur: #{color}"
+end #/ inspect
+
 # Indice couleur en fonction de la distance. Plus elle est élevée, plus
 # la couleur est "douce" (de vert, bleu, orange et rouge)
 def color
