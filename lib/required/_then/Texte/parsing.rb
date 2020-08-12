@@ -485,6 +485,7 @@ def traite_lemma_line(line, idx)
   mot, type, canon = line.strip.split(TAB)
   # Traitement de quelques cas <unknown> connus… (sic)
   if canon == LEMMA_UNKNOWN
+    log("+++ canon inconnu pour : #{line}")
     type, canon = case mot
     when 't' then ['PRO:PER', 'te']
     else [type, canon]
@@ -500,10 +501,14 @@ def traite_lemma_line(line, idx)
     # on peut définir le canon du mot. (sera supprimé dans les version ultérieures)
     Canon.add(Mot.items[idx], canon)
     # On regarde s'il faut enregistrer cette forme lemmatisée
-    # Si c'est le cas, on renseigne la table `lemmas` de la base de données
-    unless PARSED_LEMMAS.key?(mot)
+    # On le sait de deux manières : en consultant la table des mots qui ont
+    # déjà été lemmatisés au cours de ce parsing (pour aller plus vite) et en
+    # regardant si ce canon est connu dans la table `lemmas` de l'application.
+    # Si c'est le cas, on renseigne la table `lemmas` de la base de données de
+    # proximité (Runner.db) pour que cette forme soit accessible à tout
+    unless PARSED_LEMMAS.key?(mot) || Runner.db.canon_exists_for?(mot)
       PARSED_LEMMAS.merge!(mot => canon)
-      db.add_mot_and_canon(mot, type, canon)
+      Runner.db.add_mot_and_canon(mot, type, canon)
     end
   end
   return true

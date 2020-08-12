@@ -144,7 +144,8 @@ MODIFCATION DU TEXTE
     :canon <mot>        Pour obtenir le canon enregistré dans lemmas
                         du mot <mot>. Si le mot existe dans le texte courant
                         le canon sera déjà connu. Cette table permet de faire
-                        gagner du temps dans les recherches.
+                        gagner du temps dans les recherches. Elle appartient à
+                        Proximity et s'enrichit à chaque parsing de fichier.
 EOT
 
 class << self

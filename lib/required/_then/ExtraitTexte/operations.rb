@@ -101,6 +101,12 @@ def replace(params)
 
 end #/ replace
 
+
+
+
+
+
+
 # Suppression d'un ou plusieurs mots
 def remove(params)
   params[:real_at] ||= AtStructure.new(params[:at]).tap { |at| params.merge!(real_at: at) }
@@ -222,6 +228,15 @@ def remove(params)
 
 end #/ remove
 
+
+
+
+
+
+
+
+
+
 # Insert un ou plusieurs mots
 def insert(params)
   params[:real_at] ||= AtStructure.new(params[:at])
@@ -250,18 +265,6 @@ def insert(params)
 
   # :is_balise est true quand on donne '_space_' ou '_return_' comme texte
   unless params[:is_balise]
-  #   begin
-  #     tempfile = Tempfile.new('getmots')
-  #     refonlymots = File.open(tempfile, 'a')
-  #     # Ici, il faut appliquer le nouveau découpage. Noter que l'insertion ne
-  #     # peut pas comporter des retours charriot, puisqu'il est donné en console,
-  #     # donc on peut faire un traitement normalement par ligne.
-  #     # new_mots = Lemma.parse_str(params[:content], format: :instances)
-  #     Mot.init # remet la liste à vide, juste pour le contrôle des lemma
-  #     new_titems = itexte.traite_line_of_texte(params[:content], refonlymots)
-  #   ensure
-  #     refonlymots.close
-  #   end
     # Si c'est une pure insertion, il faut ajouter une espace soit avant
     # soit après les nouveaux items. On l'ajoute après si le titem d'après
     # est un mot (.mot?) et on l'ajoute avant si le titem avant est un mot.
@@ -320,6 +323,15 @@ def insert(params)
   end
 end #/ insert
 
+
+
+
+
+
+
+
+
+
 # Crée une simulation de l'opération pour s'assurer qu'elle est possible
 # sans générer de proximités. Le cas échéant on demande à l'utilisateur
 # de confirmer l'opération.
@@ -359,7 +371,7 @@ def simulation(params)
   # On boucle sur chaque mot pour voir celui qui est connu
   new_titems.each_with_index do |new_titem, idx|
     next if not new_titem.mot?
-    hcanon = itexte.db.get_canon(new_titem.content)
+    hcanon = Runner.db.get_canon(new_titem.content)
     if hcanon.nil?
       new_mots_for_treetagger << new_titem
     else

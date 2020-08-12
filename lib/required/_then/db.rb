@@ -6,9 +6,6 @@
 require 'sqlite3'
 
 class TextSQLite
-class << self
-
-end # /<< self
 attr_reader :owner
 # Pour obtenir un nouveau gestionnaire de base
 # En bas de ce module, DB est instancié
@@ -76,6 +73,26 @@ def stm_get_canon
   @stm_get_canon ||= db.prepare("SELECT * FROM lemmas WHERE mot = ? LIMIT 1")
 end #/ stm_get_canon
 
+# Pour ajouter un mot-canon à la table lemmas
+def add_mot_and_canon(mot, type, canon)
+  canon, canon_alt = canon.split(BARREV)
+  stm_set_lemma.execute(mot, type, canon)
+end #/ add_mot_and_canon
+def stm_set_lemma
+  @stm_set_lemma ||= db.prepare("INSERT INTO lemmas (mot, type, canon, canon_alt) VALUES (?, ?, ?, ?)".freeze)
+end #/ stm_lemma
+
+# Au cours du parsing, on a besoin de savoir si le mot +mot+ possède déjà
+# la définition de son canon dans la base de données (de l'application).
+# Cette méthode retourne true si c'est le cas, false dans le cas contraire
+def canon_exists_for?(mot)
+  res = stm_for_canon_existence.execute(mot)
+  res.next != nil
+end #/ canon_exists_for?
+def stm_for_canon_existence
+  @stm_for_canon ||= db.prepare("SELECT canon FROM lemmas WHERE mot = ? LIMIT 1")
+end #/ stm_for_canon_existence
+
 
 def load_text_item(id)
   stm_load_titem.execute(id)
@@ -140,14 +157,6 @@ def reset
 end #/ reset
 
 
-# Pour ajouter un mot-canon à la table lemmas
-def add_mot_and_canon(mot, type, canon)
-  stm_set_lemma.execute(mot, type, canon)
-end #/ add_mot_and_canon
-def stm_set_lemma
-  @stm_set_lemma ||= db.prepare("INSERT INTO lemmas (mot, type, canon) VALUES (?, ?, ?)".freeze)
-end #/ stm_lemma
-
 # Table pour créer la table des text-items
 #
 # La méthode permet de créer la table de tous les items, qui est créée lors du
@@ -162,8 +171,8 @@ end #/ create_table_text_items
 
 def create_table_lemmas
   db.execute("DROP TABLE IF EXISTS lemmas".freeze)
-  db.execute("CREATE TABLE IF NOT EXISTS lemmas (Mot VARCHAR(30), Type VARCHAR(15), Canon VARCHAR(30))".freeze)
-  db.execute("CREATE INDEX idxmot ON lemmas(mot)".freeze)
+  db.execute("CREATE TABLE IF NOT EXISTS lemmas (Mot VARCHAR(30), Type VARCHAR(15), Canon VARCHAR(25), Canon_alt VARCHAR(25))".freeze)
+  db.execute("CREATE INDEX idxmot ON lemmas(Mot)".freeze)
 end #/ create_table_lemmas
 
 def create_table_current_page

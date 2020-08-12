@@ -14,6 +14,9 @@ class << self
   # Lancement de l'application
   #
   def run
+    # On initialise le runner (pour le moment, ça vérifie seulement que
+    # la table `lemmas` existe et ça la crée le cas échéant)
+    init
     # On initialise le log (journal.log)
     Log.init
     # On prépare les fenêtres
@@ -37,7 +40,20 @@ class << self
     puts "#{e.message}#{RC}#{e.backtrace.join(RC)}".rouge
   end #/ run
 
-
+  # Initialisation de l'application
+  def init
+    # Il faut s'assurer que la table `lemmas` existe. C'est la table qui
+    # va contenir tous les mots possibles avec leur type et leur canon
+    # correspondant. Chaque parsing de texte alimente cette table.
+    res = Runner.db.execute("PRAGMA table_info('lemmas')")
+    # Si res est vide, c'est que la table `lemmas` n'existe pas. Il faut donc
+    # la construire.
+    if res.empty?
+      debug("* Contruction de la table `lemmas`")
+      db.create_table_lemmas
+      res = Runner.db.execute("PRAGMA table_info('lemmas')")
+    end
+  end #/ init
 
   # Pour ouvrir le texte de chemin d'accès +text_path+
   def open_texte text_path, commands = nil
@@ -137,5 +153,18 @@ def config_path
   @config_path ||= File.join(APP_FOLDER,'config','config.json')
 end #/ config_path
 
+# Pour la gestion de la base de données propre à New Proximité. Elle contient
+# notamment la table `lemmas` qui permet de retrouver n'importe quel canon et
+# enregistre les nouveaux.
+#
+# Les deux méthodes principales sont
+#   Pour récupérer un canon : `Runner.get_canon(<mot>)`
+#   Pour enregistrer un canon : `Runner.add_mot_and_canon(mot, type, canon)`
+def db
+  @db ||= TextSQLite.new(self)
+end #/ db
+def db_path
+  @db_path ||= File.join(APP_FOLDER,'lib','data.db')
+end #/ db_path
 end #/<< self
 end #/Runner

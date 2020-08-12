@@ -50,7 +50,7 @@ class << self
   end #/ add
 
   def path
-    @path ||= File.join(APP_FOLDER,'debug.log')
+    @path ||= File.join(APP_FOLDER,'logs','debug.log')
   end #/ path
 
 end # /<< self
@@ -66,7 +66,7 @@ class << self
   alias :<< :add
 
   def path
-    @path ||= File.join(APP_FOLDER,'error.log')
+    @path ||= File.join(APP_FOLDER,'logs','error.log')
   end #/ path
 end # /<< self
 end #/Errorer
@@ -96,6 +96,6 @@ def init
   File.delete(logpath) if File.exists?(logpath)
 end #/ init
 def logpath
-  @logpath ||= File.join(APP_FOLDER,'journal.log')
+  @logpath ||= File.join(APP_FOLDER,'logs','journal.log')
 end #/ logpath
 end #/Log

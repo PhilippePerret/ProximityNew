@@ -4,6 +4,7 @@
 =end
 
 APO = "'".freeze  unless defined?(APO)
+BARREV = '|'.freeze unless defined?(BARREV)
 DEUX_POINTS = ':'.freeze unless defined?(DEUX_POINTS)
 EMPTY_STRING = ''.freeze unless defined?(EMPTY_STRING)
 ISPACE = ' '.freeze unless defined?(ISPACE) # espace insécable

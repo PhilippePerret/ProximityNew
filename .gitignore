@@ -6,9 +6,11 @@
 /asset/exemples/
 /asset/exemples_errones/
 
-debug.log
-journal.log
-error.log
+*.log
+
+lib/data.db
+
+config/
 
 # Ignore Byebug command history file.
 .byebug_history

@@ -15,11 +15,11 @@ class << self
 
     when 'canon'
       mot = cmd.shift
-      canon = Runner.itexte.db.get_canon(mot)
+      canon = Runner.db.get_canon(mot)
       if canon
         log("Le canon enregistré de #{mot.inspect} est #{canon.inspect}", true)
       else
-        log("Le mot #{mot.inspect} n'a pas de canon enregistré.", true)
+        log("Le mot #{mot.inspect} n'a pas de canon enregistré dans Proximity.", true)
       end
 
     when 'essai'
