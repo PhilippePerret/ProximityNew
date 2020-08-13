@@ -125,6 +125,15 @@ class << self
 
       # *** Toutes les méthodes de modification du texte ***
 
+    when 'try'
+      # Forme de la commande :try <cmd> <index> <content>
+      ope = cmd.shift
+      index_ref = cmd.shift
+      texte = cmd.join(SPACE)
+      @operation_cancellor = OpeCancellor.new(cmd_init)
+      Runner.iextrait.essayer(operation:ope, content:texte, at:index_ref, cancellor:@operation_cancellor)
+      Runner.itexte.cancellor.add_and_save(@operation_cancellor)
+
     when 'ign'
       index_ref = cmd.shift
       @operation_cancellor = OpeCancellor.new(cmd_init)

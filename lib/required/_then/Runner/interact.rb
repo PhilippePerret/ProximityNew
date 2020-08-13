@@ -19,6 +19,7 @@ COMMANDS_TO_MODE = {
   'rem '  => {mode: :chiffres_simples},
   'show ' => {mode: :chiffres_simples},
   'sup '  => {mode: :chiffres_simples},
+  'try (del|ins|rep|mov|rem|sup) ' => {mode: :chiffres_simples},
 }
 
 MODES_CLAVIER = {

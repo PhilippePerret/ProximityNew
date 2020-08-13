@@ -59,6 +59,33 @@ def unignore(params)
   update(saveable = false)
 end #/ un_ignore
 
+# Pour essayer une opération
+# Cela revient à ne faire que la simulation de l'opération
+def essayer(params)
+  params[:operation] =  case params[:ope]
+                        when 'rep' then 'replace'
+                        when 'ins' then 'insert'
+                        when 'rem', 'del', 'sup' then 'remove'
+                        # Pas encore traités :
+                        when 'ign' then nil
+                        end
+  # L'objet At
+  params.merge!(real_at:AtStructure.new(params[:at]))
+  # Le text-item de référence
+  params.merge!(titem_ref: extrait_titems[params[:real_at].at])
+  # Pour dire de ne pas écrire le résultat normal
+  params[:noop] = true
+  # On reçoit le résultat de la simulation
+  problemes = simulation(params)
+  msg = if problemes.empty?
+          "Aucun problème de proximités pour cette opération."
+        else
+          msg = "Risque de proximités : #{problemes.join(SPACE)}"
+        end
+  # Affichage du message de résultat
+  CWindow.log(msg)
+end #/ essayer
+
 # Remplacer un mot par un ou des autres
 # Le remplacement consiste à supprimer l'élément courant et à insérer le
 # nouvel élément à la place (ou *les* nouveaux éléments)
@@ -463,22 +490,27 @@ def simulation(params)
     end
   end #/Fin de boucle sur tous les nouveaux items
 
-  if not confirmations.empty?
-    CWindow.log("RISQUE PROXIMITÉS :", pos:[0,0], color: CWindow::RED_COLOR)
-    CWindow.log(" #{confirmations.join(SPACE)}.#{RC}", pos: :keep, color: CWindow::BLUE_COLOR)
-    CWindow.log("o/y/Entrée => confirmer         z/n => renoncer.", pos:[2,2])
-    case CWindow.wait_for_user(keys: ['y','o',27,'z','n'])
-    when 'y', 'o', 27
-      log("Confirmation.", true)
-      return new_titems
-    when 'z', 'n'
-      log("Annulation.", true)
-      return false
-    end
+  if params[:noop]
+    # Quand c'est juste un essai pour voir
+    return confirmations
   else
-    # Aucune proximité
-    debug("= Aucune proximité trouvée =") if params[:debug]
-    return new_titems
+    if not confirmations.empty?
+      CWindow.log("RISQUE PROXIMITÉS :", pos:[0,0], color: CWindow::RED_COLOR)
+      CWindow.log(" #{confirmations.join(SPACE)}.#{RC}", pos: :keep, color: CWindow::BLUE_COLOR)
+      CWindow.log("o/y/Entrée => confirmer         z/n => renoncer.", pos:[2,2])
+      case CWindow.wait_for_user(keys: ['y','o',27,'z','n'])
+      when 'y', 'o', 27
+        log("Confirmation.", true)
+        return new_titems
+      when 'z', 'n'
+        log("Annulation.", true)
+        return false
+      end
+    else
+      # Aucune proximité
+      debug("= Aucune proximité trouvée =") if params[:debug]
+      return new_titems
+    end
   end
 end #/ simulation
 
