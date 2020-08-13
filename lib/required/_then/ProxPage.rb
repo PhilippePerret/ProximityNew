@@ -165,7 +165,10 @@ def last_item_page_from_index(itexte, from_item)
   log("Recherche du dernier index…", true)
   start_time = Time.now.to_i
   # On relève une quantité suffisante d'item dans la base
+  # old_results_as_hash = itexte.db.results_as_hash
+  itexte.db.results_as_hash = false
   db_result = itexte.db.execute(REQUEST_GET_TITEMS_INFOS_FROM_FOR, from_item, from_item + 300)
+  # itexte.db.results_as_hash = old_results_as_hash
   @current_long = 0
   @current_line = 1
   @current_page = 1 # juste pour savoir si on va passer à la page suivante, ici
@@ -175,6 +178,12 @@ def last_item_page_from_index(itexte, from_item)
   db_result.each do |row|
     # Le text-item courant
     index, longueur, index_charriot, is_mot = row
+    # log("row: #{row.inspect}")
+
+    # Pour qu'il y en ai toujours un défini, même si on n'en a pas assez
+    # pour aller au bout de la page
+    to_item = index
+
     has_charriot = index_charriot > 0
     is_mot = is_mot == 'TRUE' ? true : false
     # Pour les mots, si leur longueur est inférieure à la longueur que va
@@ -223,6 +232,8 @@ def last_item_page_from_index(itexte, from_item)
   end_time = Time.now.to_f
   msg_dbg = "Dernier index trouvé en #{end_time - start_time} secs.".freeze
   log(msg_dbg, true)
+
+  to_item
 end #/ last_item_page_from_index
 
 # Méthode qui reçoit un index quelconque et retourne l'instance de la

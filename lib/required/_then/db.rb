@@ -197,9 +197,9 @@ def create_base_if_necessary
   end
 end #/ create_base_if_necessary
 
-def execute(code)
+def execute(*args)
   begin
-    db.execute(code)
+    db.execute(*args)
   rescue SQLite3::Exception => e
     erreur(e)
   ensure

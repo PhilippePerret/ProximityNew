@@ -262,6 +262,7 @@ def extrait_titems
     log("On doit prendre les text-items avant jusqu'à l'offset #{first_offset_avant.inspect}")
     # La requête String permettant de récupérer ces text-items
     request = "SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze
+    itexte.db.results_as_hash = true
     titems_avant = itexte.db.db.execute(request, first_offset_avant, offset_first)
     log("Nombre de titems trouvés : #{titems_avant.count}")
 
@@ -282,9 +283,11 @@ def extrait_titems
       @to_item = ProxPage.last_item_page_from_index(itexte, from_item)
     end
     log("=== @to_item : #{@to_item.inspect}")
+    @to_item || raise("@to_item ne peut absolument pas être nil…")
 
     request = "SELECT * FROM text_items WHERE `Index` >= ? AND `Index` <= ? ORDER BY `Index` ASC".freeze
-    titems_dedans = itexte.db.db.execute(request, from_item, to_item)
+    itexte.db.results_as_hash = true
+    titems_dedans = itexte.db.execute(request, from_item, to_item)
 
     # On instancie tous les items qui peuvent appartenir à l'extrait
     # On définit aussi l'index dans l'extrait de chaque text-item.
