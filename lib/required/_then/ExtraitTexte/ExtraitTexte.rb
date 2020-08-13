@@ -227,9 +227,6 @@ def extrait_post_items; @extrait_post_items end
 # ou d'un extrait "dans l'absolu" c'est-à-dire à partir d'un index quelconque.
 def extrait_titems
   @extrait_titems ||= begin
-    # La liste qui va contenir tous les items de l'extrait courant
-    extitems = []
-
     # Pour pouvoir récupérer les données sous forme de Hash.
     # Attention :
     #   * les clés sont des strings
@@ -275,10 +272,6 @@ def extrait_titems
       TexteItem.instanciate(hdata, -(idx -= 1))
     end
 
-    # # On ajoute le premier items à la liste des items de l'extrait
-    # extitems << TexteItem.instanciate(hfrom_item, 0)
-    # log("Premier item de l'extrait (de hfrom_item) : #{extitems.first.inspect}")
-
     # On cherche les text-items qui vont se trouver dans la fenêtre
     # Si on connait @to_item, comme pour une page, on les relève simplement.
     # Sinon, il faut en relever une certaines quantité jusqu'à atteindre la
@@ -299,9 +292,9 @@ def extrait_titems
     # de la page (dans `output`) car sinon, si l'item 34 est en proximité avec
     # l'item 39, au moment où on écrit #34 et ses proximités, l'index n'est pas
     # encore défini pour #39.
-    idx = 0 # on commencera à 1 car c'est le premier text-item qui porte
+    idx = -1 # on commencera à 1 car c'est le premier text-item qui porte
             # l'index 0
-    extitems += titems_dedans.collect do |hdata|
+    extitems =  titems_dedans.collect do |hdata|
                   TexteItem.instanciate(hdata, idx += 1)
                 end
     # On a besoin de l'offset du dernier mot pour savoir jusqu'où il faut
@@ -323,7 +316,7 @@ def extrait_titems
 
     # Pour débugger tous les items qui seront dans l'extrait, avant ou
     # après
-    if true
+    if false # mettre "true" pour voir le débug
       delimitation = TIRET*80
       log("#{RC*2}#{delimitation}#{RC}Text-items dans l'extrait courant (from_item #{from_item})#{RC}")
       log("--- @extrait_pre_items ---")
