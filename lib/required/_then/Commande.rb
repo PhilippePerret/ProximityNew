@@ -160,19 +160,31 @@ class << self
       # *** Méthodes d'affichage ***
 
     when 'show'
-      from = cmd.shift.to_i # 0 si rien
+      from = cmd.shift.to_s
       Runner.itexte.update if Runner.iextrait.modified
-      Runner.show_extrait(from)
+      pms = {index: nil, index_is: nil}
+      if from.end_with?('*')
+        pms[:index]     = from[0...-1].to_i + Runner.iextrait.from_item
+        pms[:index_is]  = :absolu # oui car rendu absolu ci-dessus
+      elsif from.end_with?('p')
+        pms[:index] = from[0...-1].to_i
+        pms[:index_is] = :in_page
+      else
+        pms[:index] = from.to_i
+        pms[:index_is] = :absolu
+      end
+      pms[:index] = 0 if pms[:index] < 0
+      Runner.show_extrait(pms)
 
     when 'next'
       what = cmd.shift
       case what
       when 'page'
-        if Runner.iextrait.to_item + 1 >= Runner.itexte.items.count
+        if Runner.iextrait.page.numero == ProxPage.last_numero_page
           CWindow.log("C'est la dernière page !".freeze)
         else
           Runner.itexte.update if Runner.iextrait.modified
-          Runner.show_extrait(Runner.iextrait.to_item + 1)
+          Runner.show_extrait(numero_page: Runner.iextrait.page.numero + 1)
         end
       end
 
@@ -180,13 +192,11 @@ class << self
       what = cmd.shift
       case what
       when 'page' #  prev page
-        if Runner.iextrait.from_item == 0
+        if Runner.iextrait.page.numero == 1
           CWindow.log("C'est la première page !".freeze)
         else
           Runner.itexte.update if Runner.iextrait.modified
-          pan   = ExtraitTexte.prev_panneau
-          from  = pan.nil? ? 0 : pan[:from]
-          Runner.show_extrait(from)
+          Runner.show_extrait(numero_page: Runner.iextrait.page.numero - 1)
         end
       end
 

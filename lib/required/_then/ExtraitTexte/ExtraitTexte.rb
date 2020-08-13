@@ -8,17 +8,49 @@ DEFAULT_NOMBRE_ITEMS  = 400 # c'est de toute façon le nombre de lignes qui impo
 #   INSTANCE
 #
 # ---------------------------------------------------------------------
-attr_reader :itexte, :from_item, :to_item
+attr_reader :itexte, :from_item
+attr_accessor :to_item
+# L'instance ProxPage de la page de l'extrait. Elle définit notamment l'index
+# de départ et l'index de fin.
+attr_reader :page
 
 # Pour indiquer que l'extrait a été modifié
 attr_accessor :modified
 
+# L'extrait peut s'instancier de deux façons :
+# a) avec le numéro de page (params[:numero_page])
+# b) avec l'index du mot, avec trois possibilités :
+#   b.1) On veut la page contenant ce mot (même s'il n'est pas au début)
+#   b.2) On veut l'extrait qui commence par ce mot dont l'index est donné
+#        relativement à la page courante.
+#   b.3) On veut l'extrait qui commence par ce mot dont l'index donné est
+#        absolu.
+# Pour b), params[:from_index] est défini.
+# On traite les trois cas suivant la valeur de params[:index_is] qui peut être
+#   b.1 : :in_page
+#   b.2 : :relatif
+#   b.3 : :absolu
 def initialize itexte, params
   # log("params: #{params.inspect}")
-  @itexte     = itexte
-  @from_item  = params[:from]
-  @form_item = 0 if @from_item.nil? || @from_item < 0
-  @to_item    = params[:to]
+  @itexte = itexte
+  if params[:numero_page]
+    @page = ProxPage.pages[params[:numero_page]]
+    @from_item = @page.from
+    @to_item = @page.to
+  elsif params.key?(:index)
+    @page = nil
+    @from_item = nil
+    case params[:index_is]
+    when :absolu
+      @from_item = params[:index]
+    when :in_page
+      @page = ProxPage.page_from_index_mot(params[:index])
+      @from_item = @page.from
+      @to_item = @page.to
+    end
+  end
+  # Pour forcer la relève
+  @extrait_titems = nil
 end #/ initialize
 
 # Sortie de l'extrait
@@ -73,14 +105,6 @@ def output
   # On décale toujours d'une espace pour la lisibilité
   write_indentation(top_line_index)
   offset = LEFT_MARGIN
-
-  # La liste dans laquelle on va mettre la liste des items
-  # Note : maintenant, ils sont calculés par la page courante.
-  @extrait_titems = nil
-
-  # Page courante
-  @current_page = ProxPage.page_from_index_mot(from_item)
-  # log("= Page courante (index mot : #{from_item.inspect}) : #{@current_page.inspect}",true)
 
   # Pour retenir le véritable dernier index affiché
   real_last_index = nil
@@ -167,7 +191,8 @@ def output
   CWindow.textWind.writepos([top_line_index,0], SPACE*(max_line_length+LEFT_MARGIN+RIGHT_MARGIN), CWindow::INDEX_COLOR)
 
   # On peut définir le dernier index d'item de l'extrait, c'est utile pour
-  # d'autres méthodes.
+  # d'autres méthodes. Noter que pour les pages, ça devrait être assez
+  # juste.
   @to_item = real_last_index
 
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
@@ -196,6 +221,10 @@ def extrait_pre_items; @extrait_pre_items end
 # Les text-items APRÈS l'extrait affiché
 def extrait_post_items; @extrait_post_items end
 
+# Retourne la liste des text-items de l'extrait
+# Définit en même temps les text-items avant et après.
+# Noter que le travail est différent suivant qu'il s'agissent d'une page
+# ou d'un extrait "dans l'absolu" c'est-à-dire à partir d'un index quelconque.
 def extrait_titems
   @extrait_titems ||= begin
     # La liste qui va contenir tous les items de l'extrait courant
@@ -246,19 +275,23 @@ def extrait_titems
       TexteItem.instanciate(hdata, -(idx -= 1))
     end
 
-    # On ajoute le premier items à la liste des items de l'extrait
-    extitems << TexteItem.instanciate(hfrom_item, 0)
-    log("Premier item de l'extrait (de hfrom_item) : #{extitems.first.inspect}")
+    # # On ajoute le premier items à la liste des items de l'extrait
+    # extitems << TexteItem.instanciate(hfrom_item, 0)
+    # log("Premier item de l'extrait (de hfrom_item) : #{extitems.first.inspect}")
 
-    # On cherche les text-items qui vont se trouver peut-être dans la fenêtre
-    # (en sachant que la vraie limite sera déterminée par le nombre de lignes
-    # car on ne peut pas faire autrement : une longueur ne prend aucun compte
-    # des retours chariots, par exemple. On pourrait calculer ici en tenant
-    # compte de ces retours chariots, mais ce serait alors assez risqué.)
-    offset_last_mot = offset_first + LENGTH_TEXT_IN_TEXT_WINDOW
-    request = "SELECT * FROM text_items WHERE Offset > ? AND Offset < ? ORDER BY Offset ASC".freeze
-    titems_dedans = itexte.db.db.execute(request, offset_first, offset_last_mot)
-    # log("#{RC*3}+++ titems_dedans: #{titems_dedans.inspect}")
+    # On cherche les text-items qui vont se trouver dans la fenêtre
+    # Si on connait @to_item, comme pour une page, on les relève simplement.
+    # Sinon, il faut en relever une certaines quantité jusqu'à atteindre la
+    # quantité voulue par rapport à la page. On se sert pour cela des méthodes
+    # de ProxPage qui sait calculer les longueurs de page en fonction de
+    # l'interface actuelle.
+    if @to_item.nil?
+      @to_item = ProxPage.last_item_page_from_index(itexte, from_item)
+    end
+    log("=== @to_item : #{@to_item.inspect}")
+
+    request = "SELECT * FROM text_items WHERE `Index` >= ? AND `Index` <= ? ORDER BY `Index` ASC".freeze
+    titems_dedans = itexte.db.db.execute(request, from_item, to_item)
 
     # On instancie tous les items qui peuvent appartenir à l'extrait
     # On définit aussi l'index dans l'extrait de chaque text-item.
@@ -269,9 +302,10 @@ def extrait_titems
     idx = 0 # on commencera à 1 car c'est le premier text-item qui porte
             # l'index 0
     extitems += titems_dedans.collect do |hdata|
-      TexteItem.instanciate(hdata, idx += 1)
-    end
-
+                  TexteItem.instanciate(hdata, idx += 1)
+                end
+    # On a besoin de l'offset du dernier mot pour savoir jusqu'où il faut
+    # prendre la suite.
     offset_last = titems_dedans.last['Offset']
     last_offset_apres = offset_last + itexte.distance_minimale_commune
     request = "SELECT * FROM text_items WHERE Offset > ? AND Offset <= ? ORDER BY Offset ASC".freeze
@@ -280,8 +314,8 @@ def extrait_titems
 
     # On ajoute les instances des titems après (non affichés) aux titems de l'extrait
     @extrait_post_items = titems_apres.collect do |hdata|
-      TexteItem.instanciate(hdata, idx += 1)
-    end
+                            TexteItem.instanciate(hdata, idx += 1)
+                          end
 
     # On remet les résultats de la base de données sans table, comme c'est par
     # défaut. Cela permet d'accélerer les traitements.

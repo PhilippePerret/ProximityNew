@@ -79,6 +79,7 @@ class << self
       config.data.merge!(last_text_path: text_path)
       log("Configuration enregistrée (:last_text_path)")
       if itexte.parse_if_necessary(projetscriv)
+        log("Projet OK (ou parsé avec succès)")
         # Tout s'est bien passé
         config.save
         show_extrait_and_wait_for_user
@@ -106,7 +107,7 @@ class << self
   def iextrait
     @iextrait ||= begin
       # log("Instanciation @extrait (à partir de l'item #{itexte.current_first_item})")
-      ExtraitTexte.new(itexte, from: itexte.current_first_item)
+      ExtraitTexte.new(itexte, index: itexte.current_first_item, index_is: :in_page)
     end
   end #/ iextrait
   def iextrait= extract
@@ -114,9 +115,13 @@ class << self
   end #/ iextrait= ext
 
   # Pour montrer un extrait
-  def show_extrait(from)
-    # log("-> show_extrait(from:#{from.inspect})")
-    @iextrait = ExtraitTexte.new(itexte, from: from)
+  # +params+ peut définir les choses de deux manières :
+  #   a) avec un numéro de page (:numero_page)
+  #   b) avec un index de mot (:from_index) absolu ou non.
+  #
+  def show_extrait(params)
+    log("-> show_extrait(params:#{params.inspect})")
+    @iextrait = ExtraitTexte.new(itexte, params)
     @iextrait.output
     CWindow.init_status_and_cursor(clear:true)
   end #/ show_extrait
@@ -152,16 +157,18 @@ class << self
   end #/ display_help
 
   def show_extrait_and_wait_for_user
+    log("-> show_extrait_and_wait_for_user")
     begin
       # On calcule les pages, en fonction des configurations actuelles
       # de l'écran.
       ProxPage.calcule_pages(itexte)
       # On affiche l'extrait courant du texte
-      iextrait.output
+      show_extrait(index: itexte.current_first_item, index_is: :in_page)
       interact_with_user
     rescue Exception => e
       Curses.close_screen
       erreur("ERROR: #{e.message}#{RC}#{e.backtrace.join(RC)}")
+      erreur(e)
     else
       Curses.close_screen
     end

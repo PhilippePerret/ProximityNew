@@ -213,7 +213,6 @@ def main_type
   rescue Exception => e
     erreur("PROBLÈME AVEC #{self.inspect} : #{e.message}")
     erreur(e)
-    raise
   end
 end #/ main_type
 

@@ -158,7 +158,11 @@ class << self
   end #/ set_titre_texte
 
   def set_statut_extrait
-    str = " Items:#{Runner.iextrait.from_item}-#{Runner.iextrait.to_item}".freeze
+    unless Runner.instance_variable_get("@iextrait").nil?
+      str = " Items:#{Runner.iextrait.from_item}-#{Runner.iextrait.to_item}".freeze
+    else
+      str = '---'
+    end
     @statusWind.writepos([0,EXTRAIT_INFOS_START,EXTRAIT_INFOS_WIDTH], str, TEXT_COLOR)
   end #/ set_statut_extrait
 
