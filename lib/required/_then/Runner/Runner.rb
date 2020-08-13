@@ -153,6 +153,9 @@ class << self
 
   def show_extrait_and_wait_for_user
     begin
+      # On calcule les pages, en fonction des configurations actuelles
+      # de l'écran.
+      ProxPage.calcule_pages(itexte)
       # On affiche l'extrait courant du texte
       iextrait.output
       interact_with_user

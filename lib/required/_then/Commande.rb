@@ -184,7 +184,8 @@ class << self
           CWindow.log("C'est la première page !".freeze)
         else
           Runner.itexte.update if Runner.iextrait.modified
-          from = 0 if (from = Runner.iextrait.from_item - 150) < 0
+          pan   = ExtraitTexte.prev_panneau
+          from  = pan.nil? ? 0 : pan[:from]
           Runner.show_extrait(from)
         end
       end

@@ -3,7 +3,6 @@ require 'tempfile'
 
 class ExtraitTexte
 DEFAULT_NOMBRE_ITEMS  = 400 # c'est de toute façon le nombre de lignes qui importe
-TEXTE_COLS_WIDTH      = 100
 # ---------------------------------------------------------------------
 #
 #   INSTANCE
@@ -38,6 +37,13 @@ end #/ initialize
 # lignes occupées qui va décider du nombre de mots.
 LENGTH_TEXT_IN_TEXT_WINDOW = 1500 # pour essai
 
+# Le nombre d'espaces laissés à droite pour la marge
+RIGHT_MARGIN = 2
+# Idem à gauche
+LEFT_MARGIN = 2
+#
+SPACES_LEFT_MARGIN = (SPACE * LEFT_MARGIN).freeze
+
 def output
 
   # Dans la nouvelle formule, on récolte les items dans la base de données
@@ -66,10 +72,18 @@ def output
 
   # On décale toujours d'une espace pour la lisibilité
   write_indentation(top_line_index)
-  offset = 1
+  offset = LEFT_MARGIN
 
   # La liste dans laquelle on va mettre la liste des items
+  # Note : maintenant, ils sont calculés par la page courante.
   @extrait_titems = nil
+
+  # Page courante
+  @current_page = ProxPage.page_from_index_mot(from_item)
+  # log("= Page courante (index mot : #{from_item.inspect}) : #{@current_page.inspect}",true)
+
+  # Pour retenir le véritable dernier index affiché
+  real_last_index = nil
 
   # *** fin des préparations préliminaires ***
 
@@ -104,12 +118,13 @@ def output
     # Si le prochain offset obtenu est supérieur à la longueur maximale
     # de la ligne ou que c'est un nouveau paragraphe, on passe à la ligne
     # suivante
-    if ( next_offset > max_line_length ) || titem.new_paragraphe?
+    if ( next_offset > (max_line_length + LEFT_MARGIN) ) || titem.new_paragraphe?
       # On finit la ligne avec les caractères manquants
       finir_ligne(top_line_index, offset)
 
       # Si c'est le dernier item, on peut s'arrêter là.
       if is_last_titem
+        real_last_index = idx
         break
       else
         # Si ce n'est pas le dernier text-item à afficher, on doit passer à la
@@ -118,11 +133,12 @@ def output
         # Mais si ce nombre n'est plus inférieur à la hauteur du texte (écran),
         # on doit s'arrêter là
         if top_line_index + 3 > CWindow.hauteur_texte - 1
+          real_last_index = idx
           break
         end
         # Sinon, on peut poursuivre sur la ligne suivante
         write_indentation(top_line_index)
-        offset = 1 # car l'indentation est de 1 caractère
+        offset = LEFT_MARGIN
         next if titem.new_paragraphe?
       end
     end
@@ -136,6 +152,11 @@ def output
       ], top_line_index, offset, titem.prox_color
     )
 
+    # Si on devait s'arrêter là, ce serait le vrai dernier index
+    # Noter qu'il est défini plusieurs fois ci-dessous quand on
+    # stoppe la boucle.
+    real_last_index = idx
+
     # On se place sur l'offset suivant en fonction de la longueur affichée
     # du text-item
     offset += titem.f_length
@@ -143,11 +164,11 @@ def output
   end # Fin de boucle sur tous les items à afficher
 
   # On ajoute une dernière ligne blanche pour que ce soit mieux
-  CWindow.textWind.writepos([top_line_index,0], SPACE*max_line_length, CWindow::INDEX_COLOR)
+  CWindow.textWind.writepos([top_line_index,0], SPACE*(max_line_length+LEFT_MARGIN+RIGHT_MARGIN), CWindow::INDEX_COLOR)
 
   # On peut définir le dernier index d'item de l'extrait, c'est utile pour
   # d'autres méthodes.
-  @to_item = extrait_titems.last.index
+  @to_item = real_last_index
 
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
@@ -155,20 +176,17 @@ def output
 end #/ output
 
 def finir_ligne(top_line_index, offset)
-  manque = (SPACE * (max_line_length - offset)).freeze
+  manque = (SPACE * ((max_line_length - offset) + LEFT_MARGIN + RIGHT_MARGIN)).freeze
   write3lines([manque,manque,manque], top_line_index, offset)
 end #/ finir_ligne
 
+# @Return la longueur maximale que peut occuper une ligne
 def max_line_length
-  @max_line_length ||= begin
-    mll = Curses.cols - 6
-    mll = TEXTE_COLS_WIDTH if mll > TEXTE_COLS_WIDTH
-    mll
-  end
+  @max_line_length ||= ProxPage.max_line_length
 end #/ max_line_length
 
 def write_indentation(yindex)
-  write3lines([SPACE,SPACE,SPACE], yindex, 0)
+  write3lines([SPACES_LEFT_MARGIN,SPACES_LEFT_MARGIN,SPACES_LEFT_MARGIN], yindex, 0)
 end #/ write_indentation
 
 # Les text-items AVANT l'extrait affiché
