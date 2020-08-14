@@ -17,6 +17,15 @@ end #/ initialize
 def execute(req); db.execute(req) end
 def results_as_hash=(val); db.results_as_hash = val end
 
+# Pour pouvoir quitter proprement, il faut finaliser tous les statements
+# préparé
+def finalize_all_statements
+  all_statements.each { |stm| stm.close }
+end #/ finalize_all_statements
+def all_statements
+  @all_statements ||= []
+end #/ all_statements
+
 # Pour insérer une liste de text-items
 # +liste+ est une liste Array d'instances TextItem (Mot ou NonMot)
 # Ça peut être aussi une liste des listes de valeurs.
@@ -56,7 +65,9 @@ end #/ insert_text_item
 def stm_insert_titem
   @stm_insert_titem ||= begin
     colonnes, interros = titems_colonnes_and_interrogations
-    db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})")
+    stm = db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})")
+    all_statements << stm
+    stm
   end
 end #/ stm_insert_titem
 
@@ -71,10 +82,18 @@ def delete_text_items(params)
   end
 end #/ delete_text_items
 def stm_delete_text_items_by_list
-  @stm_delete_text_items_by_list ||= db.prepare("DELETE FROM text_items WHERE Idx IN ?".freeze)
+  @stm_delete_text_items_by_list ||= begin
+    stm = db.prepare("DELETE FROM text_items WHERE Idx IN ?".freeze)
+    all_statements << stm
+    stm
+  end
 end #/ stm_delete_text_items_by_list
 def stm_delete_text_items_by_range
-  @stm_delete_text_items_by_range ||= db.prepare("DELETE FROM text_items WHERE Idx >= ? AND Idx <= ?".freeze)
+  @stm_delete_text_items_by_range ||= begin
+    stm = db.prepare("DELETE FROM text_items WHERE Idx >= ? AND Idx <= ?".freeze)
+    all_statements << stm
+    stm
+  end
 end #/ stm_delete_text_items_by_range
 
 def get_titem_by_index(index, as_hash = nil)
@@ -89,7 +108,9 @@ def stm_titem_by_index
     colonnes, interros = titems_colonnes_and_interrogations
     cmd = "SELECT Id, #{colonnes} FROM text_items WHERE Idx = ? LIMIT 1".freeze
     # log("Requête préparée pour récupérer un titem par son index : #{cmd.inspect}")
-    db.prepare(cmd)
+    stm = db.prepare(cmd)
+    all_statements << stm
+    stm
   end
 end #/ stm_titem_by_index
 
@@ -105,7 +126,11 @@ def get_canon(mot)
   res
 end #/ get_canon
 def stm_get_canon
-  @stm_get_canon ||= db.prepare("SELECT * FROM lemmas WHERE mot = ? LIMIT 1")
+  @stm_get_canon ||= begin
+    stm = db.prepare("SELECT * FROM lemmas WHERE mot = ? LIMIT 1")
+    all_statements << stm
+    stm
+  end
 end #/ stm_get_canon
 
 # Pour ajouter un mot-canon à la table lemmas
@@ -125,7 +150,11 @@ def canon_exists_for?(mot)
   res.next != nil
 end #/ canon_exists_for?
 def stm_for_canon_existence
-  @stm_for_canon ||= db.prepare("SELECT canon FROM lemmas WHERE mot = ? LIMIT 1")
+  @stm_for_canon ||= begin
+    stm = db.prepare("SELECT canon FROM lemmas WHERE mot = ? LIMIT 1")
+    all_statements << stm
+    stm
+  end
 end #/ stm_for_canon_existence
 
 
@@ -134,7 +163,11 @@ def load_text_item(id)
   stm_load_titem.next
 end #/ load_text_item
 def stm_load_titem
-  @stm_load_titem ||= db.prepare("SELECT * FROM text_items WHERE id = ? LIMIT 1")
+  @stm_load_titem ||= begin
+    stm = db.prepare("SELECT * FROM text_items WHERE id = ? LIMIT 1")
+    all_statements << stm
+    stm
+  end
 end #/ stm_load_titem
 
 # Méthode publique pour actualiser l'offset et l'index d'un text-item
@@ -147,7 +180,11 @@ end #/ update_offset_index_titem
 # Requête préparée pour actualiser l'offset et l'index d'un text-item du
 # texte courant.
 def stm_update_offset_index
-  @stm_update_offset_index ||= db.prepare("UPDATE text_items SET Offset = ?, Idx = ?, IndiceInFile = ? WHERE id = ?")
+  @stm_update_offset_index ||= begin
+    stm = db.prepare("UPDATE text_items SET Offset = ?, Idx = ?, IndiceInFile = ? WHERE id = ?")
+    all_statements << stm
+    stm
+  end
 end #/ stm_update_offset_index
 
 def update_text_item(hvalues)
@@ -155,16 +192,17 @@ def update_text_item(hvalues)
   values = []
   modifications = hvalues.collect do |k, v|
     values << case v
-              when TrueClass then 'TRUE'
+              when TrueClass  then 'TRUE'
               when FalseClass then 'FALSE'
-              when NilClass then 'NULL'
+              when NilClass   then 'NULL'
               else v
               end
     # On retourne la modification
     "#{k} = ?"
   end
-  modifications << titem_id
-  stm = db.prepare("UPDATE text_items SET #{modifications.join(VGE)} WHERE id = ?".freeze)
+  values << titem_id
+  request = "UPDATE text_items SET #{modifications.join(VGE)} WHERE id = ?".freeze
+  stm = db.prepare(request)
   stm.execute(*values)
 end #/ update_text_item
 
@@ -172,7 +210,11 @@ def update_prop_ignored(titem, value)
   stm_update_ignored.execute(value ? 'TRUE' : 'FALSE', titem.id)
 end #/ update_prop_ignored
 def stm_update_ignored
-  @stm_update_ignored ||= db.prepare("UPDATE text_items SET Ignored = ? WHERE id = ?")
+  @stm_update_ignored ||= begin
+    stm = db.prepare("UPDATE text_items SET Ignored = ? WHERE id = ?")
+    all_statements << stm
+    stm
+  end
 end #/ stm_update_ignored
 
 

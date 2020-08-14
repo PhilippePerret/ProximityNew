@@ -130,7 +130,10 @@ class << self
   # la command “:q”)
   def finish
     check_if_current_texte_saved
-    @itexte.db.close unless @itexte.nil?
+    unless @itexte.nil?
+      @itexte.db.finalize_all_statements
+      @itexte.db.close
+    end
   end #/ finish
 
   # Cette méthode, appelée quand on quitte l'application ou quand on

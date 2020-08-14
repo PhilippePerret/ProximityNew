@@ -107,6 +107,6 @@ def create_trigger_on_insert_titem
 end #/ create_trigger_on_insert_titem
 
 def drop_trigger_on_insert_titem
-  db.execute("DROP TRIGGER IF EXISTS update_index_and_offset_on_insert_titem;")
+  db.execute("DROP TRIGGER IF EXISTS update_index_and_offset_on_insert_titem;".freeze)
 end #/ drop_trigger_on_insert_titem
 end #/TextSQLite

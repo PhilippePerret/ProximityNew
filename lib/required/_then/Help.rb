@@ -116,6 +116,15 @@ MODIFCATION DU TEXTE
 
     :show <index>             Pour afficher le texte à partir de cet
                               index de mot.
+                      234     Si l'index est littéral, on affiche le mot à cet
+                              index absolu exact dans le fichier.
+                      234*    Si l'index est suivi de "*", c'est l'index relatif
+                              par rapport à la fenêtre courante. Il peut être
+                              négatif, par exemple "-14*" pour voir le 14e mot
+                              avant l'affichage
+                      234p    Pour afficher la page exacte qui contient l'index
+                              absolu 234. Sinon, avec l'index seul, le premier
+                              mot est le mot de l'index désiré.
 
     :copy texte <new_name>    Faire une copie du projet actuel sous un autre
                               nom.
