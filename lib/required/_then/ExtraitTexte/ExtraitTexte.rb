@@ -14,9 +14,6 @@ attr_accessor :to_item
 # de départ et l'index de fin.
 attr_reader :page
 
-# Pour indiquer que l'extrait a été modifié
-attr_accessor :modified
-
 # L'extrait peut s'instancier de deux façons :
 # a) avec le numéro de page (params[:numero_page])
 # b) avec l'index du mot, avec trois possibilités :
@@ -364,13 +361,6 @@ end #/ write3lines
 # économiser le travail.
 #
 def update(to_save = nil)
-  # Pour indiquer que lorsqu'on passera à un autre extrait (ou tout de suite)
-  # il faudra enregistrer les nouvelles valeurs. Noter qu'ici on n'indique pas
-  # que le texte a été modifié. Car on peut abandonner toutes les modifications
-  # en passant à une autre page ou en quittant l'application.
-  if to_save === true
-    self.modified = true
-  end
   recompte # C'est TexteExtrait#recompte, ici, pas Texte#recompte
   output
 end #/ update

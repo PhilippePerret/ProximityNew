@@ -27,9 +27,9 @@ def insert_text_items(liste)
     last_offset = nil
     liste = liste.collect do |i|
       if i.offset.nil?
-        log("Le mot #{i.content.inspect} d'index #{i.index} n'a pas d'offset.")
+        # log("Le mot #{i.content.inspect} d'index #{i.index} n'a pas d'offset.")
         i.offset = last_offset + last_length
-        log("Je lui ai mis #{i.offset} calculé d'après le mot précédent.")
+        # log("Je lui ai mis #{i.offset} calculé d'après le mot précédent.")
       end
       last_offset = i.offset
       last_length = i.length

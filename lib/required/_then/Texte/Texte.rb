@@ -13,9 +13,6 @@ attr_reader :items
 # Le premier mot (ou non mot) courant
 attr_accessor :current_first_item
 
-# Mis à true quand une modification a été opérée
-attr_accessor :modified
-
 def initialize(path)
   @path = path
 rescue Exception => e
@@ -34,7 +31,6 @@ def save
   }
   File.open(data_path,'wb'){|f| Marshal.dump(data,f)}
   # raise "Il faut revoir la procédure de sauvarde du texte."
-  self.modified = false
 end #/ save
 
 # Méthode de débuggage pour voir les items du texte
@@ -99,12 +95,6 @@ end #/ distance_minimale_commune
 #  Question methods
 #
 # ---------------------------------------------------------------------
-
-# Retourne true si le texte est enregistré (si ses modifications ont été
-# enregistrés)
-def saved?
-  !(self.modified === true)
-end #/ saved?
 
 def projet_scrivener?
   extension == '.scriv'

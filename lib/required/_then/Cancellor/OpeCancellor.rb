@@ -53,7 +53,6 @@ end
       params.merge!(real_at: AtStructure.new(params.delete(:index), 0))
       Runner.iextrait.send(operation, params)
     end
-    Runner.iextrait.update
   end #/ undo
 
 end #/OpeCancellor

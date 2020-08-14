@@ -37,12 +37,11 @@ def ignore(params)
     # Pour le moment, on l'enregistre tout de suite, ça ne devrait pas
     # trop consommer
     itexte.db.update_prop_ignored(titem, true)
-    # titem.modified = true # pour savoir qu'il faudra l'enregistrer
     log("Titem #{titem.cio} est marqué à ignorer.", true)
   end
   # Actualiser l'affichage, mais sans marquer l'extrait modifié
   # (sinon, c'est la méthode `update` qu'il faut appeler)
-  update(save = false)
+  update
 end #/ ignore
 
 def unignore(params)
@@ -56,7 +55,7 @@ def unignore(params)
   end
   # pour actualiser l'affichage mais sans marquer que l'extrait est à
   # enregistrer
-  update(saveable = false)
+  update
 end #/ un_ignore
 
 # Pour essayer une opération
@@ -258,7 +257,7 @@ def remove(params)
   # l'extrait a changé
   if params[:operation] == 'remove'
     itexte.operator.add_text_operation(params)
-    update(saveable = true)
+    update
   end
 
 end #/ remove
@@ -361,7 +360,7 @@ def insert(params)
   end
 
   unless params[:noupdate]
-    update(saveable = true)
+    update
   end
 end #/ insert
 

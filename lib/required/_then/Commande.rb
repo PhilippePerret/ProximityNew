@@ -170,7 +170,6 @@ class << self
 
     when 'show'
       from = cmd.shift.to_s
-      Runner.itexte.update if Runner.iextrait.modified
       pms = {index: nil, index_is: nil}
       if from.end_with?('*')
         pms[:index]     = from[0...-1].to_i + Runner.iextrait.from_item
@@ -192,7 +191,6 @@ class << self
         if Runner.iextrait.page.numero == ProxPage.last_numero_page
           CWindow.log("C'est la dernière page !".freeze)
         else
-          Runner.itexte.update if Runner.iextrait.modified
           Runner.show_extrait(numero_page: Runner.iextrait.page.numero + 1)
         end
       end
@@ -204,7 +202,6 @@ class << self
         if Runner.iextrait.page.numero == 1
           CWindow.log("C'est la première page !".freeze)
         else
-          Runner.itexte.update if Runner.iextrait.modified
           Runner.show_extrait(numero_page: Runner.iextrait.page.numero - 1)
         end
       end
@@ -231,7 +228,6 @@ class << self
         Runner.itexte.reset(:distance_minimale_commune)
         CWindow.log("distance_minimale_commune du texte mis à #{val}")
         Canon.each { |can| can.reset }
-        Runner.iextrait.update
       else
         CWindow.error("Je ne sais pas régler '#{what}'")
       end
