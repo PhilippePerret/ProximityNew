@@ -13,25 +13,6 @@ def initialize(owner = nil)
   @owner = owner
 end #/ initialize
 
-DATA_TABLE_TEXT_ITEMS = [
-  {name:'Id',                 type:'INTEGER PRIMARY KEY AUTOINCREMENT', insert: false},
-  {name:'Content',            type:'VARCHAR(30)'},
-  {name:'IsMot',              type:'BOOLEAN', property:'is_mot'},
-  {name:'Canon',              type:'VARCHAR(30)'},
-  {name:'Type',               type:'VARCHAR(15)'},
-  {name:'`Index`',            type:'INTEGER', property:'index'},
-  {name:'Offset',             type:'INTEGER'},
-  {name:'FileId',             type:'TINYINT', property:'file_id'},
-  {name:'IndiceInFile',       type:'TINYINT', property:'indice_in_file'},
-  {name:'MarkScrivenerStart', type:'VARCHAR(10)', property:'db_mark_scrivener_start'},
-  {name:'MarkScrivenerEnd',   type:'VARCHAR(10)', property:'db_mark_scrivener_end'},
-  {name:'Ignored',            type:'BOOLEAN', property:'is_ignored'}
-]
-DATA_TABLE_TEXT_ITEMS.each do |dcol|
-  dcol[:property] ||= dcol[:name].downcase
-  dcol.merge!(property_sym: dcol[:property].to_sym)
-end
-
 # *** Raccourcis ***
 def execute(req); db.execute(req) end
 def results_as_hash=(val); db.results_as_hash = val end
@@ -59,7 +40,7 @@ end #/ get_titem_by_index
 def stm_titem_by_index
   @stm_titem_by_index ||= begin
     colonnes, interros = titems_colonnes_and_interrogations
-    cmd = "SELECT Id, #{colonnes} FROM text_items WHERE `Index` = ? LIMIT 1".freeze
+    cmd = "SELECT Id, #{colonnes} FROM text_items WHERE Idx = ? LIMIT 1".freeze
     # log("Requête préparée pour récupérer un titem par son index : #{cmd.inspect}")
     db.prepare(cmd)
   end
@@ -116,7 +97,7 @@ end #/ update_offset_index_titem
 # Requête préparée pour actualiser l'offset et l'index d'un text-item du
 # texte courant.
 def stm_update_offset_index
-  @stm_update_offset_index ||= db.prepare("UPDATE text_items SET Offset = ?, `Index` = ?, IndiceInFile = ? WHERE id = ?")
+  @stm_update_offset_index ||= db.prepare("UPDATE text_items SET Offset = ?, Idx = ?, IndiceInFile = ? WHERE id = ?")
 end #/ stm_update_offset_index
 
 def update_text_item(hvalues)
@@ -154,61 +135,33 @@ end #/ titems_colonnes_and_interrogations
 def reset
   # On ne crée la table de configuration que si elle n'est pas encore créée
   create_base_if_necessary
-  # Pour mettre tous les mots
+  # TABLE Pour mettre tous les mots
   create_table_text_items('text_items', drop = true)
-  # Pour mettre les formes lemmatisées
+  # TABLE Pour mettre les formes lemmatisées
   create_table_lemmas
+  # TRIGGER Pour updater automatiquement les index et offsets quand on insert
+  # un nouveau mot dans la table text_items
+  create_trigger_on_insert_titem
+  # TRIGGER pour updater automatiquement les index et les offsets quand on
+  # supprime un text-item dans la table text_items
 end #/ reset
 
 
-# Table pour créer la table des text-items
-#
-# La méthode permet de créer la table de tous les items, qui est créée lors du
-# parsing du texte, ainsi que la table des text-items affichés (page courante)
-def create_table_text_items(db_name = 'text_items'.freeze, dropping = false)
-  db.execute("DROP TABLE IF EXISTS #{db_name}") if dropping
-  colonnes = DATA_TABLE_TEXT_ITEMS.collect do |dcol|
-    "#{dcol[:name]} #{dcol[:type]}".freeze
-  end.join(VGE).freeze
-  db.execute("CREATE TABLE #{db_name}(#{colonnes})".freeze)
-end #/ create_table_text_items
-
-def create_table_lemmas
-  db.execute("DROP TABLE IF EXISTS lemmas".freeze)
-  db.execute("CREATE TABLE IF NOT EXISTS lemmas (Mot VARCHAR(30), Type VARCHAR(15), Canon VARCHAR(25), Canon_alt VARCHAR(25))".freeze)
-  db.execute("CREATE INDEX idxmot ON lemmas(Mot)".freeze)
-end #/ create_table_lemmas
-
-def create_table_current_page
-  create_table_text_items("current_page", drop = true)
-end #/ create_table_current_page
-
-# Pour créer le fichier base pour le texte
-def create_base_if_necessary
-  begin
-    db.execute("CREATE TABLE IF NOT EXISTS configuration (name TEXT, type TEXT, value TEXT)")
-    db.execute("INSERT INTO configuration (name, type) VALUES ('Path', 'string')")
-    db.execute("INSERT INTO configuration (name, type) VALUES ('LastIndexMot', 'number')")
-    db.execute("INSERT INTO configuration (name, type) VALUES ('LastOpening', 'number')")
-  rescue SQLite3::Exception => e
-    error(e)
-  ensure
-    # db.close if db
-  end
-end #/ create_base_if_necessary
 
 def execute(*args)
   begin
     db.execute(*args)
   rescue SQLite3::Exception => e
     erreur(e)
-  ensure
-    # db.close
   end
 end #/ execute
 def db
   @db ||= SQLite3::Database.open(path)
 end #/ db
+def close
+  db.close unless @db.nil?
+  @db = nil
+end #/ close
 def path
   @path ||= owner.db_path
 end #/ path

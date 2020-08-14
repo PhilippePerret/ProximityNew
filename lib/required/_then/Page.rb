@@ -27,7 +27,7 @@
     En fait, si je connaissais la formule pour construire une page, je pourrais
     en relevant simplement les index et les longueurs (ainsi que les
     retours chariots) savoir trouver la page :
-      - SELECT `Index`, LENGTH(Content) AS Length, ... FROM text_items
+      - SELECT Idx, LENGTH(Content) AS Length, ... FROM text_items
 =end
 class ProxPage
 # La largeur maximale pour la ligne, qu'on ne peut pas dépasser même
@@ -44,7 +44,7 @@ CREATE VIEW IF NOT EXISTS prox_pages (
 )
 AS
   SELECT
-    `Index`,
+    Idx,
     LENGTH(Content),
     INSTR(Content, "\n")
   FROM
@@ -56,7 +56,7 @@ SQL
 # pages dans la base de données
 GET_PAGES_USEFULL_INFOS_DB = <<-SQL.freeze.strip
 SELECT
-  `Index`,
+  Idx,
   LENGTH(Content),
   INSTR(Content, #{RC.inspect}),
   IsMot
@@ -65,12 +65,12 @@ ORDER BY Offset ASC
 SQL
 REQUEST_GET_TITEMS_INFOS_FROM_FOR = <<-SQL.freeze.strip
 SELECT
-  `Index`,
+  Idx,
   LENGTH(Content),
   INSTR(Content, #{RC.inspect}),
   IsMot
 FROM text_items
-WHERE `Index` >= ? AND `Index` < ?
+WHERE Idx >= ? AND Idx < ?
 ORDER BY `Offset` ASC
 SQL
 class << self
@@ -143,8 +143,16 @@ def calcule_pages(itexte)
     # ligne.
     @current_long += longueur
     @current_index_in_page += 1
+    # Pour se souvenir du dernier index traité, pour la dernière page qui
+    # sera créé en sortie de boucle
+    @last_index = index
 
   end #/ fin de boucle sur chaque mot (il peut y en avoir des dizaines de milliers)
+
+  # On enregistre la dernière page, mais seulement si elle existe vraiment
+  if @from_index < @last_index
+    create_new_page(numero:@current_page, from:@from_index, to:@last_index, lines_count:@current_line)
+  end
 
   end_time = Time.now.to_f
   # debug(rows_debug.join(RC))
@@ -296,8 +304,8 @@ private
       # options[:noop] est vrai quand on cherche simplement le dernier index
       # d'une page virtuelle/temporaire.
       unless options[:noop]
+        create_new_page(numero:numero, from: from_idx, to:to_idx, lines_count:@current_line)
         # log("Enregistrement de @current_page #{numero.inspect} : #{{numero:numero, from:from_idx, to:to_idx}.inspect}")
-        @pages.merge!(numero => ProxPage.new(numero:numero, from:from_idx, to:to_idx, lines_count:@current_line))
       end
       @current_page   += 1
       @current_line   = 1
@@ -305,6 +313,11 @@ private
       @current_index_in_page = 0
     end
   end #/ create_new_ligne
+
+  def create_new_page(params)
+    # debug("[ProxPage::create_new_page] Nouvelle page créée : #{params.inspect}")
+    @pages.merge!(params[:numero] => ProxPage.new(params))
+  end #/ create_new_page
 
 end # /<< self
 # ---------------------------------------------------------------------

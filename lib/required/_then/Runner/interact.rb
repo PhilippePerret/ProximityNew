@@ -86,7 +86,7 @@ def interact_with_user
           CWindow.error("Une erreur fatale est survenue (#{e.message}). Quitter et consulter le journal de bord.")
         end
       end
-    when 194, 195, 226 # pour les accents et diacritiques
+    when 194, 195, 197, 226 # pour les accents et diacritiques
       s3 = gestion_touches_speciales(s)
       if start_command
         command << s3
@@ -147,6 +147,9 @@ T195_TO_LETTER = {
   185 => 'ù'.freeze, 187 => 'û'.freeze, 188 => 'ü'.freeze,
   153 => 'Ù'.freeze, 155 => 'Û'.freeze, 156 => 'Ü'.freeze,
 }
+T197_TO_LETTRE = {
+  147 => 'œ'.freeze, 146 => 'Œ'.freeze,
+}
 T194_TO_LETTER = {
   160 => ISPACE, #insécable
   171 => '«'.freeze, 187 => '»'.freeze
@@ -165,6 +168,8 @@ def gestion_touches_speciales(s)
     T194_TO_LETTER[s2] || " --- inconnu avec 194  : #{s2}".freeze
   when 195
     T195_TO_LETTER[s2] || " --- inconnu avec 195 : #{s2}".freeze
+  when 197
+    T197_TO_LETTRE[s2] || " --- inconnu avec 197 : #{s2}".freeze
   when 226
     suite = "#{s2}-#{curse.getch}".freeze
     T226_TO_LETTRE[suite] || " --- suite inconnue avec 226 : #{suite.inspect}".freeze

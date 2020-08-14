@@ -285,7 +285,7 @@ def extrait_titems
     log("=== @to_item : #{@to_item.inspect}")
     @to_item || raise("@to_item ne peut absolument pas être nil…")
 
-    request = "SELECT * FROM text_items WHERE `Index` >= ? AND `Index` <= ? ORDER BY `Index` ASC".freeze
+    request = "SELECT * FROM text_items WHERE Idx >= ? AND Idx <= ? ORDER BY Idx ASC".freeze
     itexte.db.results_as_hash = true
     titems_dedans = itexte.db.execute(request, from_item, to_item)
 

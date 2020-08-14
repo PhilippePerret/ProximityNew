@@ -78,7 +78,7 @@ def essayer(params)
   # On reçoit le résultat de la simulation
   problemes = simulation(params)
   msg = if problemes.empty?
-          "Aucun problème de proximités pour cette opération."
+          "Aucun problème de proximités avec “#{params[:content]}” à #{params[:at]}."
         else
           msg = "Risque de proximités : #{problemes.join(SPACE)}"
         end
