@@ -19,7 +19,6 @@ end #/ initialize
 
 def add_text_operation(params)
   init_operations_file if not File.exists?(path)
-  # titem_ref = itexte.items[params[:real_at].at]
   operation = TextOperations.new(params.merge!(itexte:itexte))
   File.open(path,'a') do |f|
     f.puts(operation.as_code)

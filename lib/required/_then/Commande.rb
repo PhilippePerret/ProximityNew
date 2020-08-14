@@ -53,7 +53,7 @@ class << self
       case what
       when 'item', 'mot'
         item_index = cmd.shift.to_i
-        item = Runner.itexte.items[item_index]
+        item = Runner.iextrait.extrait_items[item_index]
         msg = "DEBUG item #{item_index} : #{item.debug(output: :console)}".freeze
         debug(msg)
         debug(item.inspect)
@@ -63,7 +63,7 @@ class << self
         entete = "#{RC} #{'index'.ljust(7)}#{'Contenu'.ljust(15)}#{'Offset'.ljust(8)}#{'FileId'.ljust(7)}".freeze
         debug(entete)
         debug(('-'*entete.length).freeze)
-        Runner.itexte.items.each do |titem|
+        Runner.iextrait.extrait_items.each do |titem|
           debug(titem.debug)
         end
         debug("#{RC*2}".freeze)

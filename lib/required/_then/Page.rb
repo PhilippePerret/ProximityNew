@@ -87,7 +87,7 @@ def calcule_pages(itexte)
   log("Calcul des pages. Merci de patienter…", true)
   start_time = Time.now.to_f
   db_result = itexte.db.execute(GET_PAGES_USEFULL_INFOS_DB)
-  log("db_result pour le calcul des pages : #{db_result.inspect}")
+  # log("db_result pour le calcul des pages : #{db_result.inspect}") # ATTENTION : GROS SI GROS FICHIER
   # Les pages qu'on va rassembler. En clé, il y aura l'indice de la
   # page (1-start) et en valeur une instance ProxPage qui définira notamment
   # @from et @to, les index de départ et d'arrivée

@@ -93,6 +93,9 @@ def stm_titem_by_index
   end
 end #/ stm_titem_by_index
 
+# Renvoie les données du canon du mot +mot+, c'est-à-dire une table
+# contenant ['Mot', 'Type', 'Canon', 'Canon_alt']
+#
 def get_canon(mot)
   db.results_as_hash = true
   res = stm_get_canon.execute(mot.downcase)
@@ -148,7 +151,21 @@ def stm_update_offset_index
 end #/ stm_update_offset_index
 
 def update_text_item(hvalues)
-  raise("udpate_text_item n'est pas encore implémenté.")
+  titem_id = hvalues.delete(:id)
+  values = []
+  modifications = hvalues.collect do |k, v|
+    values << case v
+              when TrueClass then 'TRUE'
+              when FalseClass then 'FALSE'
+              when NilClass then 'NULL'
+              else v
+              end
+    # On retourne la modification
+    "#{k} = ?"
+  end
+  modifications << titem_id
+  stm = db.prepare("UPDATE text_items SET #{modifications.join(VGE)} WHERE id = ?".freeze)
+  stm.execute(*values)
 end #/ update_text_item
 
 def update_prop_ignored(titem, value)

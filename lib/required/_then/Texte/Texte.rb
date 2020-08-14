@@ -38,23 +38,6 @@ def debug_items(quand = nil)
   debug_titems(items, titre: "#{RC*2}Text-items du texte #{quand} :")
 end #/ debug_items
 
-def error_canon_inexistant
-  err_msg = "[Erreur Recomptage] Le canon de #{titem.inspect} n'est pas défini (il devrait l'être)"
-  environ = ''
-  ((idx - 10)..(idx + 10)).each do |idx2|
-    next if idx2 < 0
-    break if Runner.itexte.items[idx2].nil?
-    environ << Runner.itexte.items[idx2].content
-  end
-  err_msg << " (environnement : #{environ})"
-  unless titem.file_id.nil?
-    err_msg << ". Le mot se trouve dans le fichier #{titem.file_id} (#{ScrivFile.get_path_by_file_id(titem.file_id)})"
-  end
-  err_msg = err_msg.freeze
-  add_parsing_error(ParsingError.new(err_msg))
-  log(err_msg)
-end #/ error_canon_inexistant
-
 # Instance base de donnée propre au texte/projet
 def db
   @db ||= TextSQLite.new(self)

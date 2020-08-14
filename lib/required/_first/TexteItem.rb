@@ -109,6 +109,11 @@ def load_from_db
   end
 end #/ load_from_db
 
+
+def get_data_canon
+  Runner.itexte.db.get_canon(content)
+end #/ get_data_canon
+
 def icanon
   @icanon ||= Canon[canon]
 end #/ icanon
@@ -225,6 +230,22 @@ end #/ downcase
 
 def main_type
   @main_type ||= begin
+    # SPARADRAP - quand le type est nil, chercher dans la base lemmas pour
+    # trouver le mot. Dans tous les cas
+    if type.nil?
+      if canon.nil?
+        dcanon = get_data_canon
+        if not dcanon.nil?
+          @canon  = dcanon['Canon']
+          @type   = dcanon['Type']
+        else
+          # CANON INTROUVABLE, IL FAUT DONNER DES VALEURS ALTERNATIVES
+          @canon  = LEMMA_UNKNOWN
+          @type   = 'TYPE_INCONNU'.freeze
+        end
+        update_in_db(canon: @canon, type: @type)
+      end
+    end
     type.split(DEUX_POINTS).first
   rescue Exception => e
     erreur("PROBLÈME AVEC #{self.inspect} : #{e.message}")
@@ -458,6 +479,9 @@ def prox_apres
       @prox_apres = nil
       while titem_apres = liste_seek.pop
         next if not titem_apres.proximizable?
+        # Quand le canon du mot est inconnu, on compare les mots entre eux,
+        # minusculisés
+        next if titem_apres.canon == LEMMA_UNKNOWN && titem_apres.downcase != downcase
         next if titem_apres.canon != canon
         distance = titem_apres.offset - offset
         break if distance > Canon[canon].distance_minimale

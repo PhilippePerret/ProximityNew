@@ -234,7 +234,7 @@ def remove(params)
   # On mémorise l'opération pour pouvoir l'annuler
   if params.key?(:cancellor) # pas quand c'est une annulation
     at.list.each do |idx|
-      params[:cancellor] << {operation: :insert, index: idx, content: itexte.items[idx].content}
+      params[:cancellor] << {operation: :insert, index: idx, content: params[:content]}
     end
   end
 
