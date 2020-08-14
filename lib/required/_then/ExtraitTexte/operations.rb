@@ -31,8 +31,7 @@ def ignore(params)
     real_at: AtStructure.new(params[:at]),
     operation: 'ignore'
   })
-  params[:real_at].list.each do |tid|
-    titem = extrait_titems[tid]
+  params[:real_at].titems.each do |titem|
     titem.is_ignored = true
     # Pour le moment, on l'enregistre tout de suite, ça ne devrait pas
     # trop consommer
@@ -49,7 +48,7 @@ def unignore(params)
     real_at: AtStructure.new(params[:at]),
     operation: 'unignore'
   })
-  params[:real_at].list do |titem|
+  params[:real_at].titems.each do |titem|
     titem.is_ignored = false
     itexte.db.update_prop_ignored(titem, false)
   end
@@ -71,7 +70,7 @@ def essayer(params)
   # L'objet At
   params.merge!(real_at:AtStructure.new(params[:at]))
   # Le text-item de référence
-  params.merge!(titem_ref: extrait_titems[params[:real_at].at])
+  params.merge!(titem_ref: params[:real_at].first_titem)
   # Pour dire de ne pas écrire le résultat normal
   params[:noop] = true
   # On reçoit le résultat de la simulation
@@ -96,7 +95,7 @@ def replace(params)
   })
 
   # Pour conserver le text-item de référence
-  params.merge!(titem_ref: extrait_titems[params[:real_at].at])
+  params.merge!(titem_ref: params[:real_at].first_titem)
 
   if debug_replace?
     log("-> replace(params:#{params.inspect})")
@@ -139,13 +138,14 @@ end #/ replace
 
 
 
+
 # Suppression d'un ou plusieurs mots
 def remove(params)
-  params[:real_at] ||= AtStructure.new(params[:at]).tap { |at| params.merge!(real_at: at) }
+  params[:real_at] ||= AtStructure.new(params[:at])
 
   # Le text-item de référence
   unless params.key?(:titem_ref)
-    params.merge!(titem_ref: extrait_titems[params[:real_at].at])
+    params.merge!(titem_ref: params[:real_at].first_titem)
   end
 
   # Pour connaitre l'opération, pour faire la distinction, plus tard, entre
@@ -161,7 +161,7 @@ def remove(params)
   end
 
   if params[:operation] == 'remove'
-    msg = "Suppression de #{extrait_titems[params[:real_at].at].content.inspect} (index #{params[:real_at].at})."
+    msg = "Suppression de “#{params[:real_at].first_titem.content}” (index absolu #{params[:real_at].abs(:at)}, index relatif #{params[:real_at].at})."
     log(msg, true)
   end
 
@@ -185,9 +185,9 @@ def remove(params)
       # Pour une liste, on doit faire un traitement particulier : il faut
       # vérifier les text-item après chaque "trou"
       liste_finale = at.list.dup
-      at.list.each_with_index do |idx, idx_in_list|
+      at.titems.each_with_index do |titem, idx_in_list|
         # Les non-mots doivent être passés
-        next if extrait_titems[idx].non_mot?
+        next if titem.non_mot?
         # On passe ce mot si le mot suivant appartient aussi à la liste
         next if at.list[idx_in_list + 1] == idx + 1
         # On passe ce mot si le mot précédent appartient aussi à la liste
@@ -228,13 +228,12 @@ def remove(params)
         params[:real_at] = at = AtStructure.new("#{prev_index}-#{at.last}")
       end
     end
-
   end
 
   # On mémorise l'opération pour pouvoir l'annuler
   if params.key?(:cancellor) # pas quand c'est une annulation
-    at.list.each do |idx|
-      params[:cancellor] << {operation: :insert, index: idx, content: params[:content]}
+    at.titems.each do |titem|
+      params[:cancellor] << {operation: :insert, index: titem.index, content: params[:content]}
     end
   end
 
@@ -246,10 +245,10 @@ def remove(params)
   # a été mis dans une liste pour simplifier les opérations)
   if at.range?
     extrait_titems.slice!(at.from, at.nombre)
-    itexte.db.delete_text_items(from:at.from, for:at.nombre)
+    itexte.db.delete_text_items(from:at.abs(:from), for:at.nombre)
   else
-    at.list.each {|idx| extrait_titems.slice!(idx)}
-    itexte.db.delete_text_items(at.list)
+    at.list.each { |idx| extrait_titems.slice!(idx) }
+    itexte.db.delete_text_items(at.abs(:list))
   end
 
   # Si c'est vraiment une opération de destruction, on l'enregistre
@@ -286,7 +285,7 @@ def insert(params)
   # notamment, de renseigner les messages, de récupérer le file_id si c'est
   # un projet Scrivener, pour l'affecter aux nouveaux text-items et
   # d'enregistrer les messages d'opération.
-  params.merge!(titem_ref: extrait_titems[params[:real_at].at]) unless params.key?(:titem_ref)
+  params.merge!(titem_ref: params[:real_at].first_titem) unless params.key?(:titem_ref)
   # Sauf si c'est une balise (*), on crée la simulation pour voir si on va vraiment faire
   # cete opération.
   # (*) Car on ne peut pas occasionner de proximités quand c'est une balise.
@@ -295,7 +294,7 @@ def insert(params)
   end
 
   if params[:operation] == 'insert'
-    msg = "Insertion de “#{params[:content]}” à l’index #{params[:real_at].at} (avant “#{extrait_titems[params[:real_at].at].content}”)"
+    msg = "Insertion de “#{params[:content]}” à l’index #{params[:real_at].abs(:at)} (avant “#{extrait_titems[params[:real_at].at].content}”)"
     log(msg, true)
   end
 
@@ -338,12 +337,13 @@ def insert(params)
   # Insertion des nouveaux titems dans l'extrait
   extrait_titems.insert(params[:real_at].at, *new_titems)
   # Insertion des nouveaux titems dans la base de données
-  new_titems.each_with_index { |i, idx| i.index = idx + params[:real_at].at }
+  start_abs_index = params[:real_at].abs(:at)
+  new_titems.each_with_index { |i, idx| i.index = idx + start_abs_index }
   itexte.db.insert_text_items(new_titems)
 
   # Pour l'annulation (sauf si c'est justement une annulation)
   if params.key?(:cancellor)
-    idx = params[:real_at].at
+    idx = params[:real_at].abs(:at)
     new_titems.each do |titem|
       content = titem.space? ? '_space_' : titem.content
       params[:cancellor] << {operation: :remove, index:idx, content:content}
@@ -506,7 +506,7 @@ def simulation(params)
     return confirmations
   else
     if not confirmations.empty?
-      CWindow.log("RISQUE PROXIMITÉS :", pos:[0,0], color: CWindow::RED_COLOR)
+      CWindow.log("RISQUES PROXIMITÉS :", pos:[0,0], color: CWindow::RED_COLOR)
       CWindow.log(" #{confirmations.join(SPACE)}.#{RC}", pos: :keep, color: CWindow::BLUE_COLOR)
       CWindow.log("o/y/Entrée => confirmer         z/n => renoncer.", pos:[2,2])
       case CWindow.wait_for_user(keys: ['y','o',27,'z','n'])

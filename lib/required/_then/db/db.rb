@@ -36,6 +36,15 @@ def insert_text_items(liste)
     last_offset = nil
     liste = liste.collect do |i|
       if i.offset.nil?
+        if last_offset.nil?
+          # Cela se produit quand c'est le premier élément qui n'a pas d'offset
+          # Dans ce cas, on prend l'offset du mot qui possède actuellement
+          # l'index du nouveau mot dans la table
+          db_res = get_titem_by_index(i.index + Runner.iextrait.from_item, as_hash = true)
+          log("[insert_text_items] Premier item sans offset défini.#{RC}titem: #{i.inspect}#{RC}db_res: #{db_res.inspect}")
+          last_offset = db_res['Offset']
+          last_length = 0
+        end
         # log("Le mot #{i.content.inspect} d'index #{i.index} n'a pas d'offset.")
         i.offset = last_offset + last_length
         # log("Je lui ai mis #{i.offset} calculé d'après le mot précédent.")
@@ -52,6 +61,7 @@ def insert_text_items(liste)
   log("*** Insertion de #{liste.count} text-items…")
   start_time = Time.now.to_f
   liste.each do |args|
+    # log("    Insertion de : #{args.inspect}")
     stm_insert_titem.execute(*args)
   end
   stop_time = Time.now.to_f
@@ -65,7 +75,7 @@ end #/ insert_text_item
 def stm_insert_titem
   @stm_insert_titem ||= begin
     colonnes, interros = titems_colonnes_and_interrogations
-    stm = db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})")
+    stm = db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})".freeze)
     all_statements << stm
     stm
   end
@@ -74,31 +84,46 @@ end #/ stm_insert_titem
 def delete_text_items(params)
   case params
   when Array
-    stm_delete_text_items_by_list.execute(params)
+    if params.count == 1
+      # log("Destruction du text-item d'index #{params.first.inspect}.")
+      stm_delete_text_item.execute(params.first)
+    else
+      stm_delete_text_items_by_list(params).execute(params)
+    end
   when Hash
     stm_delete_text_items_by_range.execute(params[:from], params[:from] + params[:for] - 1)
   else
     raise "Les paramètres pour TextSQLite#delete_text_items doit être soit un liste contenant les index des text-items, soit une table définissant :from et le nombre d'items :for."
   end
 end #/ delete_text_items
-def stm_delete_text_items_by_list
-  @stm_delete_text_items_by_list ||= begin
-    stm = db.prepare("DELETE FROM text_items WHERE Idx IN ?".freeze)
-    all_statements << stm
-    stm
-  end
+def stm_delete_text_items_by_list(liste)
+  interros = Array.new(liste.count,'?').join(VGE)
+  request = "DELETE FROM text_items WHERE Idx IN (#{interros})".freeze
+  # log("Requête de destruction : #{request}")
+  stm = db.prepare(request)
+  all_statements << stm
+  stm
 end #/ stm_delete_text_items_by_list
 def stm_delete_text_items_by_range
   @stm_delete_text_items_by_range ||= begin
-    stm = db.prepare("DELETE FROM text_items WHERE Idx >= ? AND Idx <= ?".freeze)
+    request = "DELETE FROM text_items WHERE Idx >= ? AND Idx <= ?".freeze
+    # log("Requête de destruction : #{request}")
+    stm = db.prepare(request)
     all_statements << stm
     stm
   end
 end #/ stm_delete_text_items_by_range
+def stm_delete_text_item
+  @stm_delete_text_item ||= begin
+    stm = db.prepare("DELETE FROM text_items WHERE Idx = ?".freeze)
+    all_statements << stm
+    stm
+  end
+end #/ stm_delete_text_item
 
 def get_titem_by_index(index, as_hash = nil)
   db.results_as_hash = as_hash unless as_hash.nil?
-  log("-> get_titem_by_index(index:#{index.inspect}, as_hash:#{as_hash.inspect})")
+  # log("-> get_titem_by_index(index:#{index.inspect}, as_hash:#{as_hash.inspect})")
   res = stm_titem_by_index.execute(index)
 
   res.next

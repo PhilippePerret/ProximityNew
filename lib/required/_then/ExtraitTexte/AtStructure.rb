@@ -58,12 +58,59 @@ class AtStructure
     end
   end #/ parse
 
+  # @Return la valeur absolue de +what+ (ou les valeur si
+  # c'est une liste)
+  # Par exemples
+  #   ATStructure#absolute(:from) # => premier index absolu
+  #   AtStructure#abs(:list)      # => liste des index absolu
+  #
+  # @alias def abs
+  def absolute(what)
+    case what
+    when Integer
+      what + iextrait_first_index
+    when Symbol, String
+      # log("what = #{what.inspect}")
+      newwhat = send(what.to_sym)
+      # log("newwhat = #{newwhat.inspect}")
+      case newwhat
+      when Integer
+        newwhat + iextrait_first_index
+      when Array
+        newwhat.collect { |idx| abs(idx) }
+      else
+        raise "[1] Classe inconnue : #{newwhat.class}"
+      end
+    when Array
+      what.collect { |idx| abs(idx) }
+    else
+      raise "[2] Classe inconnue : #{what.class}"
+    end
+  end #/ absolute
+  alias :abs :absolute
+
+  def iextrait_first_index
+    @iextrait_first_index ||= Runner.iextrait.from_item
+  end #/ iextrait_first_index
+
   def range?
     @is_a_range === true
   end #/ range?
   def list?
     @is_a_list === true
   end #/ list?
+
+  # Liste Array des instances de text-items du At
+  def titems
+    @titems ||= begin
+      list.collect { |idx| Runner.iextrait.extrait_titems[idx] }
+    end
+  end #/ titems
+
+  # Premier text-item
+  def first_titem
+    @first_titem ||= titems.first
+  end #/ first_titem
 
   # Retourne le at en version humaine
   def to_s

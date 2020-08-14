@@ -362,7 +362,7 @@ def proximizable?
   @is_not_proximizabe ||= begin
     # Note : il ne faut pas ajouter la condition `canon == LEMMA_UNKNOWN` car
     # dans ce cas, on peut comparer le contenu lui-même.
-    if non_mot? || ignored? || length < 4 || icanon.nil? || main_type == 'PRO' || main_type == 'DET' || is_exclu?
+    if non_mot? || ignored? || length < 4 || icanon.nil? || is_exclu? || main_type == 'PRO' || main_type == 'DET'
       :false
     else
       :true
@@ -373,7 +373,7 @@ end #/ proximizable?
 
 def is_exclu?
   @has_canon_exclu ||= begin
-    Runner.itexte.liste_mots_sans_prox.key?(canon) ? :true : :false
+    ( MOTS_SANS_PROXIMITES.key?(downcase) || Runner.itexte.liste_mots_sans_prox.key?(canon) )? :true : :false
   end
   @has_canon_exclu == :true
 end #/ is_exclu?

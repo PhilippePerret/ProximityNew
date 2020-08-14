@@ -9,7 +9,8 @@ DISTANCE_MINIMALE_COMMUNE = 1000
 # Note : ne pas mettre les mots de moins de 4 lettres, qui sont exclus
 # par défaut.
 MOTS_SANS_PROXIMITES = {
-
+  'elle'  => true,
+  'il'    => true,
 }
 
 MOTS_APOSTROPHE = {
@@ -98,4 +99,5 @@ LOCUTIONS = {
   'coûte' => {loc:'coûte que coûte', req: [[nil,2], [3,nil]]},
   'plus'  => {loc:'de plus en plus', req:[[1,2], [3, nil]]},
   'moins'  => {loc:'de moins en moins', req:[[1,2], [3, nil]]},
+  'côte'  => {loc:'côte à côte', req:[[nil,2], [2, nil]]},
 }
