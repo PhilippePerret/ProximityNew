@@ -137,6 +137,9 @@ end #/ replace
 
 
 
+
+
+
 # Suppression d'un ou plusieurs mots
 def remove(params)
   params[:real_at] ||= AtStructure.new(params[:at]).tap { |at| params.merge!(real_at: at) }
@@ -239,13 +242,15 @@ def remove(params)
   # SUPPRESSION
   # ------------
   # On procède vraiment à la suppression des mots dans le texte
-  # lui-même, avec une formule différente en fonction du fait que c'est
-  # un rang ou une liste (note : un index unique a été mis dans une liste
-  # pour simplifier les opérations)
+  # lui-même, ainsi que dans la base de données avec une formule différente en
+  # fonction du fait que c'est un rang ou une liste (note : un index unique
+  # a été mis dans une liste pour simplifier les opérations)
   if at.range?
     extrait_titems.slice!(at.from, at.nombre)
+    itexte.db.delete_text_items(from:at.from, for:at.nombre)
   else
     at.list.each {|idx| extrait_titems.slice!(idx)}
+    itexte.db.delete_text_items(at.list)
   end
 
   # Si c'est vraiment une opération de destruction, on l'enregistre
@@ -257,6 +262,8 @@ def remove(params)
   end
 
 end #/ remove
+
+
 
 
 
@@ -329,7 +336,12 @@ def insert(params)
     new_titems.each {|titem| titem.file_id = params[:titem_ref].file_id}
   end
 
+  # Insertion des nouveaux titems dans l'extrait
   extrait_titems.insert(params[:real_at].at, *new_titems)
+  # Insertion des nouveaux titems dans la base de données
+  new_titems.each_with_index { |i, idx| i.index = idx + params[:real_at].at }
+  itexte.db.insert_text_items(new_titems)
+
   # Pour l'annulation (sauf si c'est justement une annulation)
   if params.key?(:cancellor)
     idx = params[:real_at].at

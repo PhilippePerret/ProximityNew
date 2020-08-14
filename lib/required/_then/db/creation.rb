@@ -29,13 +29,24 @@ end
 # Quand un nouveau mot est inséré à un offset, tous les mots suivants doivent
 # augmenter leur index et leur offset.
 CODE_TRIGGER_ON_INSERT_TITEM = <<-SQL.freeze.strip
-CREATE TRIGGER update_index_and_offset_on_insert_titem AFTER INSERT
+CREATE TRIGGER update_index_and_offset_on_insert_titem BEFORE INSERT
   ON text_items
   BEGIN
     UPDATE text_items
     SET `Idx` = (`Idx` + 1), `Offset` = (`Offset` + LENGTH(New.Content))
     WHERE Idx >= New.Idx;
   END;
+SQL
+
+CODE_TRIGGER_ON_DELETE = <<-SQL.freeze.strip
+CREATE TRIGGER update_index_n_offset_on_delete_titem
+    AFTER DELETE
+    ON text_items
+    BEGIN
+        UPDATE text_items
+        SET `Idx` = `Idx` - 1, `Offset` = `Offset` - LENGTH(Old.Content)
+        WHERE Idx > Old.Idx ;
+    END;
 SQL
 
 class << self
@@ -83,10 +94,19 @@ def create_base_if_necessary
   end
 end #/ create_base_if_necessary
 
+def create_trigger_on_delete_titem
+  db.execute("DROP TRIGGER IF EXISTS update_index_n_offset_on_delete_titem;")
+  db.execute(CODE_TRIGGER_ON_DELETE)
+end #/ create_trigger_on_delete_titem
+
+# Trigger quand on insert une donnée dans text_items
+# Noter que ce trigger est détruit quand on parse le code, pour ne pas
+# causer un appel à chaque insertion.
 def create_trigger_on_insert_titem
-  db.execute("DROP TRIGGER IF EXISTS update_index_and_offset_on_insert_titem;")
   db.execute(CODE_TRIGGER_ON_INSERT_TITEM)
-rescue SQLite3::Exception => e
-  erreur(e)
 end #/ create_trigger_on_insert_titem
+
+def drop_trigger_on_insert_titem
+  db.execute("DROP TRIGGER IF EXISTS update_index_and_offset_on_insert_titem;")
+end #/ drop_trigger_on_insert_titem
 end #/TextSQLite

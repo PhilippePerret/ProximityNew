@@ -79,7 +79,7 @@ class << self
       config.data.merge!(last_text_path: text_path)
       log("Configuration enregistrée (:last_text_path)")
       if itexte.parse_if_necessary(projetscriv)
-        log("Projet OK (ou parsé avec succès)")
+        log("👍 Projet OK (ou parsé avec succès)")
         # Tout s'est bien passé
         config.save
         show_extrait_and_wait_for_user
@@ -135,21 +135,10 @@ class << self
 
   # Cette méthode, appelée quand on quitte l'application ou quand on
   # ouvre un autre texte, permet de vérifier que le texte courant ait
-  # bien été sauvé.
-  # Note : elle est toujours appelée quand un texte courant existe.
+  # bien été sauvé. Mais depuis l'enregistrement systématique des modifications
+  # ça n'est plus utile.
   def check_if_current_texte_saved
-    return true if itexte.saved? && !iextrait.modified
-    # log("itexte.saved? = #{itexte.saved?.inspect} / iextrait.modified = #{iextrait.modified.inspect}")
-    choix = CWindow.wait_for_user(keys:['X', 'Z','Y'], message:"Le texte courant n'a pas été sauvé. Si vous le fermez maintenant, toutes les modifications seront perdues.#{RC}X : poursuivre et tout perdre, Z : annuler, Y : enregistrer.".freeze)
-    case choix.downcase
-    when 'x'
-      return true
-    when 'z'
-      return nil
-    when 'y'
-      itexte.update if iextrait.modified
-      itexte.save
-    end
+    return true
   end #/ check_if_current_texte_saved
 
   # Pour afficher l'aide

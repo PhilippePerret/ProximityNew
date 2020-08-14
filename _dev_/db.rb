@@ -13,7 +13,7 @@ REQUESTS = []
 # # REQUESTS << request
 
 # TEXT-ITEMS
-request = "SELECT Idx, Content, Offset FROM text_items WHERE Idx < 15;"
+request = "SELECT Idx, Content, Offset FROM text_items WHERE Idx < 15 ORDER BY Idx ASC;"
 REQUESTS << [request, :afficher_mots]
 
 # TABLES

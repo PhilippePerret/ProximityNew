@@ -51,6 +51,7 @@ def parse
   Canon.init
   Mot.init
   PARSED_LEMMAS.clear
+  # Création des tables (et des triggers, sauf celui à l'insert dans text_items)
   db.reset
 
   # Parser en fonction du type du document (simple texte ou projet
@@ -61,6 +62,9 @@ def parse
   else
     parse_simple_texte || return
   end
+
+  # On peut créer le trigger qui va gérer les insertions
+  db.create_trigger_on_insert_titem
 
   return true # en cas de succès du parsing
 end #/ parse
@@ -103,19 +107,8 @@ def parse_simple_texte
     return false
   end
 
-  save_titems_in_db || begin
-    log("# Interruption du parsing au niveau du sauvetage des mots dans la DB…".freeze, true)
-    log.close
-    return false
-  end
-
-  # On doit recalculer tout le texte. C'est-à-dire définir les
-  # offsets de tous les éléments
-  recompte || begin
-    log("# Interruption du parsing au niveau du recomptage…".freeze, true)
-    log.close
-    return false
-  end
+  # On sauve le dernier paquet de mots
+  save_titems_par_paquet(@items)
 
   # On termine en enregistrant la donnée finale. Cette donnée, ce
   # sont tous les mots, les canons, ainsi que les préférences sur
@@ -137,12 +130,31 @@ ensure
 end
 
 # On crée toutes les instances mots dans la base de données du texte
+# Obsolète : c'est au cours de la relève des mots qu'on les enregistre,
+# par paquet
 def save_titems_in_db
   self.items.each_with_index do |titem, idx|
     titem.insert_in_db
   end
   return true
 end #/ save_titems_in_db
+
+# On enregistre les mots et non-mots relevés dans la base
+# Puisque cette méthode centralise l'enregistrement des Text-items au
+# parsing, on en profite pour régler seulement ici l'index et l'offset de
+# chaque mot.
+def save_titems_par_paquet(paquet)
+  @current_index_new_inserted ||= -1
+  @current_offset_new_inserted ||= 0
+  paquet.each do |titem|
+    titem.index   = @current_index_new_inserted += 1
+    titem.offset  = @current_offset_new_inserted
+    @current_offset_new_inserted += titem.length
+  end
+  db.insert_text_items(paquet) || return
+  return true
+end #/ save_titems_par_paquet
+
 # = main =
 #
 # Parsing d'un projet scrivener.
@@ -198,22 +210,13 @@ def parse_projet_scrivener(projet)
     return false
   end
 
-  save_titems_in_db || begin
-    log("# Interruption du parsing au niveau du sauvetage des mots dans la DB…".freeze, true)
-    log.close
-    return false
-  end
-
-  # On doit recalculer tout le texte. C'est-à-dire définir les
-  # offsets de tous les éléments
-  recompte || begin
-    log("# Interruption du parsing au niveau du comptage…".freeze, true)
-    return false
-  end
+  # On sauve le dernier paquet de mots
+  save_titems_par_paquet(@items)
 
   # On termine en enregistrant la donnée finale. Cette donnée, ce
   # sont tous les mots, les canons, ainsi que les préférences sur
-  # le texte.
+  # le texte. Mais ça ne doit plus servir car les données sont maintenant
+  # enregistrées directement dans la base de données du texte
   save
 
   delai = Time.now.to_f - start
@@ -231,6 +234,7 @@ end #/ parse_projet_scrivener
 
 def init
   @items = []
+  @items_counter = 0 # pour compte les mots et enregistrer par paquets
   @parsing_errors = []
   @refonlymots = nil
   self.current_first_item = 0
@@ -336,8 +340,17 @@ def decoupe_fichier_corriged(scrivfile = nil)
     next if new_items.empty?
     new_items.each { |titem| titem.file_id = scrivfile.id } unless scrivfile.nil?
     @items += new_items
+    @items_counter += new_items.count
     # À la fin de chaque “ligne”, il faut mettre une fin de paragraphe
     @items << NonMot.new(RC, type: 'paragraphe', file_id: scrivfile&.id)
+    @items_counter += 1
+
+    if @items_counter > 1000
+      save_titems_par_paquet(@items)
+      @items_counter = 0
+      @items = []
+    end
+
   end
   # On retire toujours les derniers retours charriot
   @items.pop while @items.last.content == RC

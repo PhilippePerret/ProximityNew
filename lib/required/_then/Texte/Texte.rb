@@ -28,7 +28,6 @@ end #/ reset
 
 def save
   data = {
-    items: items,
     path:  path,
     updated_at: Time.now,
     created_at: Time.now
@@ -38,102 +37,10 @@ def save
   self.modified = false
 end #/ save
 
-# Actualise le texte
-# ------------------
-# Cette méthode est appelée lorsqu'on quitte une page (pour passer à la suivante
-# ou pour quitter l'application) et que la page courante a été modifiée. Il faut
-# à présent reporter les modifications sur le texte lui-même.
-# Ces modifications portent essentiellement sur les items ajoutés/supprimés/
-# modifiés. En fait, il faut :
-#   [1] Remplacer les items actuels (itexte.items) correspondant à l'extrait
-#       (donc de iextrait.from_item à iextrait.to_item) par les nouveaux items
-#   [2] Procéder au recomptage des index et offsets de tous les mots.
-#   [3] Indiquer que le texte a été modifié pour pouvoir le sauvegarder
-#
-def update
-  # log("-> Texte#update")
-  extr = Runner.iextrait
-  # [1]
-  titems_avant = extr.from_item > 0 ? items[0...(extr.from_item)] : []
-  titems_apres = items[(extr.to_item+1)..-1]
-  @items = titems_avant + extr.extrait_titems + titems_avant
-
-  # Débug
-  # debug_items("après insertion extrait (avant recomptage)")
-
-  # [2]
-  recompte
-  # debug_items("après recomptage")
-  # [3]
-  self.modified = true
-end #/ update
-
 # Méthode de débuggage pour voir les items du texte
 def debug_items(quand = nil)
   debug_titems(items, titre: "#{RC*2}Text-items du texte #{quand} :")
 end #/ debug_items
-
-# Méthode qui recompte tout, les offsets, les index, etc.
-def recompte(params = nil)
-  start_time = Time.now.to_f
-  params  ||= {}
-  offset  = 0
-  nb      = 0 # pour connaitre le nombre de text-items traités
-  # Premier index
-  # -------------
-  # En fait, ça va tellement vite, même avec un texte long, qu'on repart
-  # toujours du départ, même si params[:from] est défini.
-  # idx = params[:from] - 1
-  idx = -1 # pour que le premier soit 0
-
-  # Si c'est un projet scrivener, on va aussi redéfinir l'index
-  # de chaque mot dans chaque fichier. Cela permettra d'enregistrer les
-  # opération de façon très précise et juste. Par exemple, la phrase
-  # "'Bonjour' Mot inséré avant le 23e mot ('toi') dans le fichier 4"
-  # Bien noter que c'est seulement utile pour un projet Scrivener (donc
-  # avec plusieurs fichiers).
-  # Noter que le premier mot aura l'indice 1.
-  idx_mot_in_file = 0
-  current_file_id = nil # pour savoir quand on change de fichier
-
-  while titem = self.items[idx += 1] # tant qu'il y a un item
-
-    titem.reset # pour forcer les recalculs
-
-    # Pour savoir si l'item a changé. Il a changé si son index ou son
-    # offset ont changé.
-    has_changed = titem.offset != offset || titem.index != idx
-    titem.offset = offset
-    titem.index  = idx
-    # Pour gérer l'index dans le fichier (projet Scrivener)
-    if current_file_id != titem.file_id
-      current_file_id = titem.file_id.dup
-      idx_mot_in_file = 0
-    end
-    if titem.mot?
-      indice_in_file = (idx_mot_in_file += 1)
-      has_changed = has_changed || titem.indice_in_file != indice_in_file
-      titem.indice_in_file = indice_in_file
-    end
-
-    # Si l'offset, l'index ou l'indice du mot dans le fichier a changé,
-    # on actualise le mot dans la base de données
-    if has_changed
-      titem.update_offset_and_index
-      log("Le mot #{titem.cio} a été actualisé".freeze)
-    end
-
-    # Le nouvel offset. Maintenant, il est très juste puisque l'intégralité
-    # du texte, non-mot compris, est enregistré dans Texte@items.
-    offset += titem.length
-    nb += 1
-  end
-
-  end_time = Time.now.to_f
-  CWindow.log("Fin du recalcul (la durée se trouve dans debug.log).")
-
-  debug("Durée du recomptage de #{nb} items : #{end_time - start_time}")
-end #/ recompte
 
 def error_canon_inexistant
   err_msg = "[Erreur Recomptage] Le canon de #{titem.inspect} n'est pas défini (il devrait l'être)"
@@ -152,22 +59,13 @@ def error_canon_inexistant
   log(err_msg)
 end #/ error_canon_inexistant
 
-# On doit forcer la ré-analyse du texte
-def reproximitize
-  CWindow.logWind.write('Ré-analyse du texte…')
-  parse # maintenant, reprend tout
-  CWindow.logWind.write('Texte analysé avec succès.')
-  return true
-end #/ reproximitize
-
 # Instance base de donnée propre au texte/projet
 def db
   @db ||= TextSQLite.new(self)
 end #/ db
 
 def load
-  @data = Marshal.load(File.read(data_path))
-  @items = @data[:items]
+  @data = Marshal.load(File.read(data_path)) # encore utile ?…
   @current_first_item = config[:last_first_index]
   return true
 rescue Exception => e

@@ -17,18 +17,65 @@ end #/ initialize
 def execute(req); db.execute(req) end
 def results_as_hash=(val); db.results_as_hash = val end
 
-def insert_text_item(values)
-  values = values.collect do |v|
-    case v
-    when true then 'TRUE'
-    when false then 'FALSE'
-    else v
+# Pour insérer une liste de text-items
+# +liste+ est une liste Array d'instances TextItem (Mot ou NonMot)
+# Ça peut être aussi une liste des listes de valeurs.
+def insert_text_items(liste)
+
+  if not liste.first.is_a?(Array)
+    last_length = nil
+    last_offset = nil
+    liste = liste.collect do |i|
+      if i.offset.nil?
+        log("Le mot #{i.content.inspect} d'index #{i.index} n'a pas d'offset.")
+        i.offset = last_offset + last_length
+        log("Je lui ai mis #{i.offset} calculé d'après le mot précédent.")
+      end
+      last_offset = i.offset
+      last_length = i.length
+      # On renvoie les valeurs
+      i.db_values
     end
   end
+  # log("Liste pour l'insertion multiple : #{liste.inspect}")
+  # log("Pour rappel, les colonnes : #{titems_colonnes_and_interrogations.first.inspect}")
+  # stm_insert_titem.execute(*liste)
+  log("*** Insertion de #{liste.count} text-items…")
+  start_time = Time.now.to_f
+  liste.each do |args|
+    stm_insert_titem.execute(*args)
+  end
+  stop_time = Time.now.to_f
+  log("=== Insertion opérée en #{stop_time - start_time} secs.")
+end #/ insert_text_items
+def insert_text_item(values)
   stm_insert_titem.execute(values)
-
-  db.last_insert_row_id
+  return db.last_insert_row_id
 end #/ insert_text_item
+# Requête préparée pour l'enregistrement d'un nouveau text-item dans text_items
+def stm_insert_titem
+  @stm_insert_titem ||= begin
+    colonnes, interros = titems_colonnes_and_interrogations
+    db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})")
+  end
+end #/ stm_insert_titem
+
+def delete_text_items(params)
+  case params
+  when Array
+    stm_delete_text_items_by_list.execute(params)
+  when Hash
+    stm_delete_text_items_by_range.execute(params[:from], params[:from] + params[:for] - 1)
+  else
+    raise "Les paramètres pour TextSQLite#delete_text_items doit être soit un liste contenant les index des text-items, soit une table définissant :from et le nombre d'items :for."
+  end
+end #/ delete_text_items
+def stm_delete_text_items_by_list
+  @stm_delete_text_items_by_list ||= db.prepare("DELETE FROM text_items WHERE Idx IN ?".freeze)
+end #/ stm_delete_text_items_by_list
+def stm_delete_text_items_by_range
+  @stm_delete_text_items_by_range ||= db.prepare("DELETE FROM text_items WHERE Idx >= ? AND Idx <= ?".freeze)
+end #/ stm_delete_text_items_by_range
 
 def get_titem_by_index(index, as_hash = nil)
   db.results_as_hash = as_hash unless as_hash.nil?
@@ -111,13 +158,6 @@ def stm_update_ignored
   @stm_update_ignored ||= db.prepare("UPDATE text_items SET Ignored = ? WHERE id = ?")
 end #/ stm_update_ignored
 
-# Requête préparée pour l'enregistrement d'un nouveau text-item dans text_items
-def stm_insert_titem
-  @stm_insert_titem ||= begin
-    colonnes, interros = titems_colonnes_and_interrogations
-    db.prepare("INSERT INTO text_items (#{colonnes}) VALUES (#{interros})")
-  end
-end #/ stm_insert_titem
 
 def titems_colonnes_and_interrogations
   @titems_colonnes_and_interrogations ||= begin
@@ -141,9 +181,14 @@ def reset
   create_table_lemmas
   # TRIGGER Pour updater automatiquement les index et offsets quand on insert
   # un nouveau mot dans la table text_items
-  create_trigger_on_insert_titem
+  # NON sinon on aurait un appel à chaque insertion de mot. Au contraire, on
+  # le détruit s'il existe.
+  # create_trigger_on_insert_titem
+  drop_trigger_on_insert_titem
+
   # TRIGGER pour updater automatiquement les index et les offsets quand on
   # supprime un text-item dans la table text_items
+  create_trigger_on_delete_titem
 end #/ reset
 
 

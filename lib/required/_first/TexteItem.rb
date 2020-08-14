@@ -102,7 +102,7 @@ end #/ initialize
 
 def load_from_db
   data = Runner.itexte.db.load_text_item(id)
-  data.reverse! # pour poper
+  data.reverse! # pour pop(er)
   DATA_TABLE_TEXT_ITEMS.each do |dcol|
     next if dcol[:insert] === false
     self.send(dcol[:property_sym].to_sym, data.pop)
@@ -117,14 +117,29 @@ def icanon=(v)
 end #/ icanon=
 
 def insert_in_db
-  log("Insert in db de : #{db_values.inspect}")
+  # log("Insert in db de : #{db_values.inspect}")
   @id = Runner.itexte.db.insert_text_item(db_values)
   # log("@id pour le mot #{content.inspect} : #{id.inspect}")
 end #/ insert_in_db
 
+def get_is_mot
+  mot? ? 'TRUE' : 'FALSE'
+end #/ get_is_mot
+def set_is_mot(v)
+  @is_mot = v == 'TRUE'
+end #/ set_is_mot
+def get_is_ignored
+  ignored? ? 'TRUE' : 'FALSE'
+end #/ get_is_ignored
+def set_is_ignored(v)
+  @is_ignored = v == 'TRUE'
+end #/ set_is_ignored
+
+# OBSOLETE C'est un trigger maintenant qui s'assure de ça.
 def update_offset_and_index
+  raise("Il ne faut plus appeler la méthode update_offset_and_index (#{__FILE__}:#{__LINE__})")
   # log("UPDATE ##{id.inspect.ljust(4)} index:#{index.to_s.ljust(4)} offset:#{offset.to_s.ljust(6)}")
-  Runner.itexte.db.update_offset_index_titem(id:id, offset:offset, index:index, indice_in_file:indice_in_file)
+  # Runner.itexte.db.update_offset_index_titem(id:id, offset:offset, index:index, indice_in_file:indice_in_file)
 end #/ update_offset_and_index
 
 # Pour updater les valeurs +data+ dans la base de données
@@ -141,7 +156,8 @@ def db_values
   ary = []
   TextSQLite::DATA_TABLE_TEXT_ITEMS.collect do |dcol|
     next if dcol[:insert] === false
-    ary << self.send(dcol[:property_sym])
+    getter = "get_#{dcol[:property]}".to_sym # p.e. #get_is_mot
+    ary << self.send(self.respond_to?(getter) ? getter : dcol[:property_sym])
   end
   ary
 end #/ db_values

@@ -87,6 +87,7 @@ def calcule_pages(itexte)
   log("Calcul des pages. Merci de patienter…", true)
   start_time = Time.now.to_f
   db_result = itexte.db.execute(GET_PAGES_USEFULL_INFOS_DB)
+  log("db_result pour le calcul des pages : #{db_result.inspect}")
   # Les pages qu'on va rassembler. En clé, il y aura l'indice de la
   # page (1-start) et en valeur une instance ProxPage qui définira notamment
   # @from et @to, les index de départ et d'arrivée
@@ -248,7 +249,14 @@ end #/ last_item_page_from_index
 # page concernée.
 def page_from_index_mot(index)
   found_page = nil
-  # log("Recherche de la page courante…".freeze, true)
+  log("Recherche de la page courante…".freeze, true)
+
+  if pages.nil?
+    log("ProxPage.pages est nil. Il faudra voir pourquoi.", true)
+    return nil
+  end
+  log("pages: #{pages.inspect}")
+
   pages.each do |numero, page|
     log("#{page.from} < #{index} > #{page.to}")
     if page.from <= index && page.to >= index
