@@ -225,16 +225,15 @@ def separe_mot_et_marque
   return if @mot.nil?
 
   if mot.match?('XSCRIVEND')
-    log("Le mot #{mot.inspect} contient la marque de fin")
+    log("Marque de fin de style Scrivener sur #{mot.inspect}".freeze)
     idx = mot.index('XSCRIVEND')
     extr = mot[(idx+9)..(idx+9+4)]
     lettre_style = extr[0]
     mark_style = extr[1..-1]
     id_style = mark_style.gsub(/O/,'').to_i
     @mark_style_end = {id: id_style, lettre: lettre_style}
-    log("@mark_style_end: #{@mark_style_end.inspect}")
+    log("@mark_style_end: #{@mark_style_end.inspect}".freeze)
     @mot = mot.sub(/XSCRIVEND#{extr}/,'')
-    log("@mot : #{@mot.inspect}")
     @mot = nil if @mot.empty? # Cf. [2]
   end
 end #/ separe_mot_et_marque

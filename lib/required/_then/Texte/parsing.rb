@@ -53,6 +53,7 @@ def parse
   PARSED_LEMMAS.clear
   # Création des tables (et des triggers, sauf celui à l'insert dans text_items)
   db.reset
+  db.begin_transaction
 
   # Parser en fonction du type du document (simple texte ou projet
   # Scrivener)
@@ -67,6 +68,10 @@ def parse
   db.create_triggers_post_parsing
 
   return true # en cas de succès du parsing
+rescue Exception => e
+  erreur(e)
+ensure
+  db.end_transaction
 end #/ parse
 
 # = main =
@@ -120,9 +125,9 @@ def parse_simple_texte
   return true
 
 rescue Exception => e
-  log("PROBLÈME EN PARSANT le texte #{path} : #{e.message}#{RC}#{e.backtrace.join(RC)}")
-  CWindow.error("Une erreur est survenue : #{e.message} (quitter et consulter le journal)")
-  return false
+  log("PROBLÈME EN PARSANT le texte #{path} : #{e.message}#{RC}#{e.backtrace.join(RC)}".freeze, true)
+  # Pour rejoindre le handling des erreurs de la méthode générale
+  raise "Une erreur est survenue : #{e.message} (quitter et consulter le journal)".freeze
 ensure
   File.delete(corrected_text_path) if File.exists?(corrected_text_path)
 end
@@ -224,10 +229,10 @@ def parse_projet_scrivener(projet)
   return true
 
 rescue Exception => e
-  log("PROBLÈME EN PARSANT le projet scrivener #{projet.path} : #{e.message}#{RC}#{e.backtrace.join(RC)}")
+  log("PROBLÈME EN PARSANT le projet scrivener #{projet.path} : #{e.message}#{RC}#{e.backtrace.join(RC)}", true)
   log.close
-  erreur("Une erreur est survenue : #{e.message} (quitter et consulter le journal)")
-  return false
+  # Pour retomber dans la méthode générale de parsing
+  raise "Une erreur est survenue : #{e.message} (quitter et consulter le journal)"
 end #/ parse_projet_scrivener
 
 def init
@@ -351,7 +356,7 @@ def decoupe_fichier_corriged(scrivfile = nil)
 
   end
   # On retire toujours les derniers retours charriot
-  @items.pop while @items.last.content == RC
+  @items.pop while @items.last&.content == RC
   return true
 rescue Exception => e
   erreur(e)

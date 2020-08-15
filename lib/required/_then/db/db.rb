@@ -26,6 +26,14 @@ def all_statements
   @all_statements ||= []
 end #/ all_statements
 
+
+def begin_transaction
+  db.execute("BEGIN TRANSACTION;".freeze)
+end #/ begin_transaction
+def end_transaction
+  db.execute("END TRANSACTION;".freeze)
+end #/ end_transaction
+
 # Pour insérer une liste de text-items
 # +liste+ est une liste Array d'instances TextItem (Mot ou NonMot)
 # Ça peut être aussi une liste des listes de valeurs.
