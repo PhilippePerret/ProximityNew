@@ -83,7 +83,8 @@ def create_trigger_operations
   db.execute(CODE_TRIGGER_OPERATIONS)
 end #/ create_trigger_operations
 def drop_trigger_operations
-  db.execute("DROP TRIGGER IF EXISTS suivi_operations;")
+  db.execute("DROP TRIGGER IF EXISTS consignation_operation_insert;")
+  db.execute("DROP TRIGGER IF EXISTS consignation_operation_delete;")
 end #/ drop_trigger_operations
 
 # Trigger quand on insert une donnée dans text_items
