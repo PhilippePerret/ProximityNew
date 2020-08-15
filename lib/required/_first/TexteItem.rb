@@ -19,6 +19,7 @@ class << self
   # Pour instancier si nécessaire un text-item avec ses données
   # En fonction de hdata["IsMot"] on fera des Mot ou des NonMot.
   def instantiate(hdata, index_in_extrait = nil)
+    # log("TexteItem::instantiate(hdata:#{hdata.inspect})")
     hdata.each do |k, v|
       hdata[k] = case v
       when "TRUE"   then true
@@ -98,6 +99,7 @@ def initialize(content, params = nil)
   unless params.nil?
     params.each { |k,v| instance_variable_set("@#{k.to_s.decamelize}", v)}
   end
+  self.index = @idx # Idx dans la base de données
 end #/ initialize
 
 def load_from_db
@@ -109,9 +111,11 @@ def load_from_db
   end
 end #/ load_from_db
 
-
+# @Return le mot canon du mot courant
+# Note : la méthode le cherche non pas dans la table `lemmas` du texte
+# mais dans la table `lemmas` de l'application.
 def get_data_canon
-  Runner.itexte.db.get_canon(content)
+  Runner.db.get_canon(content)
 end #/ get_data_canon
 
 def icanon
@@ -139,13 +143,6 @@ end #/ get_is_ignored
 def set_is_ignored(v)
   @is_ignored = v == 'TRUE'
 end #/ set_is_ignored
-
-# OBSOLETE C'est un trigger maintenant qui s'assure de ça.
-def update_offset_and_index
-  raise("Il ne faut plus appeler la méthode update_offset_and_index (#{__FILE__}:#{__LINE__})")
-  # log("UPDATE ##{id.inspect.ljust(4)} index:#{index.to_s.ljust(4)} offset:#{offset.to_s.ljust(6)}")
-  # Runner.itexte.db.update_offset_index_titem(id:id, offset:offset, index:index, indice_in_file:indice_in_file)
-end #/ update_offset_and_index
 
 # Pour updater les valeurs +data+ dans la base de données
 def update_in_db(data)
@@ -314,9 +311,9 @@ def f_proximities
     SPACE * f_length
   else
     s = []
-    s << (prox_avant.nil? ? '' : (prox_avant.mot_avant.index_in_extrait).to_s)
+    s << (prox_avant.nil? ? '' : prox_avant.mot_avant.index_in_page)
     s << '|'
-    s << (prox_apres.nil? ? '' : (prox_apres.mot_apres.index_in_extrait).to_s)
+    s << (prox_apres.nil? ? '' : prox_apres.mot_apres.index_in_page)
 
     # log("Index(s) de proximité de ##{id} : #{s.inspect}")
 
@@ -351,8 +348,8 @@ end #/ calcule_longueurs
 #
 def proximites_length
   dist = []
-  dist << (prox_avant.nil? ? 0 : (prox_avant.mot_avant.index_in_extrait).to_s.length)
-  dist << (prox_apres.nil? ? 0 : (prox_apres.mot_apres.index_in_extrait).to_s.length)
+  dist << (prox_avant.nil? ? 0 : (prox_avant.mot_avant.index_in_page).length)
+  dist << (prox_apres.nil? ? 0 : (prox_apres.mot_apres.index_in_page).length)
 
   dist.inject(:+) + 1 # +1 pour la barre (dans tous les cas)
 end #/ proximites_length
@@ -436,6 +433,7 @@ def prox_avant
         next if not titem.proximizable?
         # Quand le canon du mot est inconnu, on compare les mots entre eux,
         # minusculisés
+        next if canon == LEMMA_UNKNOWN && titem.downcase != downcase
         next if titem.canon == LEMMA_UNKNOWN && titem.downcase != downcase
         next if titem.canon != canon
         distance = offset - titem.offset
@@ -481,6 +479,7 @@ def prox_apres
         next if not titem_apres.proximizable?
         # Quand le canon du mot est inconnu, on compare les mots entre eux,
         # minusculisés
+        next if canon == LEMMA_UNKNOWN && titem_apres.downcase != downcase
         next if titem_apres.canon == LEMMA_UNKNOWN && titem_apres.downcase != downcase
         next if titem_apres.canon != canon
         distance = titem_apres.offset - offset
@@ -501,5 +500,64 @@ def prox_apres=(prox)
   @prox_apres = prox
   @prox_apres_calculed = true
 end
+
+
+# @Return l'index {String} dans la page
+# Cette méthode est utilisée uniquement pour l'affichage de la page courante,
+# pour afficher les proximités.
+# Il y a trois possibilités et 3 traitements possibles :
+#   - le mot se trouve avant la page affichée => il porte la marque "-" et
+#     l'index dans la page précédente.
+#   - le mot se trouve dans la page affichée => simple, juste l'index
+#   - le mot se trouve dans la page après celle affichée => il porte la marque
+#     "+" et l'index dans la page suivante
+def index_in_page
+  curpage = ProxPage.current_numero_page
+  log("* Index in page de #{cio}")
+  log("  index_in_extrait: #{index_in_extrait.inspect}")
+  log("Numéro page courante : #{curpage.inspect}")
+  log("Runner.iextrait.to_item: #{Runner.iextrait.to_item.inspect}")
+  log("Runner.iextrait.from_item: #{Runner.iextrait.from_item.inspect}")
+  if in_current_page?
+    log("Le mot #{cio} est dans la page courante")
+    index_in_extrait.to_s
+  elsif in_prev_page?
+    log("Le mot #{cio} est dans la page précédente")
+    if curpage.nil?
+      # Quand l'extrait n'est pas une page (i.e. il a été affiché à partir
+      # d'un `:show xxxx`), on indique simplement la différence d'indice entre
+      # le mot courant et sa proximité
+      "#{index_in_extrait.inspect}".freeze # le "-" sera ajouté
+    else
+      # Une page est affichée, on peut trouver l'indice du mot sur la
+      # page précédente
+      prev_page = ProxPage.pages[curpage - 1]
+      index_rel = index - prev_page.from
+      "-#{index_rel}".freeze
+    end
+  elsif in_next_page?
+    log("Le mot #{cio} est dans la page suivante")
+    if curpage.nil?
+      "+#{index_in_extrait}".freeze
+    else
+      next_page = ProxPage.pages[curpage + 1]
+      log("next page : #{next_page.inspect}")
+      index_rel = index - next_page.from
+      log("=> index_rel +#{index_rel}")
+      "+#{index_rel}".freeze
+    end
+  end
+end #/ index_in_page
+
+private
+  def in_current_page?
+    not(in_prev_page?) && not(in_next_page?)
+  end #/ in_current_page?
+  def in_prev_page?
+    index_in_extrait < 0
+  end #/ in_prev_page?
+  def in_next_page?
+    index > Runner.iextrait.to_item
+  end #/ in_next_page?
 
 end #/TexteItem

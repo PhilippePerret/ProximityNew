@@ -31,7 +31,8 @@ def initialize itexte, params
   # log("params: #{params.inspect}")
   @itexte = itexte
   if params[:numero_page]
-    @page = ProxPage.pages[params[:numero_page]]
+    ProxPage.current_numero_page = params[:numero_page]
+    @page = ProxPage.current_page
     @from_item = @page.from
     @to_item = @page.to
   elsif params.key?(:index)
@@ -40,8 +41,10 @@ def initialize itexte, params
     case params[:index_is]
     when :absolu
       @from_item = params[:index]
+      ProxPage.current_numero_page = nil
     when :in_page
       @page = ProxPage.page_from_index_mot(params[:index])
+      ProxPage.current_numero_page = @page.numero
       @from_item = @page.from
       @to_item = @page.to
     end

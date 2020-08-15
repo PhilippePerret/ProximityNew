@@ -9,75 +9,24 @@
   Elles sont enregistrées au fur et à mesure de la consultation du
   texte.
 
-  Note problème
-    Le problème, actuellement, c'est que ces pages sont calculées par
-    rapport à l'écran courant. Donc, si on change la taille de l'écran,
-    elles ne sont plus valables et elle risque même de poser des problèmes.
-    Je ne vois pas encore comment résoudre ce problème sans savoir encore
-    calculer une page en arrière.
-    Si je savais calculer une page en arrière (donc en définissant le
-    to_item et en trouvant le from_item), on pourrait recalculer les pages
-    à chaque utilisation :
-      - le last_index est enregistré chaque fois, on repart de lui à
-        l'ouverture du texte
-      - on construit la première page à partir de là
-      - ensuite, si l'user va en avant, on calcule de la même manière la
-        page suivante.
-      - si l'user va en arrière, on calcule la page avant pareille.
-    En fait, si je connaissais la formule pour construire une page, je pourrais
-    en relevant simplement les index et les longueurs (ainsi que les
-    retours chariots) savoir trouver la page :
-      - SELECT Idx, LENGTH(Content) AS Length, ... FROM text_items
 =end
 class ProxPage
 # La largeur maximale pour la ligne, qu'on ne peut pas dépasser même
 # si l'écran est plus grand.
 TEXTE_COLS_WIDTH      = 100
-# La vue SQLite qui va permettre de calculer vite les pages
-# NOTE Je n'arrive pas à la faire fonctionner
-SQLITE_CREATE_VIEW_PAGE = <<-SQL.freeze.strip
--- DROP VIEW prox_pages -- pour forcer à chaque fois au début
-CREATE VIEW IF NOT EXISTS prox_pages (
-  TitemIndex,
-  Length,
-  HasReturn
-)
-AS
-  SELECT
-    Idx,
-    LENGTH(Content),
-    INSTR(Content, "\n")
-  FROM
-    text_items
-  ORDER BY
-    Offset ASC
-SQL
-# Requête qui permet de relever les informations utiles pour calculer les
-# pages dans la base de données
-GET_PAGES_USEFULL_INFOS_DB = <<-SQL.freeze.strip
-SELECT
-  Idx,
-  LENGTH(Content),
-  INSTR(Content, #{RC.inspect}),
-  IsMot
-FROM text_items
-ORDER BY Offset ASC
-SQL
-REQUEST_GET_TITEMS_INFOS_FROM_FOR = <<-SQL.freeze.strip
-SELECT
-  Idx,
-  LENGTH(Content),
-  INSTR(Content, #{RC.inspect}),
-  IsMot
-FROM text_items
-WHERE Idx >= ? AND Idx < ?
-ORDER BY `Offset` ASC
-SQL
 class << self
 
 # Hash contenant les instances des pages, calculées au chargement
 # du texte ou après son analyse.
 attr_reader :pages
+
+# Index de la page courante
+# Il est défini à l'instanciation de l'extrait courant. Il est mis à nil
+# lorsque ce n'est pas une page qui est affiché.
+attr_accessor :current_numero_page
+
+# Page courant (instance ProxPage)
+def current_page ; pages[current_numero_page] end #/ current_page
 
 # Cette méthode calcule les pages au chargement du texte
 # Pour le moment, elle est à l'essai pour savoir si elle ne prendra pas
@@ -255,10 +204,10 @@ def page_from_index_mot(index)
     log("ProxPage.pages est nil. Il faudra voir pourquoi.", true)
     return nil
   end
-  log("pages: #{pages.inspect}")
+  # log("pages: #{pages.inspect}")
 
   pages.each do |numero, page|
-    log("#{page.from} < #{index} > #{page.to}")
+    # log("#{page.from} < #{index} > #{page.to}")
     if page.from <= index && page.to >= index
       # log("Page trouvée : #{page.numero} !".freeze, true)
       found_page = page
@@ -340,4 +289,51 @@ def initialize(data)
   @numero = data[:numero]
   @lines_count = data[:lines_count]
 end #/ initialize
+
+
+
+# La vue SQLite qui va permettre de calculer vite les pages
+# NOTE Je n'arrive pas à la faire fonctionner (JE PENSE QUE C'EST À CAUSE
+# DE L'OUBLI DU POINT-VIRGULE À LA FIN - RAJOUTÉ)
+SQLITE_CREATE_VIEW_PAGE = <<-SQL.freeze.strip
+-- DROP VIEW prox_pages -- pour forcer à chaque fois au début
+CREATE VIEW IF NOT EXISTS prox_pages (
+  TitemIndex,
+  Length,
+  HasReturn
+)
+AS
+  SELECT
+    Idx,
+    LENGTH(Content),
+    INSTR(Content, "\n")
+  FROM
+    text_items
+  ORDER BY
+    Offset ASC
+  ;
+SQL
+# Requête qui permet de relever les informations utiles pour calculer les
+# pages dans la base de données
+GET_PAGES_USEFULL_INFOS_DB = <<-SQL.freeze.strip
+SELECT
+  Idx,
+  LENGTH(Content),
+  INSTR(Content, #{RC.inspect}),
+  IsMot
+FROM text_items
+ORDER BY Offset ASC
+SQL
+REQUEST_GET_TITEMS_INFOS_FROM_FOR = <<-SQL.freeze.strip
+SELECT
+  Idx,
+  LENGTH(Content),
+  INSTR(Content, #{RC.inspect}),
+  IsMot
+FROM text_items
+WHERE Idx >= ? AND Idx < ?
+ORDER BY `Offset` ASC
+;
+SQL
+
 end #/ProxPage

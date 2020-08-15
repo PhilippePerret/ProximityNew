@@ -75,16 +75,17 @@ def create_base_if_necessary
 end #/ create_base_if_necessary
 
 def create_trigger_on_delete_titem
-  db.execute("DROP TRIGGER IF EXISTS update_index_n_offset_on_delete_titem;")
+  db.execute("DROP TRIGGER IF EXISTS update_index_n_offset_on_delete_titem;".freeze)
   db.execute(CODE_TRIGGER_ON_DELETE)
 end #/ create_trigger_on_delete_titem
 
 def create_trigger_operations
+  drop_triggers_operations
   db.execute(CODE_TRIGGER_OPERATIONS)
 end #/ create_trigger_operations
-def drop_trigger_operations
-  db.execute("DROP TRIGGER IF EXISTS consignation_operation_insert;")
-  db.execute("DROP TRIGGER IF EXISTS consignation_operation_delete;")
+def drop_triggers_operations
+  db.execute("DROP TRIGGER IF EXISTS consignation_operation_insert;".freeze)
+  db.execute("DROP TRIGGER IF EXISTS consignation_operation_delete;".freeze)
 end #/ drop_trigger_operations
 
 # Trigger quand on insert une donnée dans text_items

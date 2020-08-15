@@ -278,7 +278,7 @@ def reset
   # un nouveau mot dans la table text_items
   drop_trigger_on_insert_titem
   # TRIGGER Pour conserver les opérations
-  drop_trigger_operations
+  drop_triggers_operations
 
   # TRIGGER pour updater automatiquement les index et les offsets quand on
   # supprime un text-item dans la table text_items
