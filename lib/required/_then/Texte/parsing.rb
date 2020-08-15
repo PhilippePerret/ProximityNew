@@ -63,13 +63,11 @@ def parse
     parse_simple_texte || return
   end
 
-  # On peut créer le trigger qui va gérer les insertions
-  db.create_trigger_on_insert_titem
+  # On peut créer le trigger qui vont gérer le travail
+  db.create_triggers_post_parsing
 
   return true # en cas de succès du parsing
 end #/ parse
-
-
 
 # = main =
 #

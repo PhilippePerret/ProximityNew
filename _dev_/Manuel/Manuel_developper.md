@@ -23,7 +23,16 @@ Un système de **mode de clavier** permet une gestion intelligente. Par exemple,
 
 Puisque tout sera chargé d'un coup (ou presque), je n'ai pas peur d'alourdir les fichiers. Donc les méthodes sont très documentées à l'intérieur des modules eux-mêmes. Dans ce fichier manuel du développeur je ne parlerai que des choses générales qui ne peuvent pas se trouver à un endroit précis.
 
-La documentation du projet est produite par [Yard](https://yardoc.org/).
+La documentation du projet est produite par [~~Yard~~](https://yardoc.org/) rien pour le moment.
+
+#### Usage intense de la base de données (SQLite)
+
+Pour travailler le texte, on fait un usage intense de la base de données. Tous les mots, au départ, y sont enregistrés. Ensuite, on fonctionne en insertion et en suppression (jamais en modification, à part de l’index et de l’offset) et on laisse les triggers SQL rectifier les choses :
+
+* quand on insert un élément, un trigger modifie les éléments (text-items) se trouvant après l’insertion, en ajoutant 1 à l’index de chaque mot suivant et la longueur de l’insertion à l’offset de chaque mot suivant.
+* inversement, quand on supprime un élément, un trigger modifie les éléments (text-items) se trouvant après la suppression, en retirant 1 à leur index et en retirant la longueur de la suppression à leur offset.
+
+L’usage intense des bases de données se fait aussi au niveau de la base propre à l’application, qui contient dans sa base, dans la table `lemmas`, toutes les formes lemmatisées jusqu’à aujourd’hui. Cela afin d’alléger le travail de TreeTagger.
 
 
 ## Classes d'éléments
@@ -38,13 +47,19 @@ Pour le programme de façon générale, on trouve
 
 Pour le texte lui-même, on ne trouve que
 
-* **mot**. Les mots ou les locutions. Peut-être composé exceptionnellement de `not-mot` comme « aujourd'hui » qui comprend une apostrophe.
-* **not-mot**. Tout ce qui n’est pas une lettre qui va composer un mot.
+* **Mot**. Les mots ou les locutions. Peut-être composé exceptionnellement de `not-mot` comme « aujourd'hui » qui comprend une apostrophe.
+* **NonMot**. Tout ce qui n’est pas une lettre qui va composer un mot.
 
 Pour le fonctionnement des proximités, on trouve :
 
-* **canon**. Pour maintenir les canons. Les canons, principalement, permettent de savoir rapidement si un mot est en proximité avec un autre. Les informations dans les `Canon`s, contrairement aux `Proximites`, sont assez complètes.
+* **Canon**. Pour maintenir les canons en temps réel (plus aucune information, pour le moment, n’est conservée concernant les canons). Contrairement aux autres versions de l’application, on ne passe plus par eux pour connaitre les proximités des mots.
 * **Proximite**. Petite classe pour s’occuper d’une proximité. Le principe est qu’elles ne soient pas enregistrées, elles sont toujours calculées et instanciées à la volée, à la demande et la nécessité.
+
+Autres classes
+
+* **AtStructure**. C’est une classe très intéressante qui permet de gérer les index désignant les mots, et principalement les mots à éditer. Elle permet de désigner les mots par des nombres simples (`12` signifiant le nombre d’index 12 dans l’extrait affiché), par des listes d’index (`12,14,23` désignant les mots 12, 14 et 23) ou un rang d’index pour remplacer ou supprimer plusieurs mots d’un coup par exemple (`12-15` désignant les text-items de 12 à 15).
+  Elle contient une méthode très utile, la méthode `:abs` qui retourne l’index absolu des valeurs conservées (entendu que les index conservés dans une instance `AtStructure` sont relatifs à la page affichée). Par exemple, la propriété `@list` d’une instance `AtStructure` contient dans tous les cas la liste des index relatifs concernés. Le résultat de `at.abs(:list)` retournera la liste des index absolus.
+  Cette classe est systématiquement utilisée avec les opérations (insertion, remplacement, suppression, déplacement).
 
 
 
@@ -53,15 +68,15 @@ Pour le fonctionnement des proximités, on trouve :
 Le nouveau fonctionnement complet inauguré le 11 août est le suivant :
 
 * on utilise la base (table `text_items` pour enregistrer tous les mots,
-* on utilise la base (table `lemmas`) pour enregistrer seulement mot unique et canon,
-* on utilise une table générale (table `infos`) pour les données générales, par exemple l’identifiant ou l’index du premier mot du panneau courant.
+* on utilise la base de l'application (table `lemmas`) pour enregistrer seulement mot unique, type et canon,
+* on utilise une table générale pour chaque texte (table `infos`) pour les données générales, par exemple l’identifiant ou l’index du premier mot du panneau courant.
 * on utilise une table provisoire qui contient toutes les informations du panneau courant, à commencer par tous les mots.
 
 ### Parsing complet du texte
 
-Au cours du parsing complet du texte, les mots sont enregistrés dans la base `db.sqlite` du dossier prox du texte. Dans `Runner.itexte.items` on ne met plus que les identifiants obtenus des insertions. On renseigne également la table `lemmas` qui contient « un mot = un canon » qui permettra d’obtenir plus tard un grand nombre de canons sans passer par TreeTagger.
+Au cours du parsing complet du texte, les mots sont enregistrés dans la base `db.sqlite` du dossier prox du texte — par paquet de x mots (1000 au moment de l’écriture de ce texte). ~~Dans `Runner.itexte.items` on ne met plus que les identifiants obtenus des insertions~~. On renseigne également la table `lemmas` de l’application qui contient « un mot = un canon » qui permettra d’obtenir plus tard un grand nombre de canons sans passer par TreeTagger (grâce à la méthode `Texte.db.get_canon("<mot>")`).
 
-Pour ne pas répéter les appels à la table `lemmas` pour savoir si un mot est déjà enregistré, on tient à jour, au cours du parsing, une table `PARSED_LEMMAS` qui listera les mots déjà traités dans leur forme exacte. Cette table contiendra par exemple :
+Au cours du parsing, pour ne pas répéter les appels à la table `lemmas` pour savoir si un mot est déjà enregistré, on tient à jour, une table `Hash` `PARSED_LEMMAS`  liste les mots déjà traités dans leur forme exacte. Cette table contient par exemple :
 
 ~~~ruby
 PARSED_LEMMAS = {

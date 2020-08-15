@@ -259,20 +259,26 @@ end #/ titems_colonnes_and_interrogations
 def reset
   # On ne crée la table de configuration que si elle n'est pas encore créée
   create_base_if_necessary
-  # TABLE Pour mettre tous les mots
+  # TABLE Pour mettre tous les mots (si nécessaire)
   create_table_text_items('text_items', drop = true)
-  # TABLE Pour mettre les formes lemmatisées
-  create_table_lemmas
+  # TABLE pour enregistrer les opérations (si nécessaire)
+  create_table_operations
+
+  # *** TRIGGERS à supprimer quand on parse ***
+
   # TRIGGER Pour updater automatiquement les index et offsets quand on insert
   # un nouveau mot dans la table text_items
-  # NON sinon on aurait un appel à chaque insertion de mot. Au contraire, on
-  # le détruit s'il existe.
-  # create_trigger_on_insert_titem
   drop_trigger_on_insert_titem
+  # TRIGGER Pour conserver les opérations
+  drop_trigger_operations
 
   # TRIGGER pour updater automatiquement les index et les offsets quand on
   # supprime un text-item dans la table text_items
   create_trigger_on_delete_titem
+
+  # TRIGGER pour enregistrer les opérations faites
+  # sur le texte.
+  create_trigger_operations
 end #/ reset
 
 
