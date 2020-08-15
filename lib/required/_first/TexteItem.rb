@@ -102,6 +102,12 @@ def initialize(content, params = nil)
   self.index = @idx # Idx dans la base de données
 end #/ initialize
 
+# Pour info, le content/index/offset
+def cio
+  "“““#{content.gsub(/\n/,'\n')}”””/##{id}/#{index}/offset-extrait:#{index_in_extrait}/#{offset}#{"/#{file_id}" unless file_id.nil?}"
+end #/ cio
+
+
 def load_from_db
   data = Runner.itexte.db.load_text_item(id)
   data.reverse! # pour pop(er)
@@ -181,6 +187,7 @@ def reset
   @f_length = nil
   @f_content  = nil
   @is_not_proximizabe   = nil
+  @is_in_extrait = nil
   @prox_avant = nil
   @prox_avant_calculed  = nil
   @prox_apres = nil
@@ -188,10 +195,6 @@ def reset
   @has_canon_exclu = nil
 end #/ reset
 
-# Pour info, le content/index/offset
-def cio
-  "##{id}/#{content.gsub(/\n/,'\n')}/#{index}/in extrait:#{index_in_extrait}/#{offset}#{"/#{file_id}"unless file_id.nil?}"
-end #/ cio
 
 # Pour débugguer le texte item
 def debug(options = nil)
@@ -354,6 +357,15 @@ def proximites_length
   dist.inject(:+) + 1 # +1 pour la barre (dans tous les cas)
 end #/ proximites_length
 
+# Retourne true si le text-item se trouve dans l'extrait affiché
+def in_extrait?
+  @is_in_extrait ||= begin
+    @is_in_extrait = index >= ProxPage.current_page.from && index <= ProxPage.current_page.to
+    @is_in_extrait = @is_in_extrait ? :true : :false
+  end
+  @is_in_extrait == :true
+end #/ in_extrait?
+
 # Retourne true si le text-item peut être étudié au niveau de ses proximités
 def proximizable?
   @is_not_proximizabe ||= begin
@@ -375,6 +387,10 @@ def is_exclu?
   @has_canon_exclu == :true
 end #/ is_exclu?
 
+def has_unknown_canon?
+  @canon_is_unknown = canon == LEMMA_UNKNOWN if @canon_is_unknown.nil?
+  @canon_is_unknown
+end #/ has_unknown_canon?
 def new_paragraphe?
   content == RC
 end #/ new_paragraphe?
@@ -385,10 +401,11 @@ def space?
 end #/ space
 
 def no_proximites?
-  !proximizable? || (prox_avant.nil? && prox_apres.nil?)
+  not(proximizable?) || (prox_avant.nil? && prox_apres.nil?)
 end #/ no_proximites?
 def has_proximites?
-  !no_proximites?
+  # log("has_proximites? = #{not(no_proximites?).inspect}")
+  not(no_proximites?)
 end #/ has_proximites?
 
 # Renvoie l'indice de couleur en fonction des proximités
@@ -414,7 +431,9 @@ end #/ prox_color
 # avant, si elle existe. Renvoie nil otherwise.
 def prox_avant
   @prox_avant_calculed || begin
-    if ! proximizable?
+    # log("-> prox_avant après @prox_avant_calculed")
+    if not proximizable?
+      # log("pas proximizable donc @prox_avant = nil") if downcase == 'autre'
       @prox_avant = nil
     else
       iext = Runner.iextrait
@@ -424,32 +443,37 @@ def prox_avant
       # Maintenant qu'on travaille seulement avec l'extrait, il suffit de
       # chercher le mot, dans les mots avant l'index du mot, qui ait le même
       # canon et qui soit à la bonne distance.
-      liste_seek = iext.extrait_pre_items
-      liste_seek += iext.extrait_titems[0...index_in_extrait] if index_in_extrait > 0
+      # Pour ce faire, on prend les titems avant l'extrait ainsi que les mots
+      # de l'extrait avant le mot étudié.
+      # Mais attention, car la méthode peut être appelée hors extrait, lorsqu'on
+      # fait un rapport ou qu'on débuggue un mot. Dans ce cas-là, la procédure
+      # est tout autre.
+      if in_extrait?
+        liste_seek =  iext.extrait_pre_items.dup
+        liste_seek += iext.extrait_titems[0...index_in_extrait] if index_in_extrait > 0
+      else
+        liste_seek = Runner.itexte.get_titems(from_offset: offset - Runner.itexte.distance_minimale_commune, to_offset: offset - 1)
+      end
 
       @prox_avant = nil
-      titem_avant = nil
-      while titem = liste_seek.pop
-        next if not titem.proximizable?
+      # Pop(per) dans la liste fouillé, c'est prendre d'abord les mots les plus
+      # proches pour aller ensuite vers les mots les plus éloignés.
+      while titem_avant = liste_seek.pop
+        next if not titem_avant.proximizable?
         # Quand le canon du mot est inconnu, on compare les mots entre eux,
         # minusculisés
-        next if canon == LEMMA_UNKNOWN && titem.downcase != downcase
-        next if titem.canon == LEMMA_UNKNOWN && titem.downcase != downcase
-        next if titem.canon != canon
-        distance = offset - titem.offset
+        next if (has_unknown_canon? || titem_avant.has_unknown_canon?) && titem_avant.downcase != downcase
+        next if titem_avant.canon != canon
+        distance = offset - titem_avant.offset
         break if distance > Canon[canon].distance_minimale
         # Si on passe ici, c'est qu'un item proche a été trouvé
-        titem_avant = titem.dup
+        # log("Proximity avant trouvée pour #{self.cio} avec : #{titem_avant.cio}")
+        @prox_avant = Proximite.new(avant:titem_avant, apres:self, distance:distance)
+        titem_avant.prox_apres = @prox_avant
         # Puisqu'on lisait la liste à l'envers (pop), le premier titem trouvé
         # est forcément le plus proche. On peut breaker
         break
       end
-      unless titem_avant.nil?
-        # log("Proximity avant trouvée pour #{self.cio} avec : #{titem_avant.cio}")
-        @prox_avant = Proximite.new(avant:titem_avant, apres:self, distance:distance)
-        titem_avant.prox_apres = @prox_avant
-      end
-
     end
     @prox_avant_calculed = true
   end
@@ -462,15 +486,24 @@ end
 
 def prox_apres
    @prox_apres_calculed || begin
-    if !proximizable?
+    if not proximizable?
       @prox_apres = nil
     else
       # Raccourci
       iextr = Runner.iextrait
 
-      # La liste de tous les text-items dans lesquels il va falloir cherché
-      liste_seek = iextr.extrait_titems[index_in_extrait+1..-1]
-      liste_seek += iextr.extrait_post_items
+      # La liste de tous les text-items dans lesquels il va falloir chercher
+      # Le cas est différent suivant que le mot se trouve dans l'extrait ou
+      # en dehors.
+      # NOTE : si la distinction entre dans/hors extrait est trop consommatrice,
+      # on pourrait isoler les deux procédures et les appeler explicitement au
+      # besoin.
+      if in_extrait?
+        liste_seek = iextr.extrait_titems[index_in_extrait+1..-1]
+        liste_seek += iextr.extrait_post_items
+      else
+        liste_seek = Runner.itexte.get_titems(from_offset:offset+1, to_offset:offset + Runner.itexte.distance_minimale_commune)
+      end
 
       liste_seek.reverse! # pour pouvoir pop(er) au lieu de shift(er)
 
@@ -479,16 +512,18 @@ def prox_apres
         next if not titem_apres.proximizable?
         # Quand le canon du mot est inconnu, on compare les mots entre eux,
         # minusculisés
-        next if canon == LEMMA_UNKNOWN && titem_apres.downcase != downcase
-        next if titem_apres.canon == LEMMA_UNKNOWN && titem_apres.downcase != downcase
+        next if (has_unknown_canon? || titem_apres.has_unknown_canon?) && titem_apres.downcase != downcase
         next if titem_apres.canon != canon
+        # On passe ici si le mot est proximizable et si le mot après possède
+        # le même canon OU est égal en minuscule.
         distance = titem_apres.offset - offset
         break if distance > Canon[canon].distance_minimale
         # Si on passe ici c'est qu'un mot proche a été trouvé
         # log("Proximity après trouvée pour #{self.cio} : #{titem_apres.cio}")
         @prox_apres = Proximite.new(avant:self, apres:titem_apres, distance:distance)
         titem_apres.prox_avant = @prox_apres
-        break # on s'arrête là, puisque le prochain mot serait plus loin
+        break   # on s'arrête là, puisque le prochain mot serait forcément plus
+                # loin
       end
     end
     @prox_apres_calculed = true
@@ -513,16 +548,16 @@ end
 #     "+" et l'index dans la page suivante
 def index_in_page
   curpage = ProxPage.current_numero_page
-  log("* Index in page de #{cio}")
-  log("  index_in_extrait: #{index_in_extrait.inspect}")
-  log("Numéro page courante : #{curpage.inspect}")
-  log("Runner.iextrait.to_item: #{Runner.iextrait.to_item.inspect}")
-  log("Runner.iextrait.from_item: #{Runner.iextrait.from_item.inspect}")
+  # log("* Recherche index-in-page de #{cio}")
+  # log("  index in extrait: #{index_in_extrait.inspect}")
+  # log("Numéro page courante : #{curpage.inspect}")
+  # log("Runner.iextrait.to_item: #{Runner.iextrait.to_item.inspect}")
+  # log("Runner.iextrait.from_item: #{Runner.iextrait.from_item.inspect}")
   if in_current_page?
-    log("Le mot #{cio} est dans la page courante")
+    # log("Le mot #{cio} est dans la page courante")
     index_in_extrait.to_s
   elsif in_prev_page?
-    log("Le mot #{cio} est dans la page précédente")
+    # log("Le mot #{cio} est dans la page précédente")
     if curpage.nil?
       # Quand l'extrait n'est pas une page (i.e. il a été affiché à partir
       # d'un `:show xxxx`), on indique simplement la différence d'indice entre
@@ -536,20 +571,21 @@ def index_in_page
       "-#{index_rel}".freeze
     end
   elsif in_next_page?
-    log("Le mot #{cio} est dans la page suivante")
+    # log("Le mot #{cio} est dans la page suivante")
     if curpage.nil?
       "+#{index_in_extrait}".freeze
     else
       next_page = ProxPage.pages[curpage + 1]
-      log("next page : #{next_page.inspect}")
+      # log("next page : #{next_page.inspect}")
       index_rel = index - next_page.from
-      log("=> index_rel +#{index_rel}")
+      # log("=> index_rel +#{index_rel}")
       "+#{index_rel}".freeze
     end
   end
 end #/ index_in_page
 
 private
+
   def in_current_page?
     not(in_prev_page?) && not(in_next_page?)
   end #/ in_current_page?

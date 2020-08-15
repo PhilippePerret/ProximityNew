@@ -22,6 +22,58 @@ end #/ initialize
 def reset(key)
   instance_variable_set("@#{key}", nil)
 end #/ reset
+# ---------------------------------------------------------------------
+#
+#   PUBLIC METHODS
+#
+# ---------------------------------------------------------------------
+
+# Reçoit des paramètres définissant les text-items à voir et les retourne
+# @Params
+#   :params   {Hash}  Table contenant les propriétés permettant de charger
+#                     les text-items voulus, parmi :
+#                     :from_index
+#                     :to_index
+#                     :from_offset
+#                     :to_offset
+#                     :from_id
+#                     :to_id
+def get_titems(params)
+  where_clause = []
+  values = []
+  if params.key?(:from_offset)
+    where_clause << "Offset >= ?"; values << params[:from_offset]
+  end
+  if params.key?(:to_offset)
+    where_clause << "Offset <= ?"; values << params[:to_offset]
+  end
+  if params.key?(:from_index)
+    where_clause << "Idx >= ?" ; values << params[:from_index]
+  end
+  if params.key?(:to_index)
+    where_clause << "Idx <= ?" ; values << params[:to_index]
+  end
+  if params.key?(:from_id)
+    where_clause << "Id >= ?" ; values << params[:from_id]
+  end
+  if params.key?(:to_id)
+    where_clause << "Id <= ?" ; values << params[:to_id]
+  end
+  db.results_as_hash = true
+  request = "SELECT * FROM text_items WHERE #{where_clause.join(AND)};"
+  stm_get_titems = db.db.prepare(request)
+  db_result = stm_get_titems.execute(values)
+  db.results_as_hash = false
+  db_result.collect do |row|
+    TexteItem.instantiate(row)
+  end
+end #/ get_titems
+
+# Reçoit un index absolu et retourne le text-item du texte correspondant.
+def get_titem_by_index(index)
+  hitem = db.get_titem_by_index(index, true)
+  TexteItem.instantiate(hitem)
+end #/ get_titem_by_index
 
 def save
   data = {

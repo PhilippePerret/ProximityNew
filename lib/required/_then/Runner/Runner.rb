@@ -122,6 +122,7 @@ class << self
   def show_extrait(params)
     log("-> show_extrait(params:#{params.inspect})")
     @iextrait = ExtraitTexte.new(itexte, params)
+    @iextrait.prepare # pour définir les listes
     @iextrait.output
     CWindow.init_status_and_cursor(clear:true)
   end #/ show_extrait
@@ -149,6 +150,10 @@ class << self
     Help.show(options)
   end #/ display_help
 
+  # Méthode principale qui affiche l'extrait courant au départ et attend
+  # les commandes de l'utilisateur.
+  # C'est aussi dans cette méthode que sont calculées les pages du texte en
+  # fonction de la taille de l'écran.
   def show_extrait_and_wait_for_user
     log("-> show_extrait_and_wait_for_user")
     begin

@@ -13,8 +13,32 @@ class << self
 
     case cmd_name
 
+
     when 'essai'
       # Pour faire des essais et les lancer par ":essai"
+
+
+    when 'next'
+      what = cmd.shift
+      case what
+      when 'page'
+        if Runner.iextrait.page.numero == ProxPage.last_numero_page
+          CWindow.log("C'est la dernière page !".freeze)
+        else
+          Runner.show_extrait(numero_page: Runner.iextrait.page.numero + 1)
+        end
+      end
+
+    when 'prev'
+      what = cmd.shift
+      case what
+      when 'page' #  prev page
+        if Runner.iextrait.page.numero == 1
+          CWindow.log("C'est la première page !".freeze)
+        else
+          Runner.show_extrait(numero_page: Runner.iextrait.page.numero - 1)
+        end
+      end
 
 
     when 'canon'
@@ -52,18 +76,28 @@ class << self
       what = cmd.shift
       case what
       when 'item', 'mot'
-        item_index = cmd.shift.to_i
-        item = Runner.iextrait.extrait_items[item_index]
-        msg = "DEBUG item #{item_index} : #{item.debug(output: :console)}".freeze
-        debug(msg)
-        debug(item.inspect)
-        CWindow.log("#{msg} (détails dans debug.log)")
+        item_index = cmd.shift
+        if item_index.end_with?('*')
+          item_index = item_index[0...-1].to_i
+          titem = Runner.itexte.get_titem_by_index(item_index)
+        else
+          item_index = item_index.to_i
+          titem = Runner.iextrait.extrait_titems[item_index]
+        end
+        if titem.nil?
+          erreur("L'item d'index relatif #{item_index} est inconnu. Pour un index absolu, ajouter une étoile après le l'index — p.e. '#{item_index}*'.")
+        else
+          msg = "DEBUG item #{item_index} : #{titem.debug(output: :console)}".freeze
+          debug(msg)
+          debug(titem.inspect)
+          CWindow.log("#{msg} (détails dans debug.log)")
+        end
       when 'mots'
         debug("#{RC*2}Débuggage des mots du texte".freeze)
         entete = "#{RC} #{'index'.ljust(7)}#{'Contenu'.ljust(15)}#{'Offset'.ljust(8)}#{'FileId'.ljust(7)}".freeze
         debug(entete)
         debug(('-'*entete.length).freeze)
-        Runner.iextrait.extrait_items.each do |titem|
+        Runner.iextrait.extrait_titems.each do |titem|
           debug(titem.debug)
         end
         debug("#{RC*2}".freeze)
@@ -183,28 +217,6 @@ class << self
       end
       pms[:index] = 0 if pms[:index] < 0
       Runner.show_extrait(pms)
-
-    when 'next'
-      what = cmd.shift
-      case what
-      when 'page'
-        if Runner.iextrait.page.numero == ProxPage.last_numero_page
-          CWindow.log("C'est la dernière page !".freeze)
-        else
-          Runner.show_extrait(numero_page: Runner.iextrait.page.numero + 1)
-        end
-      end
-
-    when 'prev'
-      what = cmd.shift
-      case what
-      when 'page' #  prev page
-        if Runner.iextrait.page.numero == 1
-          CWindow.log("C'est la première page !".freeze)
-        else
-          Runner.show_extrait(numero_page: Runner.iextrait.page.numero - 1)
-        end
-      end
 
       # *** Commandes d'information ***
 

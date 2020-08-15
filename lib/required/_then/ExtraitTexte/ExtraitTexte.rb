@@ -53,6 +53,12 @@ def initialize itexte, params
   @extrait_titems = nil
 end #/ initialize
 
+# Préparation des listes
+def prepare
+  prepare_listes
+end #/ prepare
+
+
 # Sortie de l'extrait
 # --------------------
 # La mise en forme est assez complexe puisqu'elle
@@ -129,6 +135,7 @@ def output
     #
     # Noter que c'est ce calcul des longueurs qui va définir les proximités
     # du mot si c'est un mot et qu'elles existent.
+    log("Calcul des longueurs de #{titem.cio}")
     titem.calcule_longueurs(self)
 
     # On prend déjà le prochain offset pour voir si on doit passer à la
@@ -214,136 +221,145 @@ def write_indentation(yindex)
   write3lines([SPACES_LEFT_MARGIN,SPACES_LEFT_MARGIN,SPACES_LEFT_MARGIN], yindex, 0)
 end #/ write_indentation
 
+def prepare_listes
+  # Les trois listes qui vont être définies ici
+  @extrait_titems     = nil
+  @extrait_pre_items  = nil
+  @extrait_post_items = nil
+
+  # Pour pouvoir récupérer les données sous forme de Hash.
+  # Attention :
+  #   * les clés sont des strings
+  #   * les noms de colonnes sont avec capitales ("Offset", "Content", etc.)
+  itexte.db.results_as_hash = true
+
+  # On prend dans la DB le tout premier mot qui doit être affiché dans la
+  # fenêtre. Cet text-item doit obligatoirement exister, sinon on lève une
+  # exception.
+  # +hfrom+ est un Hash contenant les données du mot.
+  hfrom_item = itexte.db.get_titem_by_index(from_item)
+  # Si ce n'est pas un mot, on prend le précédent, car on commence toujours
+  # par un mot (pour l'esthétique)
+  if hfrom_item['IsMot'] == 'FALSE'
+    log("On doit prendre l'item d'avant pour avoir un Mot.")
+    @from_item -= 1
+    hfrom_item = itexte.db.get_titem_by_index(from_item)
+  end
+  if hfrom_item.nil?
+    raise "Grave erreur, le text-item d'index #{from_item.inspect} est introuvable dans la DB"
+  end
+
+  # log("DB: #{itexte.db.path}")
+  # log("hfrom_item (index #{from_item.inspect}): #{hfrom_item.inspect}")
+
+  # On doit récupérer dans la base de données tous les text-items qui ont
+  # un offset de la distance minimale commune avant
+  # +offset_first+ Integer Décalage absolu du mot dans le texte. Cette valeur
+  # est toujours juste puisqu'elle est recalculée chaque fois
+  offset_first = hfrom_item['Offset']
+  log("Offset du tout premier mot affiché : #{offset_first.inspect} (mot “#{hfrom_item['Content']}” d'index #{from_item})")
+  first_offset_avant = offset_first - itexte.distance_minimale_commune
+  log("On doit prendre les text-items avant jusqu'à l'offset #{first_offset_avant.inspect}")
+  # La requête String permettant de récupérer ces text-items
+  request = "SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze
+  itexte.db.results_as_hash = true
+  titems_avant = itexte.db.db.execute(request, first_offset_avant, offset_first)
+  log("Nombre de titems trouvés : #{titems_avant.count}")
+
+  # On instancie les text-items avant pour en faire des instances et
+  # on règle sur index dans l'extrait affiché.
+  idx = titems_avant.count + 1 # pour que le dernier soit à -1
+  @extrait_pre_items = titems_avant.collect do |hdata|
+    TexteItem.instanciate(hdata, -(idx -= 1))
+  end
+  # log("@extrait_pre_items = #{@extrait_pre_items.inspect}")
+
+  # On cherche les text-items qui vont se trouver dans la fenêtre
+  # Si on connait @to_item, comme pour une page, on les relève simplement.
+  # Sinon, il faut en relever une certaines quantité jusqu'à atteindre la
+  # quantité voulue par rapport à la page. On se sert pour cela des méthodes
+  # de ProxPage qui sait calculer les longueurs de page en fonction de
+  # l'interface actuelle.
+  if @to_item.nil?
+    @to_item = ProxPage.last_item_page_from_index(itexte, from_item)
+  end
+  log("=== @to_item : #{@to_item.inspect}")
+  @to_item || raise("@to_item ne peut absolument pas être nil…")
+
+  request = "SELECT * FROM text_items WHERE Idx >= ? AND Idx <= ? ORDER BY Idx ASC".freeze
+  itexte.db.results_as_hash = true
+  titems_dedans = itexte.db.execute(request, from_item, to_item)
+
+  # On instancie tous les items qui peuvent appartenir à l'extrait
+  # On définit aussi l'index dans l'extrait de chaque text-item.
+  # Noter qu'il ne faut pas le faire au fur et à mesure de la composition
+  # de la page (dans `output`) car sinon, si l'item 34 est en proximité avec
+  # l'item 39, au moment où on écrit #34 et ses proximités, l'index n'est pas
+  # encore défini pour #39.
+  idx = -1 # on commencera à 1 car c'est le premier text-item qui porte
+          # l'index 0
+  extitems =  titems_dedans.collect do |hdata|
+                TexteItem.instanciate(hdata, idx += 1)
+              end
+  # On a besoin de l'offset du dernier mot pour savoir jusqu'où il faut
+  # prendre la suite.
+  offset_last = titems_dedans.last['Offset']
+  last_offset_apres = offset_last + itexte.distance_minimale_commune
+  request = "SELECT * FROM text_items WHERE Offset > ? AND Offset <= ? ORDER BY Offset ASC".freeze
+  titems_apres = itexte.db.db.execute(request, offset_last, last_offset_apres)
+  # log("titems_apres : #{titems_apres.inspect}")
+
+  # On ajoute les instances des titems après (non affichés) aux titems de l'extrait
+  @extrait_post_items = titems_apres.collect do |hdata|
+                          TexteItem.instanciate(hdata, idx += 1)
+                        end
+
+  # On remet les résultats de la base de données sans table, comme c'est par
+  # défaut. Cela permet d'accélerer les traitements.
+  itexte.db.results_as_hash = false
+
+  @extrait_titems = extitems
+
+  # # Décommenter pour débugger tous les items qui seront dans l'extrait,
+  # # avant ou après
+  # debug_trois_listes_titems
+
+end #/ prepare_listes
+
+# Méthode de débuggage pour voir les trois listes de l'extrait :
+#   - les text-items de l'extrait lui-même
+#   - les text-items avant, à une distance de distance_minimale_commune
+#   - les text-items suivant, idem
+def debug_trois_listes_titems
+  delimitation = TIRET*80
+  log("#{RC*2}#{delimitation}#{RC}Text-items dans l'extrait courant (from_item #{from_item})#{RC}")
+  log("--- @extrait_pre_items ---")
+  mots = extrait_pre_items.collect do |titem|
+    "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
+  end.join(RC)
+  log(RC + mots)
+  log("--- @extrait_titems ---")
+  mots = extrait_titems.collect do |titem|
+    "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
+  end.join(RC)
+  log(RC + mots)
+  log("--- @extrait_post_items ---")
+  mots = extrait_post_items.collect do |titem|
+    "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
+  end.join(RC)
+  log(RC + mots)
+  log(delimitation)
+  log(RC*3)
+end #/ debug_trois_listes_titems
+
+# Retourne la liste des text-items de l'extrait
+def extrait_titems ; @extrait_titems end
 # Les text-items AVANT l'extrait affiché
 # [1] Note : cette liste, comme la liste post_items, ne sert que pour définir
 #     les proximités d'avec les premiers et derniers mots (autour)
 def extrait_pre_items; @extrait_pre_items end
 # Les text-items APRÈS l'extrait affiché
 def extrait_post_items; @extrait_post_items end
-
-# Retourne la liste des text-items de l'extrait
-# Définit en même temps les text-items avant et après.
-# Noter que le travail est différent suivant qu'il s'agissent d'une page
-# ou d'un extrait "dans l'absolu" c'est-à-dire à partir d'un index quelconque.
-def extrait_titems
-  @extrait_titems ||= begin
-    # Pour pouvoir récupérer les données sous forme de Hash.
-    # Attention :
-    #   * les clés sont des strings
-    #   * les noms de colonnes sont avec capitales ("Offset", "Content", etc.)
-    itexte.db.results_as_hash = true
-
-    # On prend dans la DB le tout premier mot qui doit être affiché dans la
-    # fenêtre. Cet text-item doit obligatoirement exister, sinon on lève une
-    # exception.
-    # +hfrom+ est un Hash contenant les données du mot.
-    hfrom_item = itexte.db.get_titem_by_index(from_item)
-    # Si ce n'est pas un mot, on prend le précédent, car on commence toujours
-    # par un mot (pour l'esthétique)
-    if hfrom_item['IsMot'] == 'FALSE'
-      log("On doit prendre l'item d'avant pour avoir un Mot.")
-      @from_item -= 1
-      hfrom_item = itexte.db.get_titem_by_index(from_item)
-    end
-    if hfrom_item.nil?
-      raise "Grave erreur, le text-item d'index #{from_item.inspect} est introuvable dans la DB"
-    end
-
-    # log("DB: #{itexte.db.path}")
-    # log("hfrom_item (index #{from_item.inspect}): #{hfrom_item.inspect}")
-
-    # On doit récupérer dans la base de données tous les text-items qui ont
-    # un offset de la distance minimale commune avant
-    # +offset_first+ Integer Décalage absolu du mot dans le texte. Cette valeur
-    # est toujours juste puisqu'elle est recalculée chaque fois
-    offset_first = hfrom_item['Offset']
-    log("Offset du tout premier mot affiché : #{offset_first.inspect} (mot “#{hfrom_item['Content']}” d'index #{from_item})")
-    first_offset_avant = offset_first - itexte.distance_minimale_commune
-    log("On doit prendre les text-items avant jusqu'à l'offset #{first_offset_avant.inspect}")
-    # La requête String permettant de récupérer ces text-items
-    request = "SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze
-    itexte.db.results_as_hash = true
-    titems_avant = itexte.db.db.execute(request, first_offset_avant, offset_first)
-    log("Nombre de titems trouvés : #{titems_avant.count}")
-
-    # On instancie les text-items avant pour en faire des instances et
-    # on règle sur index dans l'extrait affiché.
-    idx = titems_avant.count + 1 # pour que le dernier soit à -1
-    @extrait_pre_items = titems_avant.collect do |hdata|
-      TexteItem.instanciate(hdata, -(idx -= 1))
-    end
-
-    # On cherche les text-items qui vont se trouver dans la fenêtre
-    # Si on connait @to_item, comme pour une page, on les relève simplement.
-    # Sinon, il faut en relever une certaines quantité jusqu'à atteindre la
-    # quantité voulue par rapport à la page. On se sert pour cela des méthodes
-    # de ProxPage qui sait calculer les longueurs de page en fonction de
-    # l'interface actuelle.
-    if @to_item.nil?
-      @to_item = ProxPage.last_item_page_from_index(itexte, from_item)
-    end
-    log("=== @to_item : #{@to_item.inspect}")
-    @to_item || raise("@to_item ne peut absolument pas être nil…")
-
-    request = "SELECT * FROM text_items WHERE Idx >= ? AND Idx <= ? ORDER BY Idx ASC".freeze
-    itexte.db.results_as_hash = true
-    titems_dedans = itexte.db.execute(request, from_item, to_item)
-
-    # On instancie tous les items qui peuvent appartenir à l'extrait
-    # On définit aussi l'index dans l'extrait de chaque text-item.
-    # Noter qu'il ne faut pas le faire au fur et à mesure de la composition
-    # de la page (dans `output`) car sinon, si l'item 34 est en proximité avec
-    # l'item 39, au moment où on écrit #34 et ses proximités, l'index n'est pas
-    # encore défini pour #39.
-    idx = -1 # on commencera à 1 car c'est le premier text-item qui porte
-            # l'index 0
-    extitems =  titems_dedans.collect do |hdata|
-                  TexteItem.instanciate(hdata, idx += 1)
-                end
-    # On a besoin de l'offset du dernier mot pour savoir jusqu'où il faut
-    # prendre la suite.
-    offset_last = titems_dedans.last['Offset']
-    last_offset_apres = offset_last + itexte.distance_minimale_commune
-    request = "SELECT * FROM text_items WHERE Offset > ? AND Offset <= ? ORDER BY Offset ASC".freeze
-    titems_apres = itexte.db.db.execute(request, offset_last, last_offset_apres)
-    # log("titems_apres : #{titems_apres.inspect}")
-
-    # On ajoute les instances des titems après (non affichés) aux titems de l'extrait
-    @extrait_post_items = titems_apres.collect do |hdata|
-                            TexteItem.instanciate(hdata, idx += 1)
-                          end
-
-    # On remet les résultats de la base de données sans table, comme c'est par
-    # défaut. Cela permet d'accélerer les traitements.
-    itexte.db.results_as_hash = false
-
-    # Pour débugger tous les items qui seront dans l'extrait, avant ou
-    # après
-    if false # mettre "true" pour voir le débug
-      delimitation = TIRET*80
-      log("#{RC*2}#{delimitation}#{RC}Text-items dans l'extrait courant (from_item #{from_item})#{RC}")
-      log("--- @extrait_pre_items ---")
-      mots = extrait_pre_items.collect do |titem|
-        "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
-      end.join(RC)
-      log(RC + mots)
-      log("--- @extrait_titems ---")
-      mots = extitems.collect do |titem|
-        "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
-      end.join(RC)
-      log(RC + mots)
-      log("--- @extrait_post_items ---")
-      mots = extrait_post_items.collect do |titem|
-        "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
-      end.join(RC)
-      log(RC + mots)
-      log(delimitation)
-      log(RC*3)
-    end
-
-    extitems # => @extrait_titems
-  end
-end #/ extrait_titems
 
 def write3lines treelines, top, offset, color_prox = nil
   idx, titem, prox = treelines
