@@ -46,7 +46,7 @@ end #/ reset_mode_clavier
 
 def interact_with_user
   wind  = CWindow.uiWind
-  wind.write("Taper “:help” pour obtenir de l’aide. Pour quitter : “:q”")
+  wind.write("Taper “:help” pour obtenir de l’aide. “:q” pour quitter")
   curse = wind.curse # raccourci
   start_command = false # mis à true quand il tape ':'
   command = nil
@@ -112,9 +112,9 @@ def interact_with_user
     when 260 # LEFT ARROW
       Commande.run('prev page')
     when 258 # BOTTOM ARROW
-      wind.write("Aller en bas")
+      command = Commande.up_historique # (sic)
     when 259 # TOP ARROW
-      wind.write("Aller en haut")
+      command = Commande.back_historique
     when 127 # effacement arrière
       if start_command
         command = command[0...-1]

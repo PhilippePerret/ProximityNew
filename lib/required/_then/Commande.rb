@@ -289,7 +289,41 @@ class << self
   def historize(command)
     @historique ||= []
     @historique << command
+    @historique_index = @historique.count
+      # On ne met pas à count - 1 pour pouvoir rappeler la commande courante
+      # en faisant back_historique
   end #/ historize
+
+  # Pour aller à la commande historisée suivante
+  def up_historique
+    if @historique_index == @historique.count
+      CWindow.log("C'est la toute dernière commande !")
+    else
+      show_commande_historized(@historique_index + 1)
+    end
+  end #/ up_historique
+
+  # Pour revenir à la commande historisée précédente
+  def back_historique
+    if @historique_index == 0
+      CWindow.log("C'est toute première commande !")
+    else
+      show_commande_historized(@historique_index - 1)
+    end
+  end #/ back_historique
+
+  # Méthode qui réaffiche une commande précédente et la renvoie
+  # Note : la commande est renvoyée car Runner (interact) a besoin
+  # de la connaitre pour pouvoir la modifier correctement.
+  def show_commande_historized(cmd_idx)
+    commande = @historique[@historique_index = cmd_idx]
+    wind  = CWindow.uiWind
+    wind.resetpos
+    wind.write(":#{commande}".freeze)
+    Runner.reset_mode_clavier
+
+    return commande
+  end #/ show_commande_historized
 
 end # /<< self
 end #/Commande

@@ -368,7 +368,8 @@ end #/ proximites_length
 def in_extrait?
   @is_in_extrait ||= begin
     raise("index ne devrait pas être nil") if index.nil?
-    @is_in_extrait = index >= ProxPage.current_page.from && index <= ProxPage.current_page.to
+    # @is_in_extrait = index >= ProxPage.current_page.from && index <= ProxPage.current_page.to
+    @is_in_extrait = index >= Runner.iextrait.from_item && index <= Runner.iextrait.to_item
     @is_in_extrait = @is_in_extrait ? :true : :false
   end
   @is_in_extrait == :true
