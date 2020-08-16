@@ -3,7 +3,16 @@ class Commande
 class << self
   # Jouer la commande voulue
   def run(cmd)
-    log("🔨 Commande jouée : #{cmd.inspect}")
+    log("♻︎ Commande jouée : #{cmd.inspect}")
+
+    # Certaines commandes sont des raccourcis qu'il faut étendre
+    case cmd
+    when /^debug\(/,  /^log\(/
+      cmd = "eval #{cmd}"
+      log("♻︎ Commande rectifiée : #{cmd.inspect}")
+    end
+
+    # On peut maintenant traiter la commande
     historize(cmd)
     cmd_init = cmd.dup.freeze
     cmd = cmd.split(SPACE)
