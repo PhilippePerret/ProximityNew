@@ -9,6 +9,12 @@
     2. La fenêtre affichant le statut
     3. La fenêtre permettant d'entrer les commandes.
 
+
+  On peut trouver les 256 couleurs disponibles (pour former les paires avec
+  init_pair) à l'adresse : https://jonasjacek.github.io/colors/
+  Par exemple, un vrai blanc sur noir :
+    Curses.init_pair(1, 0, 15)
+
 =end
 require 'curses'
 WindParams = Struct.new(:height, :top)
@@ -21,14 +27,20 @@ class CWindow
 #   CLASSE
 #
 # ---------------------------------------------------------------------
-INDEX_COLOR   = 1
-RED_COLOR     = 2
-RED_ON_BLACK_COLOR = 7
-TEXT_COLOR    = 3
-ORANGE_COLOR  = 4
-BLUE_COLOR    = 5
-GREEN_COLOR   = 6
 WHITE_ON_BLACK = 0
+
+
+TEXT_COLOR    = 100 # jusqu'à 256 compris
+INDEX_COLOR   = 101 # idem
+# Pour indiquer l'intensité des proximités
+RED_COLOR     = 110
+ORANGE_COLOR  = 111
+BLUE_COLOR    = 112
+GREEN_COLOR   = 113
+RED_ON_BLACK_COLOR = 120 # En cas d'erreur
+
+CWindow::BnW_BLACK = 0   # pur noir
+CWindow::BnW_WHITE = 255  # pur blanc (plus blanc que 15)
 
 class << self
   attr_reader :textWind, :statusWind, :uiWind, :logWind
@@ -41,23 +53,30 @@ class << self
 
   def init_curses
     Curses.init_screen
+    Curses.start_color # pour la couleur
+    Curses.use_default_colors
     # Curses.curs_set(0)  # Invisible cursor
     # Window.keypad(true) # pour que les clés soient Curses::KEY::RETURN
     # Curses.nodelay= false # getch doit attendre
-    Curses.start_color # pour la couleur
     Curses.noecho
 
-    Curses.init_color(Curses::COLOR_ORANGE, 1000, 128*4, 0)
 
     # Pour définir une couleur
     Curses.init_pair(INDEX_COLOR,   Curses::COLOR_YELLOW, Curses::COLOR_WHITE)
     Curses.init_pair(TEXT_COLOR,    Curses::COLOR_BLACK,  Curses::COLOR_WHITE)
-    Curses.init_pair(RED_COLOR,     Curses::COLOR_RED,    Curses::COLOR_WHITE)
-    Curses.init_pair(RED_ON_BLACK_COLOR, Curses::COLOR_RED, Curses::COLOR_BLACK)
     Curses.init_pair(WHITE_ON_BLACK, Curses::COLOR_WHITE, Curses::COLOR_BLACK)
-    Curses.init_pair(ORANGE_COLOR,  Curses::COLOR_ORANGE, Curses::COLOR_WHITE)
-    Curses.init_pair(BLUE_COLOR,    Curses::COLOR_BLUE,   Curses::COLOR_WHITE)
-    Curses.init_pair(GREEN_COLOR,   Curses::COLOR_BLUE,   Curses::COLOR_WHITE)
+
+
+    Curses.init_pair(TEXT_COLOR,        CWindow::BnW_BLACK, 255) #Curses::BnW_WHITE
+    Curses.init_pair(INDEX_COLOR, 251,  CWindow::BnW_WHITE)
+    # Proximités
+    Curses.init_pair(RED_COLOR,     196,    CWindow::BnW_WHITE)
+    Curses.init_pair(ORANGE_COLOR,  214,    CWindow::BnW_WHITE) # 208
+    Curses.init_pair(BLUE_COLOR,    Curses::COLOR_BLUE,   CWindow::BnW_WHITE)
+    Curses.init_pair(GREEN_COLOR,   112,   CWindow::BnW_WHITE) # 70, 76
+    # Messages
+    Curses.init_pair(RED_ON_BLACK_COLOR, 196, CWindow::BnW_BLACK)
+
   end #/ init_curses
 
   def prepare_windows

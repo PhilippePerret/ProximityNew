@@ -9,6 +9,7 @@ class << self
     case cmd
     when /^debug\(/,  /^log\(/
       cmd = "eval #{cmd}"
+      CWindow.log("Consulter #{cmd.match?(/^debug\(/) ? 'debug' : 'journal'}.log pour voir le résultat (quitter pour journal.log).")
       log("♻︎ Commande rectifiée : #{cmd.inspect}")
     end
 
@@ -26,6 +27,22 @@ class << self
     when 'essai'
       # Pour faire des essais et les lancer par ":essai"
 
+      color1 = cmd.shift.to_i
+      color2 = cmd.shift.to_i
+      color3 = cmd.shift.to_i
+      log("can_change_color? #{Curses.can_change_color?.inspect}", true)
+      log("Curses.has_colors? #{Curses.has_colors?.inspect}", true)
+      nombre_couleurs = Curses.colors
+      log("Nombre couleurs : #{nombre_couleurs.inspect}")
+
+      (0..1000).step(100) do |color1|
+        (0...nombre_couleurs).each do |icolor|
+          CWindow.log("Couleur index #{icolor} / color #{color1} / ")
+          sleep 0.5
+          # Curses.init_color(icolor, color1, 0, 0)
+          Curses.init_pair(1, icolor, icolor)
+        end
+      end
 
     when 'next'
       what = cmd.shift
