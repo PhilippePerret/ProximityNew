@@ -1,6 +1,7 @@
 # encoding: UTF-8
 # Chemin d'accès à la table à voir
-DB_PATH = "/Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text_prox/db.sqlite"
+# DB_PATH = "/Users/philippeperret/Programmation/ProximityNew/asset/exemples/simple_text_prox/db.sqlite"
+DB_PATH = "/Users/philippeperret/Programmation/ProximityNew/asset/exemples_errones/Le_Parc_complet_v2020-08-15_prox/db.sqlite"
 
 REQUESTS = []
 
@@ -13,7 +14,7 @@ REQUESTS = []
 # # REQUESTS << request
 
 # TEXT-ITEMS
-request = "SELECT Idx, Content, Offset FROM text_items WHERE Idx < 15 ORDER BY Idx ASC;"
+request = "SELECT Idx, Content, Offset FROM text_items WHERE Idx > 82300 AND Idx < 82500 ORDER BY Idx ASC;"
 REQUESTS << [request, :afficher_mots]
 
 # TABLES

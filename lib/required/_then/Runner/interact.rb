@@ -144,6 +144,7 @@ T195_TO_LETTER = {
   128 => 'À'.freeze, 130 => 'Ä'.freeze,
   174 => 'î'.freeze, 175 => 'ï'.freeze,
   142 => 'Î'.freeze, 143 => 'Ï'.freeze,
+  180 => 'ô'.freeze, 181 => 'ö'.freeze,
   185 => 'ù'.freeze, 187 => 'û'.freeze, 188 => 'ü'.freeze,
   153 => 'Ù'.freeze, 155 => 'Û'.freeze, 156 => 'Ü'.freeze,
 }

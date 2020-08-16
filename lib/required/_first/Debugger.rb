@@ -68,7 +68,10 @@ class << self
 
   def add(str, options = nil)
     options ||= {}
-    str = "#{Time.now.to_s}-- #{str}" if options[:time]
+    str = str.to_s
+    if options[:time]
+      str = "#{Time.now.to_s}-- #{str}"
+    end
     File.open(path,'a'){|f|f.write(str.freeze + RC)}
   end #/ add
 

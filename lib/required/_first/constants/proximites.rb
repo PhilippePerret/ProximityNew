@@ -100,4 +100,6 @@ LOCUTIONS = {
   'plus'  => {loc:'de plus en plus', req:[[1,2], [3, nil]]},
   'moins'  => {loc:'de moins en moins', req:[[1,2], [3, nil]]},
   'côte'  => {loc:'côte à côte', req:[[nil,2], [2, nil]]},
+  'jour'  => {loc:'de jour en jour', req:[[1,2],[3,nil]]},
+  'jours' => {loc:'de jours en jours', req:[[1,2],[3,nil]]},
 }

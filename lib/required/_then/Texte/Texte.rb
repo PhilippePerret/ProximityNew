@@ -59,14 +59,17 @@ def get_titems(params)
   if params.key?(:to_id)
     where_clause << "Id <= ?" ; values << params[:to_id]
   end
-  db.results_as_hash = true
+  db.db.results_as_hash = true
   request = "SELECT * FROM text_items WHERE #{where_clause.join(AND)};"
   stm_get_titems = db.db.prepare(request)
   db_result = stm_get_titems.execute(values)
-  db.results_as_hash = false
-  db_result.collect do |row|
+  # log("#{RC*3}db_result:#{RC}#{db_result.inspect}")
+  titems = db_result.collect do |row|
     TexteItem.instantiate(row)
   end
+  stm_get_titems.close
+
+  titems
 end #/ get_titems
 
 # Reçoit un index absolu et retourne le text-item du texte correspondant.

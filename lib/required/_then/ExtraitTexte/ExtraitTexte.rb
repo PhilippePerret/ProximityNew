@@ -135,7 +135,6 @@ def output
     #
     # Noter que c'est ce calcul des longueurs qui va définir les proximités
     # du mot si c'est un mot et qu'elles existent.
-    log("Calcul des longueurs de #{titem.cio}")
     titem.calcule_longueurs(self)
 
     # On prend déjà le prochain offset pour voir si on doit passer à la

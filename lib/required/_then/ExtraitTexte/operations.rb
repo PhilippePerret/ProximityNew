@@ -6,17 +6,20 @@ class ExtraitTexte
 # Régler les trois valeurs ci-dessous en fonction des envies et
 # des besoins.
 # ---------------------------------------------------------------------
+def debug_try?
+  true
+end #/ debug_try?
 def debug_ignore?
-  false
+  true
 end #/ debug_ignore?
 def debug_replace?
-  false
+  true
 end #/ debug_replace?
 def debug_remove?
-  false
+  true
 end #/ debug_remove?
 def debug_insert?
-  false
+  true
 end #/ debug_insert?
 
 # ---------------------------------------------------------------------
@@ -60,6 +63,10 @@ end #/ un_ignore
 # Pour essayer une opération
 # Cela revient à ne faire que la simulation de l'opération
 def essayer(params)
+  if debug_try?
+    log("-> essayer(params:#{params.inspect})")
+    params.merge!(debug: true)
+  end
   params[:operation] =  case params[:ope]
                         when 'rep' then 'replace'
                         when 'ins' then 'insert'
@@ -381,7 +388,9 @@ end #/ insert
 #   :content        Le contenu à insérer
 #   :operation      Opération ('insert','replace' ou 'insert')
 def simulation(params)
-  debug("-> simulation. Quelques paramètres : content:#{params[:content].inspect}, operation:#{params[:operation]}, at:#{params[:at]}") if params[:debug]
+  if params[:debug]
+    debug("-> simulation. Quelques paramètres : content:#{params[:content].inspect}, operation:#{params[:operation]}, at:#{params[:at]}, titem_ref:#{params[:titem_ref].inspect}")
+  end
   # Si on a besoin de connaitre l'opération, elle se trouve dans
   # params[:operation]
 
@@ -445,7 +454,7 @@ def simulation(params)
   # On peut mettre tous les nouveaux titems dans les paramètres, ce qui
   # permettra de ne pas avoir à les recalculer dans la méthode.
   params.merge!(new_titems: new_titems)
-  debug("Nouveaux text-items mis dans params: #{new_titems.inspect}") if params[:debug]
+  debug("Nouveaux text-items mis dans params[:new_titems]: #{new_titems.inspect}") if params[:debug]
 
   # *** On peut vérifier enfin les proximités ***
 
@@ -481,8 +490,9 @@ def simulation(params)
     # partir pour regarder et l'offset (pris dans le text-item de référence)
     # permet de calculer la distance entre les mots.
     new_mot.reset
+    new_mot.index   = params[:titem_ref].index
     new_mot.index_in_extrait = params[:real_at].at
-    new_mot.offset = params[:titem_ref].offset
+    new_mot.offset  = params[:titem_ref].offset
 
     # On cherche avant
     # ----------------
@@ -499,6 +509,10 @@ def simulation(params)
       titem_apres = new_mot.prox_apres.mot_apres
       confirmations << " -> #{titem_apres.content.inspect} (#{titem_apres.index_in_extrait})"
     end
+
+    # Je retirer l'index et l'offset pour qu'il n'y ait pas de confusion
+    new_mot.index   = nil
+    new_mot.offset  = nil
   end #/Fin de boucle sur tous les nouveaux items
 
   if params[:noop]

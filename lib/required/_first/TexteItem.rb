@@ -21,10 +21,17 @@ class << self
   def instantiate(hdata, index_in_extrait = nil)
     # log("TexteItem::instantiate(hdata:#{hdata.inspect})")
     hdata.each do |k, v|
-      hdata[k] = case v
-      when "TRUE"   then true
-      when "FALSE"  then false
-      else v
+      begin
+        hdata[k] = case v
+        when "TRUE"   then true
+        when "FALSE"  then false
+        else v
+        end
+      rescue Exception => e
+        erreur("Problème avec TexteItem.instantiate avec les données envoyées")
+        log("Données transmises : hdata:#{hdata.inspect}, index_in_extrait: #{index_in_extrait.inspect}")
+        erreur(e)
+        raise "Abandon obligatoire"
       end
     end
     if hdata['IsMot']
@@ -360,6 +367,7 @@ end #/ proximites_length
 # Retourne true si le text-item se trouve dans l'extrait affiché
 def in_extrait?
   @is_in_extrait ||= begin
+    raise("index ne devrait pas être nil") if index.nil?
     @is_in_extrait = index >= ProxPage.current_page.from && index <= ProxPage.current_page.to
     @is_in_extrait = @is_in_extrait ? :true : :false
   end
@@ -590,10 +598,15 @@ private
     not(in_prev_page?) && not(in_next_page?)
   end #/ in_current_page?
   def in_prev_page?
-    index_in_extrait < 0
+    if index_in_extrait.nil?
+      index >= Runner.iextrait.extrait_pre_items.first.index &&
+      index < Runner.iextrait.extrait_titems.first.index
+    else
+      index_in_extrait < 0
+    end
   end #/ in_prev_page?
   def in_next_page?
-    index > Runner.iextrait.to_item
+    index > Runner.iextrait.to_item && index <= Runner.iextrait.extrait_post_items.last.index
   end #/ in_next_page?
 
 end #/TexteItem

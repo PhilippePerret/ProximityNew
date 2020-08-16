@@ -1,6 +1,7 @@
 # encoding: UTF-8
 TIRET = '-'.freeze unless defined?(TIRET)
 UNDERSCORE = '_'.freeze unless defined?(UNDERSCORE)
+AND = ' AND '.freeze unless defined?(AND)
 
 class String
 

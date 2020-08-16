@@ -48,7 +48,10 @@ def insert_text_items(liste)
           # Cela se produit quand c'est le premier élément qui n'a pas d'offset
           # Dans ce cas, on prend l'offset du mot qui possède actuellement
           # l'index du nouveau mot dans la table
-          db_res = get_titem_by_index(i.index + Runner.iextrait.from_item, as_hash = true)
+          db_res = get_titem_by_index(i.index, as_hash = true)
+          if db_res.nil?
+            db_res = get_titem_by_index(i.index + Runner.iextrait.from_item, as_hash = true)
+          end
           log("[insert_text_items] Premier item sans offset défini.#{RC}titem: #{i.inspect}#{RC}db_res: #{db_res.inspect}")
           last_offset = db_res['Offset']
           last_length = 0
