@@ -146,6 +146,15 @@ class << self
           ican.items.each {|item| debug(item.cio) }
         end
         CWindow.log("Canons écrits dans debug.log.")
+      when 'pages'
+        debug(RC*3)
+        debug("=== DEBUG DES PAGES ===")
+        ProxPage.pages.each do |numero, page|
+          debug(page.debug)
+        end
+        CWindow.log("Pages débugguées dans le fichier debug.log")
+      else
+        erreur("Je ne sais pas débugger “#{what}”")
       end
 
 

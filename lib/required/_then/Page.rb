@@ -13,7 +13,7 @@
 class ProxPage
 # La largeur maximale pour la ligne, qu'on ne peut pas dépasser même
 # si l'écran est plus grand.
-TEXTE_COLS_WIDTH      = 100
+TEXTE_COLS_WIDTH = 100
 class << self
 
 # Hash contenant les instances des pages, calculées au chargement
@@ -29,12 +29,17 @@ attr_accessor :current_numero_page
 def current_page ; pages[current_numero_page] end #/ current_page
 
 # Cette méthode calcule les pages au chargement du texte
-# Pour le moment, elle est à l'essai pour savoir si elle ne prendra pas
-# trop de temps au chargement.
+# Elle calcule ces pages en fonction de la taille de l'écran.
 def calcule_pages(itexte)
   itexte ||= Runner.itexte
   log("Calcul des pages. Merci de patienter…", true)
+
+  # Pour savoir combien ça prendre de temps
   start_time = Time.now.to_f
+
+  # On relève les informations de tous les text-items mais seulement celles
+  # qui servent pour le calcul des pages, c'est-à-dire l'index, l'offset et
+  # la longueur du mot. Et également pour savoir si c'est un mot ou un non-mot.
   db_result = itexte.db.execute(GET_PAGES_USEFULL_INFOS_DB)
   # log("db_result pour le calcul des pages : #{db_result.inspect}") # ATTENTION : GROS SI GROS FICHIER
   # Les pages qu'on va rassembler. En clé, il y aura l'indice de la
@@ -45,36 +50,55 @@ def calcule_pages(itexte)
   @current_line = 1
   @current_page = 1
   # L'index courant dans la page. Il va permettre de savoir s'il faut ajouter
-  # ou non des espaces pour la longueur.
+  # ou non des espaces pour la longueur quand l'index devient grand.
+  # Par exemple, si le mot est "à" est que l'index est 265, le mot n'aura pas
+  # une longueur de 1 (pour "à") mais une longueur de 3 (pour "265").
   @current_index_in_page = 0
 
+  # Pour consigner le premier index de la page courante.
   @from_index = 0
 
   # On boucle sur chaque text-item pour définir le premier et le dernier
   # de chaque page en fonction des longueurs.
   db_result.each do |row|
 
-    # Le text-item courant
-    index, longueur, index_charriot, is_mot = row
-    has_charriot = index_charriot > 0
-    is_mot = is_mot == 'TRUE' ? true : false
-    # Pour les mots, si leur longueur est inférieure à la longueur que va
-    # prendre l'index courant dans la page, on doit ajouter la différence
-    # pour connaitre la longueur à prendre en compte. Ici, on aura seulement
-    # les proximités qui pourront allonger la longueur.
-    # NOTE Si on voit vraiment que les proximités ajoutent beaucoup, il faut
-    # avoir la possibilité d'ajouter 1 à chaque mot.
-    index_len = @current_index_in_page.to_s.length
-    if is_mot && longueur < index_len
-      longueur += (index_len - longueur) if is_mot
+    # Les infos du text-item courant de +row+
+    # +index_charriot+ correspond au décalage du retour chariot dans le mot,
+    # pour savoir s'il en contient un. S'il en contient un, on doit passer à
+    # la ligne.
+    row << @current_index_in_page
+    titem = TextItemPage.new(*row)
+    # id, index, titem_len, index_charriot, is_mot = row
+
+    # Debug - Etat des lieux
+    #
+    if titem.index < 700 # true # false pour ne pas debugger
+      msg = "#{RC}-- TITEM index:#{titem.index} - longueur:#{titem.length} - is_mot:#{titem.mot?.inspect}"
+      msg << "#{RC}   avec : @current_index_in_page:#{@current_index_in_page.inspect} (@from_index:#{@from_index.inspect}) @current_long:#{@current_long.inspect} @current_line:#{@current_line.inspect} @current_page:#{@current_page.inspect}"
+      log(msg)
     end
+
 
     # Si c'est un retour chariot, on passe à la ligne suivante et peut-être
     # à la page suivante.
-    if has_charriot
-      create_new_line(@from_index, index)
-      # On peut tout de suite passer au text-item suivant.
-      next
+    if titem.has_charriot?
+
+      # --- Si le text-item comprend un retour chariot ---
+
+      @current_line += 1
+      if @current_line < max_lines_per_page
+        # On passe simplement à la ligne suivant (pas de changement de page)
+        create_new_line(titem)
+        next # On peut tout de suite passer au text-item suivant.
+      else
+        # On passe à une nouvelle page
+        create_new_page
+      end
+
+    else
+
+      # --- Si ce n'est pas un retour chariot ---
+      
     end
 
     # # Debug only
@@ -85,13 +109,13 @@ def calcule_pages(itexte)
     # Si on dépasse la longueur max de la ligne en ajoutant cette longueur
     # à la longueur courante alors il faut passer à la ligne suivante
     # Si on passe à la page suivante, on crée une nouvelle page.
-    if @current_long + longueur > max_line_length
+    if @current_long + titem_len >= max_line_length
       create_new_line(@from_index, index - 1)
     end
 
     # On ajoute la longueur du text-item courant à la longueur de la
     # ligne.
-    @current_long += longueur
+    @current_long += titem_len
     @current_index_in_page += 1
     # Pour se souvenir du dernier index traité, pour la dernière page qui
     # sera créé en sortie de boucle
@@ -144,6 +168,7 @@ def last_item_page_from_index(itexte, from_item)
 
     has_charriot = index_charriot > 0
     is_mot = is_mot == 'TRUE' ? true : false
+
     # Pour les mots, si leur longueur est inférieure à la longueur que va
     # prendre l'index courant dans la page, on doit ajouter la différence
     # pour connaitre la longueur à prendre en compte. Ici, on aura seulement
@@ -237,7 +262,7 @@ end #/ max_line_length
 # C'est la raison pour laquelle il faut diviser par 3
 def max_lines_per_page
   @max_lines_per_page ||= begin
-    ((CWindow.hauteur_texte) / 3)  - 1
+    ((CWindow.hauteur_texte) / 3) - 4
   end
 end #/ max_lines_per_page
 
@@ -252,7 +277,6 @@ private
   #               tout dernier index dans la boucle, parfois c'est le précédent.
   def create_new_line(from_idx, to_idx, options = nil)
     options ||= {}
-    @current_line += 1
     @current_long = 0
     # Si la ligne suivante passe à la page suivante, on doit initier une
     # nouvelle page
@@ -268,6 +292,9 @@ private
       @current_line   = 1
       @from_index     = to_idx + 1
       @current_index_in_page = 0
+    else
+      # Tant qu'on ne passe pas à la page suivante
+      @current_line += 1
     end
   end #/ create_new_ligne
 
@@ -277,11 +304,21 @@ private
   end #/ create_new_page
 
 end # /<< self
+
+
+
+
+
+
 # ---------------------------------------------------------------------
 #
 #   INSTANCE
 #
 # ---------------------------------------------------------------------
+
+
+
+
 attr_reader :from, :to, :numero, :lines_count
 def initialize(data)
   @from   = data[:from]
@@ -290,7 +327,10 @@ def initialize(data)
   @lines_count = data[:lines_count]
 end #/ initialize
 
-
+# @Return un String pour le débuggage de la page
+def debug
+  "#{@numero.to_s.ljust(4)}#{@from.to_s.ljust(8)}#{@to.to_s.ljust(8)}".freeze
+end #/ debug
 
 # La vue SQLite qui va permettre de calculer vite les pages
 # NOTE Je n'arrive pas à la faire fonctionner (JE PENSE QUE C'EST À CAUSE
@@ -313,17 +353,6 @@ AS
     Offset ASC
   ;
 SQL
-# Requête qui permet de relever les informations utiles pour calculer les
-# pages dans la base de données
-GET_PAGES_USEFULL_INFOS_DB = <<-SQL.freeze.strip
-SELECT
-  Idx,
-  LENGTH(Content),
-  INSTR(Content, #{RC.inspect}),
-  IsMot
-FROM text_items
-ORDER BY Offset ASC
-SQL
 REQUEST_GET_TITEMS_INFOS_FROM_FOR = <<-SQL.freeze.strip
 SELECT
   Idx,
@@ -337,3 +366,53 @@ ORDER BY `Offset` ASC
 SQL
 
 end #/ProxPage
+
+# Requête qui permet de relever les informations utiles pour calculer les
+# pages dans la base de données
+GET_PAGES_USEFULL_INFOS_DB = <<-SQL.freeze.strip
+SELECT
+  Id,
+  Idx,
+  LENGTH(Content),
+  INSTR(Content, #{RC.inspect}),
+  IsMot
+FROM text_items
+ORDER BY Offset ASC
+SQL
+# Structure MotPage pour simplifier le travail avec l'établissement des
+# pages en fonction de l'interface.
+# La liste des arguments ci-dessous doit correspondre à la liste des
+# arguments de la classe SELECT ci-dessus.
+TextItemPage = Struct.new(:id, :index, :content_length, :offset_rc, :is_mot, :index_in_page) do
+
+  # Longueur effectif du text-item dans la page
+  # -------------------------------------------
+  # Pour les mots, si leur longueur est inférieure à la longueur que va
+  # prendre l'index courant dans la page, on doit ajouter la différence
+  # pour connaitre la longueur à prendre en compte. Ici, on aura seulement
+  # les proximités qui pourront allonger la longueur.
+  def length
+    @length ||= begin
+      if mot? && index_length > content_length
+        index_length
+      else
+        content_length
+      end
+    end
+  end #/ length
+
+  def index_length
+    @index_length ||= index_in_page.to_s.length
+  end #/ index_length
+
+  def mot?
+    @is_a_mot ||= (is_mot == 'TRUE' ? :true : :false)
+    @is_a_mot == :true
+  end #/ mot?
+
+  def has_charriot?
+    @has_charriot ||= (offset_rc > 0 ? :true : :false)
+    @has_charriot == :true
+  end #/ has_charriot?
+
+end
