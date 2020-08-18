@@ -10,7 +10,6 @@ end # /<< self
 def non_mot? ; true end
 def mot? ; false end
 def is_mot ; false end
-def ponctuation?; false end
 def ignored?
   is_ignored === true
 end #/ ignored?

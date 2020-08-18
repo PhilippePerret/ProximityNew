@@ -150,7 +150,7 @@ def calcule_pages(itexte)
     if @current_page.nil? || @current_page.lines_count == max_lines_per_page
       # log("[Nouvelle page] @current_line_length = #{@current_line_length.inspect} / @current_page (#{@current_page&.numero.inspect}).lines_count (#{@current_page&.lines_count.inspect}) > max_lines_per_page (#{max_lines_per_page.inspect}) ? #{(@current_page&.lines_count.to_i > max_lines_per_page).inspect}")
       @current_page = ProxPage.new(first_titem:titem)
-      raise "pour arrêter là" if @current_page.numero > 3
+
       # On ré-initialise les valeurs
       @index_in_page = -1 # pour commencer à 0
       @current_line_length = 0

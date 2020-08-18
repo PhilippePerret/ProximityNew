@@ -120,7 +120,7 @@ def output
   duplicate_titems = extrait_titems.reverse
 
   # Pour suivre l'index du mot
-  tit_index = -1 # pour commencer à 0
+  index_titem_in_extrait = -1 # pour commencer à 0
 
   while titem = duplicate_titems.pop
 
@@ -128,9 +128,9 @@ def output
 
     # On reset toujours le text-item pour forcer tous les recalculs
     titem.reset
-    titem.index_in_extrait = (tit_index += 1)
+    titem.index_in_extrait = (index_titem_in_extrait += 1)
 
-    log_msg << "#{RC*2}* ÉTUDE DE ““#{titem.content}”” POUR OUTPUT"
+    log_msg << "#{RC*2}* ÉTUDE DE ““#{titem.content}”” (index #{titem.index_in_extrait}) POUR OUTPUT"
 
     # On doit calculer la longeur que ce text-item va occuper. Cette longueur
     # dépend :
@@ -147,9 +147,10 @@ def output
     #   - savoir si le text-item suivant est une ponctuation (si c'est une
     #     ponctuation, elle doit toujours être attachée au mot courant)
     next_titem = duplicate_titems[-1]
-    unless next_titem.nil?
-      next_titem.index_in_extrait = tit_index + 1
+    if not next_titem.nil?
+      next_titem.index_in_extrait = index_titem_in_extrait + 1
       next_titem.calcule_longueurs(self)
+      log_msg << "\t- Longueur text-item suivant : #{next_titem.f_length}"
     end
     log_msg << "\t\t(item suivant : #{next_titem&.content.inspect})"
 
@@ -160,14 +161,39 @@ def output
     #   - le mot suivant est une ponctuation OU que le mot courant finit
     #     par une apostrophe
     next_must_be_joined = not(next_titem.nil?) && (next_titem.ponctuation? || titem.elized?)
-    log_msg << "\t  not(next_titem.nil?) (#{not(next_titem.nil?).inspect}) && (next_titem.ponctuation? (#{next_titem.ponctuation?.inspect}) || titem.elized? (#{titem.elized?.inspect})) = #{(not(next_titem.nil?) && (next_titem.ponctuation? || titem.elized?)).inspect}"
-    log_msg << "\t  Détail de ponctuation? : not(mot?) (#{not(next_titem.mot?).inspect}) && not(!!FIRST_SIGN_PHRASE[content[0]]) (#{not(!!FIRST_SIGN_PHRASE[next_titem.content[0]]).inspect}) && ( has_point? (#{next_titem.has_point?.inspect}) || new_paragraph? #{next_titem.new_paragraph?.inspect}) = #{(not(next_titem.mot?) && not(!!FIRST_SIGN_PHRASE[next_titem.content[0]]) && ( next_titem.has_point? || next_titem.new_paragraph? )).inspect}"
-    log_msg << "\t- Doit être join au suivant ? #{next_must_be_joined.inspect}"
 
-    if not next_titem.nil?
-      if next_titem.ponctuation?
-        log_msg << "\t- l'item suivant (““#{next_titem.content}””) est une ponctuation"
-        log_msg << "\t  Sa longueur est #{next_titem.f_length}"
+    if next_titem.nil?
+      log_msg << "\t\t= next_titem est nil"
+    else
+      if next_titem.mot?
+        log_msg << "\t\t= next_titem est un mot"
+      else
+        log_msg << "\t\t= next_titem n'est pas un mot"
+        if next_must_be_joined
+          log_msg << "\t\t- titem doit être join au suivant"
+        else
+          log_msg << "\t\t- titem ne doit pas être join au suivant"
+        end
+        # if FIRST_SIGN_PHRASE[next_titem.content[0]]
+        #   log_msg << "\t\t= next_titem commence par un signe de début de phrase"
+        # else
+        #   log_msg << "\t\t= next_titem ne commence pas par un signe de début de phrase"
+        # end
+        # if next_titem.has_point?
+        #   log_msg << "\t\t= next_titem contient un point quelconque"
+        # else
+        #   log_msg << "\t\t= next_titem ne contient pas de point"
+        # end
+        # if next_titem.new_paragraph?
+        #   log_msg << "\t\t= tnext_titem contient un retour chariot"
+        # else
+        #   log_msg << "\t\t= tnext_titem ne contient pas de retour chariot"
+        # end
+        # if next_titem.ponctuation?
+        #   log_msg << "\t\t= next_titem est une ponctuation"
+        # else
+        #   log_msg << "\t\t= next_titem n'est pas une ponctuation"
+        # end
       end
     end
 
@@ -198,7 +224,7 @@ def output
       log_msg << "\t=> next_offset_virtuel (#{next_offset_virtuel.inspect}) > max_text_length (#{max_text_length.inspect}) => On doit passer à la ligne suivante pour écrire “““#{titem.content}”””."
 
       # On finit la ligne avec les caractères manquants
-      finir_ligne(current_line, cursor_offset)
+      finir_ligne(current_line, ProxPage::LEFT_MARGIN + cursor_offset)
 
       # Si c'est le dernier item, on peut s'arrêter là.
       break if is_last_titem
@@ -218,7 +244,7 @@ def output
         titem.f_index,
         titem.f_content,
         titem.f_proximities
-      ], current_line, cursor_offset, titem.text_color, titem.prox_color
+      ], current_line, ProxPage::LEFT_MARGIN + cursor_offset, titem.text_color, titem.prox_color
     )
 
     # On se place sur l'offset suivant
@@ -227,13 +253,19 @@ def output
     # Si le mot suivant doit être écrit aussi
     if next_must_be_joined
       log_msg << "\t  On ajoute l'item suivant"
-      duplicate_titems.pop # on le retire vraiment
+
+      # On retire vraiment l'item de la liste et on incrémente vraiment
+      # l'index du text-item dans la page (on ne l'avait fait que virtuellement
+      # avant)
+      duplicate_titems.pop
+      index_titem_in_extrait += 1
+
       write3lines(
         [
           next_titem.f_index,
           next_titem.f_content,
           next_titem.f_proximities
-        ], current_line, cursor_offset, next_titem.text_color, next_titem.prox_color
+        ], current_line, ProxPage::LEFT_MARGIN + cursor_offset, next_titem.text_color, next_titem.prox_color
       )
 
       # On se place sur l'offset suivant
@@ -245,9 +277,11 @@ def output
 
   end # Fin de boucle sur tous les items à afficher
 
+  # On finalise la ligne courante
+  finir_ligne(current_line, ProxPage::LEFT_MARGIN + cursor_offset)
+
   # On ajoute une dernière ligne blanche pour que ce soit mieux
-  # TODO On pourrait ne le faire que si on n'a pas mis trop de lignes
-  CWindow.textWind.writepos([current_line+1, 0], SPACE * max_line_length)
+  CWindow.textWind.writepos([(current_line * 3) + 1, 0], SPACE * max_line_length, CWindow::TEXT_COLOR)
 
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
@@ -277,7 +311,7 @@ end #/ write3lines
 # Méthode graphique qui permet de "finir" une ligne affichée en ajoutant les
 # espace au bout de la couleur normale.
 def finir_ligne(current_line, curoff)
-  dif = max_line_length - (curoff + ProxPage::RIGHT_MARGIN)
+  dif = max_line_length - curoff
   manque = (SPACE * dif).freeze
   write3lines([manque,manque,manque], current_line, curoff)
 end #/ finir_ligne
