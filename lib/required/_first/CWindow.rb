@@ -37,6 +37,7 @@ RED_COLOR     = 110
 ORANGE_COLOR  = 111
 BLUE_COLOR    = 112
 GREEN_COLOR   = 113
+RETURN_COLOR  = 114
 RED_ON_BLACK_COLOR = 120 # En cas d'erreur
 
 CWindow::BnW_BLACK = 0   # pur noir
@@ -66,9 +67,10 @@ class << self
     Curses.init_pair(TEXT_COLOR,    Curses::COLOR_BLACK,  Curses::COLOR_WHITE)
     Curses.init_pair(WHITE_ON_BLACK, Curses::COLOR_WHITE, Curses::COLOR_BLACK)
 
-
+    # Texte
     Curses.init_pair(TEXT_COLOR,        CWindow::BnW_BLACK, 255) #Curses::BnW_WHITE
     Curses.init_pair(INDEX_COLOR, 251,  CWindow::BnW_WHITE)
+    Curses.init_pair(RETURN_COLOR, 88, 159)
     # Proximités
     Curses.init_pair(RED_COLOR,     196,    CWindow::BnW_WHITE)
     Curses.init_pair(ORANGE_COLOR,  214,    CWindow::BnW_WHITE) # 208

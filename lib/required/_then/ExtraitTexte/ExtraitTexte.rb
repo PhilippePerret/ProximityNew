@@ -1,8 +1,10 @@
 # encoding: UTF-8
 require 'tempfile'
+require_relative '../Page'
 
 class ExtraitTexte
 DEFAULT_NOMBRE_ITEMS  = 400 # c'est de toute façon le nombre de lignes qui importe
+
 # ---------------------------------------------------------------------
 #
 #   INSTANCE
@@ -31,11 +33,15 @@ def initialize itexte, params
   # log("params: #{params.inspect}")
   @itexte = itexte
   if params[:numero_page]
+    # Quand on fournit le numéro de page à voir
     ProxPage.current_numero_page = params[:numero_page]
     @page = ProxPage.current_page
-    @from_item = @page.from
-    @to_item = @page.to
+    @from_item = @page.from_index
+    @to_item = @page.last_index
+  elsif params.key?(:from_index)
+    ProxPage.current_page = ProxPage.page_from_index_mot(params[:from_index])
   elsif params.key?(:index)
+    # Quand on fournit un index de text-item
     @page = nil
     @from_item = nil
     case params[:index_is]
@@ -43,10 +49,10 @@ def initialize itexte, params
       @from_item = params[:index]
       ProxPage.current_numero_page = nil
     when :in_page
-      @page = ProxPage.page_from_index_mot(params[:index])
-      ProxPage.current_numero_page = @page.numero
-      @from_item = @page.from
-      @to_item = @page.to
+      ProxPage.current_page = ProxPage.page_from_index_mot(params[:index])
+      @page = ProxPage.current_page
+      @from_item  = @page.from_index
+      @to_item    = @page.last_index
     end
   end
   # Pour forcer la relève
@@ -75,140 +81,205 @@ end #/ prepare
 # lignes occupées qui va décider du nombre de mots.
 LENGTH_TEXT_IN_TEXT_WINDOW = 1500 # pour essai
 
-# Le nombre d'espaces laissés à droite pour la marge
-RIGHT_MARGIN = 2
-# Idem à gauche
-LEFT_MARGIN = 2
-#
-SPACES_LEFT_MARGIN = (SPACE * LEFT_MARGIN).freeze
+# Les espaces pour former la marge gauche
+SPACES_LEFT_MARGIN = (SPACE * ProxPage::LEFT_MARGIN).freeze
 
 def output
+  log("-> ExtraitTexte#output")
 
-  # Dans la nouvelle formule, on récolte les items dans la base de données
-  # qui correspondent au panneau demandé. Ce panneau est défini par l'index
-  # @from_item. Cet index définit un offset qu'il suffit de relever dans la
-  # table text_items. Cet offset permet de définir les text-items à prendre
-  # avant le premier mot.
-  # Ensuite, on doit trouver le dernier mot, dont l'offset permettra de
-  # définir le dernier mot qu'il faut relever.
-  # Un extrait contient donc :
-  #   titem d'offset offset-premier - distance_minimale commune
-  #   jusque
-  #   titem d'index @from_item
-  #   jusque
-  #   titem d'index @to_item (mais comment est-il calculé ? peut-être
-  #   d'après l'offset du premier mot, aussi, sachant qu'on ne peut mettre
-  #   qu'une certaine distance dans la fenêtre)
-  #   jusque
-  #   le titem d'offset offset-dernier + distance_minimale_commune
+  # Dans la nouvelle formule, on a déjà récolté les text-items dans la base
+  # de données qui correspondent au panneau demandé (à la page ProxPage).
+  # Voir la préparation des listes.
 
+  # On nettoie la fenêtre
   CWindow.textWind.clear
 
   # *** Définitions préliminaires ***
 
-  top_line_index = 0
+  # La ligne de texte courante à l'écran, qui doit correspondre au nombre
+  # de lignes établies. Noter qu'ici :
+  #
+  #       1 ligne de texte = 3 lignes d'écran
+  #
+  #   1. ligne des index
+  #   2. ligne du texte (des text-items)
+  #   3. ligne des proximités (qu'il y en ait ou non)
+  #
+  current_line = 0
 
   # On décale toujours d'une espace pour la lisibilité
-  write_indentation(top_line_index)
-  offset = LEFT_MARGIN
+  write_indentation(current_line)
 
-  # Pour retenir le véritable dernier index affiché
-  real_last_index = nil
-
-  # *** fin des préparations préliminaires ***
+  # +cursor_offset+ conserve la valeur x du décalage horizontal courant
+  # Comme on a déjà indenté la ligne, on part à la valeur de la
+  # marge gauche. NON. Maintenant, on ne s'encombre plus de ça, on travaille
+  # avec la longueur possible de texte uniquement
+  cursor_offset = 0
 
   # On boucle sur toutes les notes de l'extrait pour les afficher
-  # Note : c'est la méthode propriété +extrait_titems+ qui va recueillir
-  # les text-items à afficher ici.
-  # log("extrait_titems:#{extrait_titems.inspect}") # ATTENTION : prend de la place si gros texte
-  extrait_titems.each_with_index do |titem, idx|
+  duplicate_titems = extrait_titems.reverse
+
+  # Pour suivre l'index du mot
+  tit_index = -1 # pour commencer à 0
+
+  while titem = duplicate_titems.pop
+
+    log_msg = []
 
     # On reset toujours le text-item pour forcer tous les recalculs
     titem.reset
+    titem.index_in_extrait = (tit_index += 1)
+
+    log_msg << "#{RC*2}* ÉTUDE DE ““#{titem.content}”” POUR OUTPUT"
 
     # On doit calculer la longeur que ce text-item va occuper. Cette longueur
     # dépend :
     #
     #   a) de la longueur du texte lui-même (ponctuation ou mot)
     #   b) de l'index dans la page courante (3 si "234")
-    #   c) des proximités s'il y en a.
+    #   c) des proximités s'il y en a, et la place qu'elles occupent.
     #
-    # Noter que c'est ce calcul des longueurs qui va définir les proximités
-    # du mot si c'est un mot et qu'elles existent.
     titem.calcule_longueurs(self)
+    log_msg << "\t- Longueur (f_length) : #{titem.f_length}"
 
-    # On prend déjà le prochain offset pour voir si on doit passer à la
-    # ligne avant d'ajouter de text-item.
-    next_offset = offset + titem.f_length
+    # On a besoin de l'item suivant pour plusieurs choses :
+    #   - savoir si le text-item courant est le dernier du texte
+    #   - savoir si le text-item suivant est une ponctuation (si c'est une
+    #     ponctuation, elle doit toujours être attachée au mot courant)
+    next_titem = duplicate_titems[-1]
+    unless next_titem.nil?
+      next_titem.index_in_extrait = tit_index + 1
+      next_titem.calcule_longueurs(self)
+    end
+    log_msg << "\t\t(item suivant : #{next_titem&.content.inspect})"
 
-    # On a besoin de savoir si c'est le dernier text-item pour savoir ce que
-    # l'on devra faire en cas d'ajout de blancs.
-    is_last_titem = extrait_titems[idx+1].nil?
+    # Faut-il coller le text-item courant au text-item suivant ?
+    # (pour pouvoir compter la longueur qu'on obtiendrait). On doit coller
+    # avec le mot suivant lorsque :
+    #   - le mot suivant existe
+    #   - le mot suivant est une ponctuation OU que le mot courant finit
+    #     par une apostrophe
+    next_must_be_joined = not(next_titem.nil?) && (next_titem.ponctuation? || titem.elized?)
+    log_msg << "\t  not(next_titem.nil?) (#{not(next_titem.nil?).inspect}) && (next_titem.ponctuation? (#{next_titem.ponctuation?.inspect}) || titem.elized? (#{titem.elized?.inspect})) = #{(not(next_titem.nil?) && (next_titem.ponctuation? || titem.elized?)).inspect}"
+    log_msg << "\t  Détail de ponctuation? : not(mot?) (#{not(next_titem.mot?).inspect}) && not(!!FIRST_SIGN_PHRASE[content[0]]) (#{not(!!FIRST_SIGN_PHRASE[next_titem.content[0]]).inspect}) && ( has_point? (#{next_titem.has_point?.inspect}) || new_paragraph? #{next_titem.new_paragraph?.inspect}) = #{(not(next_titem.mot?) && not(!!FIRST_SIGN_PHRASE[next_titem.content[0]]) && ( next_titem.has_point? || next_titem.new_paragraph? )).inspect}"
+    log_msg << "\t- Doit être join au suivant ? #{next_must_be_joined.inspect}"
 
-    # Si le prochain offset obtenu est supérieur à la longueur maximale
-    # de la ligne ou que c'est un nouveau paragraphe, on passe à la ligne
-    # suivante
-    if ( next_offset > (max_line_length + LEFT_MARGIN) ) || titem.new_paragraphe?
-      # On finit la ligne avec les caractères manquants
-      finir_ligne(top_line_index, offset)
-
-      # Si c'est le dernier item, on peut s'arrêter là.
-      if is_last_titem
-        real_last_index = idx
-        break
-      else
-        # Si ce n'est pas le dernier text-item à afficher, on doit passer à la
-        # ligne suivante et ajouter une espace au début (pour la lisibilité)
-        top_line_index += 3
-        # Mais si ce nombre n'est plus inférieur à la hauteur du texte (écran),
-        # on doit s'arrêter là
-        if top_line_index + 3 > CWindow.hauteur_texte - 1
-          real_last_index = idx
-          break
-        end
-        # Sinon, on peut poursuivre sur la ligne suivante
-        write_indentation(top_line_index)
-        offset = LEFT_MARGIN
-        next if titem.new_paragraphe?
+    if not next_titem.nil?
+      if next_titem.ponctuation?
+        log_msg << "\t- l'item suivant (““#{next_titem.content}””) est une ponctuation"
+        log_msg << "\t  Sa longueur est #{next_titem.f_length}"
       end
     end
 
-    # *** C'est ici qu'on écrit les trois lignes de la phrase
+    # On a besoin de savoir si c'est le dernier text-item pour savoir ce que
+    # l'on devra faire en cas d'ajout de blancs.
+    is_last_titem = next_titem.nil?
+
+    # On calcule le prochain offset (cursor_offset) pour voir si on doit passer à la
+    # ligne avant d'ajouter de text-item.
+    # Dans le nouveau calcul, on doit tenir compte du fait qu'on met toujours
+    # les ponctuations et les retours chariot à la fin de la ligne, jamais au
+    # début de la suivante.
+    titem_total_len = titem.f_length.dup
+    # On ajoute la longueur du text-item suivant si c'est une ponctuation.
+    titem_total_len += next_titem.f_length if next_must_be_joined
+    log_msg << "\t- Longueur Totale occupée par le text-item#{next_must_be_joined ? ' et le suivant' : EMPTY_STRING} : #{titem_total_len}"
+
+    # Le décalage horizontal si on collait ce mot (et peut-être sa
+    # ponctuation ou son retour chariot)
+    next_offset_virtuel = cursor_offset + titem_total_len
+    log_msg << "\t  === Ce qui conduirait le curseur à #{next_offset_virtuel}"
+
+    # Si le prochain offset, auquel on ajoute la valeur de la marge, est
+    # supérieur à la longueur maximale de la ligne, alors il faut passer
+    # à la ligne suivante
+    if next_offset_virtuel >= max_text_length
+
+      log_msg << "\t=> next_offset_virtuel (#{next_offset_virtuel.inspect}) > max_text_length (#{max_text_length.inspect}) => On doit passer à la ligne suivante pour écrire “““#{titem.content}”””."
+
+      # On finit la ligne avec les caractères manquants
+      finir_ligne(current_line, cursor_offset)
+
+      # Si c'est le dernier item, on peut s'arrêter là.
+      break if is_last_titem
+
+      # Si ce n'est pas le dernier text-item à afficher, on doit passer à la
+      # ligne suivante et ajouter la marge gauche (pour la lisibilité)
+      current_line += 1
+      write_indentation(current_line)
+      cursor_offset = 0
+
+    end
+
+    # *** On écrit LE TEXT-ITEM SUR LES TROIS LIGNES DE LA PHRASE ***
+
     write3lines(
       [
-        titem.f_index(idx),
+        titem.f_index,
         titem.f_content,
         titem.f_proximities
-      ], top_line_index, offset, titem.prox_color
+      ], current_line, cursor_offset, titem.text_color, titem.prox_color
     )
 
-    # Si on devait s'arrêter là, ce serait le vrai dernier index
-    # Noter qu'il est défini plusieurs fois ci-dessous quand on
-    # stoppe la boucle.
-    real_last_index = idx
+    # On se place sur l'offset suivant
+    cursor_offset += titem.f_length
 
-    # On se place sur l'offset suivant en fonction de la longueur affichée
-    # du text-item
-    offset += titem.f_length
+    # Si le mot suivant doit être écrit aussi
+    if next_must_be_joined
+      log_msg << "\t  On ajoute l'item suivant"
+      duplicate_titems.pop # on le retire vraiment
+      write3lines(
+        [
+          next_titem.f_index,
+          next_titem.f_content,
+          next_titem.f_proximities
+        ], current_line, cursor_offset, next_titem.text_color, next_titem.prox_color
+      )
+
+      # On se place sur l'offset suivant
+      cursor_offset += next_titem.f_length
+
+    end
+
+    log(log_msg.join(RC) + RC*3)
 
   end # Fin de boucle sur tous les items à afficher
 
   # On ajoute une dernière ligne blanche pour que ce soit mieux
-  CWindow.textWind.writepos([top_line_index,0], SPACE*(max_line_length+LEFT_MARGIN+RIGHT_MARGIN), CWindow::INDEX_COLOR)
-
-  # On peut définir le dernier index d'item de l'extrait, c'est utile pour
-  # d'autres méthodes. Noter que pour les pages, ça devrait être assez
-  # juste.
-  @to_item = real_last_index
+  # TODO On pourrait ne le faire que si on n'a pas mis trop de lignes
+  CWindow.textWind.writepos([current_line+1, 0], SPACE * max_line_length)
 
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
   log("<- ExtraitTexte#output")
 end #/ output
 
-def finir_ligne(top_line_index, offset)
-  manque = (SPACE * ((max_line_length - offset) + LEFT_MARGIN + RIGHT_MARGIN)).freeze
-  write3lines([manque,manque,manque], top_line_index, offset)
+# Méthode générale qui affiche les trois lignes pour le texte
+#
+# @Params
+#   +treelines+   {Array} Les trois textes à écrire (index, texte, proximités)
+#   +curline+     {Integer} La ligne virtuelle courante (rappel : une ligne
+#                 virtuelle est égale à 3 lignes graphiques)
+#   +curoff+      {Integer} Décalage horizontal du texte (cursor offset)
+#   +color_prox+  {Integer} Indice de la couleur pour caractériser la proximité
+#                 Quatre couleurs du vert au rouge suivant la proximité.
+#
+def write3lines treelines, curline, curoff, text_color = nil, color_prox = nil
+  lgn_idx, lgn_titem, lgn_prox = treelines
+  top = curline * 3
+  color_prox ||= CWindow::TEXT_COLOR
+  text_color ||= CWindow::TEXT_COLOR
+  CWindow.textWind.writepos([top,   curoff], lgn_idx,   CWindow::INDEX_COLOR)
+  CWindow.textWind.writepos([top+1, curoff], lgn_titem, text_color)
+  CWindow.textWind.writepos([top+2, curoff], lgn_prox,  color_prox)
+end #/ write3lines
+
+# Méthode graphique qui permet de "finir" une ligne affichée en ajoutant les
+# espace au bout de la couleur normale.
+def finir_ligne(current_line, curoff)
+  dif = max_line_length - (curoff + ProxPage::RIGHT_MARGIN)
+  manque = (SPACE * dif).freeze
+  write3lines([manque,manque,manque], current_line, curoff)
 end #/ finir_ligne
 
 # @Return la longueur maximale que peut occuper une ligne
@@ -216,37 +287,39 @@ def max_line_length
   @max_line_length ||= ProxPage.max_line_length
 end #/ max_line_length
 
+# @Return {Integer} la longueur maximale du texte, hors marges. C'est-à-dire
+# la longueur que peut vraiment avoir le texte dans l'affichage.
+# Attention, la valeur est différente de celle dans ProxPage, pour le calcul
+# des pages, où on laisse un tampon (voir pourquoi dans ProxPage)
+def max_text_length
+  @max_text_length ||= max_line_length - ( ProxPage::RIGHT_MARGIN + ProxPage::LEFT_MARGIN)
+end #/ max_text_length
+
+# Méthode graphique qui écrit une indentation sur les trois lignes de texte
 def write_indentation(yindex)
   write3lines([SPACES_LEFT_MARGIN,SPACES_LEFT_MARGIN,SPACES_LEFT_MARGIN], yindex, 0)
 end #/ write_indentation
 
+# PRÉPARATION DES LISTES
+#
+# Méthode définissant les variables :
+#   @extrait_titems       Text-items de l'extrait courant
+#   @extrait_pre_titems   Text-items précédent l'extrait courant, à distance
+#                         de proximité minimale.
+#   @extrait_post_titems  Text-items succédant l'extrait courant, à distance
+#                         de proximité minimale.
+#
 def prepare_listes
   # Les trois listes qui vont être définies ici
   @extrait_titems     = nil
-  @extrait_pre_items  = nil
-  @extrait_post_items = nil
+  @extrait_pre_titems  = nil
+  @extrait_post_titems = nil
 
-  # Pour pouvoir récupérer les données sous forme de Hash.
-  # Attention :
-  #   * les clés sont des strings
-  #   * les noms de colonnes sont avec capitales ("Offset", "Content", etc.)
-  itexte.db.results_as_hash = true
-
-  # On prend dans la DB le tout premier mot qui doit être affiché dans la
-  # fenêtre. Cet text-item doit obligatoirement exister, sinon on lève une
-  # exception.
-  # +hfrom+ est un Hash contenant les données du mot.
-  hfrom_item = itexte.db.get_titem_by_index(from_item)
-  # Si ce n'est pas un mot, on prend le précédent, car on commence toujours
-  # par un mot (pour l'esthétique)
-  if hfrom_item['IsMot'] == 'FALSE'
-    log("On doit prendre l'item d'avant pour avoir un Mot.")
-    @from_item -= 1
-    hfrom_item = itexte.db.get_titem_by_index(from_item)
-  end
-  if hfrom_item.nil?
-    raise "Grave erreur, le text-item d'index #{from_item.inspect} est introuvable dans la DB"
-  end
+  # La page courante
+  # ipage.titems contient tous les text-items de la page, donc de l'extrait.
+  # QUESTION quid si c'est un affichage :show xxxx ?
+  ipage = ProxPage.current_page
+  @extrait_titems = ipage.text_items
 
   # log("DB: #{itexte.db.path}")
   # log("hfrom_item (index #{from_item.inspect}): #{hfrom_item.inspect}")
@@ -255,69 +328,43 @@ def prepare_listes
   # un offset de la distance minimale commune avant
   # +offset_first+ Integer Décalage absolu du mot dans le texte. Cette valeur
   # est toujours juste puisqu'elle est recalculée chaque fois
-  offset_first = hfrom_item['Offset']
-  log("Offset du tout premier mot affiché : #{offset_first.inspect} (mot “#{hfrom_item['Content']}” d'index #{from_item})")
+  first_text_item = ipage.text_items.first
+  offset_first = first_text_item.offset
+  log("Offset du tout premier mot affiché : #{offset_first.inspect} (mot “#{first_text_item.content}” d'index #{first_text_item.index})")
   first_offset_avant = offset_first - itexte.distance_minimale_commune
   log("On doit prendre les text-items avant jusqu'à l'offset #{first_offset_avant.inspect}")
   # La requête String permettant de récupérer ces text-items
   request = "SELECT * FROM text_items WHERE Offset >= ? AND Offset < ? ORDER BY Offset ASC".freeze
   itexte.db.results_as_hash = true
-  titems_avant = itexte.db.db.execute(request, first_offset_avant, offset_first)
-  log("Nombre de titems trouvés : #{titems_avant.count}")
+  titems_avant = itexte.db.execute(request, first_offset_avant, offset_first)
+  log("Nombre de titems trouvés avant : #{titems_avant.count}")
 
   # On instancie les text-items avant pour en faire des instances et
   # on règle sur index dans l'extrait affiché.
   idx = titems_avant.count + 1 # pour que le dernier soit à -1
-  @extrait_pre_items = titems_avant.collect do |hdata|
+  @extrait_pre_titems = titems_avant.collect do |hdata|
     TexteItem.instanciate(hdata, -(idx -= 1))
   end
-  # log("@extrait_pre_items = #{@extrait_pre_items.inspect}")
+  # log("@extrait_pre_titems = #{@extrait_pre_titems.inspect}")
 
-  # On cherche les text-items qui vont se trouver dans la fenêtre
-  # Si on connait @to_item, comme pour une page, on les relève simplement.
-  # Sinon, il faut en relever une certaines quantité jusqu'à atteindre la
-  # quantité voulue par rapport à la page. On se sert pour cela des méthodes
-  # de ProxPage qui sait calculer les longueurs de page en fonction de
-  # l'interface actuelle.
-  if @to_item.nil?
-    @to_item = ProxPage.last_item_page_from_index(itexte, from_item)
-  end
-  log("=== @to_item : #{@to_item.inspect}")
-  @to_item || raise("@to_item ne peut absolument pas être nil…")
-
-  request = "SELECT * FROM text_items WHERE Idx >= ? AND Idx <= ? ORDER BY Idx ASC".freeze
-  itexte.db.results_as_hash = true
-  titems_dedans = itexte.db.execute(request, from_item, to_item)
-
-  # On instancie tous les items qui peuvent appartenir à l'extrait
-  # On définit aussi l'index dans l'extrait de chaque text-item.
-  # Noter qu'il ne faut pas le faire au fur et à mesure de la composition
-  # de la page (dans `output`) car sinon, si l'item 34 est en proximité avec
-  # l'item 39, au moment où on écrit #34 et ses proximités, l'index n'est pas
-  # encore défini pour #39.
-  idx = -1 # on commencera à 1 car c'est le premier text-item qui porte
-          # l'index 0
-  extitems =  titems_dedans.collect do |hdata|
-                TexteItem.instanciate(hdata, idx += 1)
-              end
   # On a besoin de l'offset du dernier mot pour savoir jusqu'où il faut
   # prendre la suite.
-  offset_last = titems_dedans.last['Offset']
+  last_text_item = ipage.text_items.last
+  offset_last = last_text_item.offset
   last_offset_apres = offset_last + itexte.distance_minimale_commune
   request = "SELECT * FROM text_items WHERE Offset > ? AND Offset <= ? ORDER BY Offset ASC".freeze
-  titems_apres = itexte.db.db.execute(request, offset_last, last_offset_apres)
+  itexte.db.results_as_hash = true
+  titems_apres = itexte.db.execute(request, offset_last, last_offset_apres)
   # log("titems_apres : #{titems_apres.inspect}")
 
   # On ajoute les instances des titems après (non affichés) aux titems de l'extrait
-  @extrait_post_items = titems_apres.collect do |hdata|
+  @extrait_post_titems = titems_apres.collect do |hdata|
                           TexteItem.instanciate(hdata, idx += 1)
                         end
 
   # On remet les résultats de la base de données sans table, comme c'est par
   # défaut. Cela permet d'accélerer les traitements.
   itexte.db.results_as_hash = false
-
-  @extrait_titems = extitems
 
   # # Décommenter pour débugger tous les items qui seront dans l'extrait,
   # # avant ou après
@@ -332,8 +379,8 @@ end #/ prepare_listes
 def debug_trois_listes_titems
   delimitation = TIRET*80
   log("#{RC*2}#{delimitation}#{RC}Text-items dans l'extrait courant (from_item #{from_item})#{RC}")
-  log("--- @extrait_pre_items ---")
-  mots = extrait_pre_items.collect do |titem|
+  log("--- @extrait_pre_titems ---")
+  mots = extrait_pre_titems.collect do |titem|
     "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
   end.join(RC)
   log(RC + mots)
@@ -342,8 +389,8 @@ def debug_trois_listes_titems
     "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
   end.join(RC)
   log(RC + mots)
-  log("--- @extrait_post_items ---")
-  mots = extrait_post_items.collect do |titem|
+  log("--- @extrait_post_titems ---")
+  mots = extrait_post_titems.collect do |titem|
     "    * “#{titem.content.gsub(/\n/,'\n')}” - offset: #{titem.offset} - index: #{titem.index_in_extrait}".freeze
   end.join(RC)
   log(RC + mots)
@@ -356,16 +403,9 @@ def extrait_titems ; @extrait_titems end
 # Les text-items AVANT l'extrait affiché
 # [1] Note : cette liste, comme la liste post_items, ne sert que pour définir
 #     les proximités d'avec les premiers et derniers mots (autour)
-def extrait_pre_items; @extrait_pre_items end
+def extrait_pre_titems; @extrait_pre_titems end
 # Les text-items APRÈS l'extrait affiché
-def extrait_post_items; @extrait_post_items end
-
-def write3lines treelines, top, offset, color_prox = nil
-  idx, titem, prox = treelines
-  CWindow.textWind.writepos([top,   offset], idx,   CWindow::INDEX_COLOR)
-  CWindow.textWind.writepos([top+1, offset], titem,   CWindow::TEXT_COLOR)
-  CWindow.textWind.writepos([top+2, offset], prox,  color_prox || CWindow::RED_COLOR)
-end #/ write3lines
+def extrait_post_titems; @extrait_post_titems end
 
 # Actualisation de l'affichage
 #
@@ -392,7 +432,7 @@ def recompte
   # Ils n'ont pas besoin d'être recomptés au niveau de leur index, puisque
   # cet index ne peut pas être modifié. En revanche, on peut les reset(ter)
   # car leurs proximités peuvent avoir changé
-  extrait_pre_items.each do |titem|
+  extrait_pre_titems.each do |titem|
     titem.reset
   end
 
@@ -408,7 +448,7 @@ def recompte
   # Leur index peut évidemment avoir changé, si des mots ont été ajoutés
   # ou supprimés par exemple.
   idx = extrait_titems.count - 1 # -1 car on ajoute tout de suite 1
-  extrait_post_items.each do |titem|
+  extrait_post_titems.each do |titem|
     titem.reset
     titem.index_in_extrait = (idx += 1)
   end

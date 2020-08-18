@@ -12,6 +12,8 @@ attr_reader :path
 attr_reader :items
 # Le premier mot (ou non mot) courant
 attr_accessor :current_first_item
+# Le dernier index de mot
+attr_accessor :last_index
 
 def initialize(path)
   @path = path

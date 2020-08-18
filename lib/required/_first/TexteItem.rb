@@ -1,5 +1,10 @@
 # encoding: UTF-8
 class TexteItem
+
+REG_RC = /\r?\n/.freeze
+# Pour remplacer le retour chariot dans l'affichage du texte
+RETURN_GRAPH = ' ¶ '.freeze
+
 class << self
   attr_reader :items
 
@@ -286,18 +291,30 @@ end #/ sous_type
 #     a
 #     134|125
 #
+#   Le text-item contient un retour charriot
+#   => On ajoute 2 à la longueur
+#
 def f_length
   @f_length
 end #/ f_length
 
 # L'index formaté. On ne l'indique pas si c'est une ponctuation.
-def f_index(idx)
+def f_index(idx = nil)
+  idx ||= index_in_extrait
   (non_mot? ? SPACE : idx).to_s.ljust(f_length)
 end #/ f_index
 
+
 # Pour la deuxième ligne contenant le texte
 def f_content
-  @f_content ||= content.ljust(f_length)
+  @f_content ||= begin
+    if new_paragraph?
+      # content.gsub(REG_RC, '⏀↩︎¶')
+      content.gsub(REG_RC, RETURN_GRAPH)
+    else
+      content.ljust(f_length)
+    end
+  end
 end #/ f_content
 
 # Retourne le contenu à inscrire dans le fichier reconstitué
@@ -321,9 +338,9 @@ def f_proximities
     SPACE * f_length
   else
     s = []
-    s << (prox_avant.nil? ? '' : prox_avant.mot_avant.index_in_page)
+    s << (prox_avant.nil? ? '' : prox_avant.mot_avant.index_in_extrait.to_s)
     s << '|'
-    s << (prox_apres.nil? ? '' : prox_apres.mot_apres.index_in_page)
+    s << (prox_apres.nil? ? '' : prox_apres.mot_apres.index_in_extrait.to_s)
 
     # log("Index(s) de proximité de ##{id} : #{s.inspect}")
 
@@ -340,6 +357,7 @@ end #/ f_proximities
 def calcule_longueurs(iextrait)
   if non_mot?
     @f_length = content.length
+    @f_length += 2 if new_paragraph?
   else
     candidats_longueurs = []
     # La longueur du text-item est le premier candidat pour la longueur
@@ -358,8 +376,8 @@ end #/ calcule_longueurs
 #
 def proximites_length
   dist = []
-  dist << (prox_avant.nil? ? 0 : (prox_avant.mot_avant.index_in_page).length)
-  dist << (prox_apres.nil? ? 0 : (prox_apres.mot_apres.index_in_page).length)
+  dist << (prox_avant.nil? ? 0 : (prox_avant.mot_avant.index_in_extrait.to_s).length)
+  dist << (prox_apres.nil? ? 0 : (prox_apres.mot_apres.index_in_extrait.to_s).length)
 
   dist.inject(:+) + 1 # +1 pour la barre (dans tous les cas)
 end #/ proximites_length
@@ -400,9 +418,26 @@ def has_unknown_canon?
   @canon_is_unknown = canon == LEMMA_UNKNOWN if @canon_is_unknown.nil?
   @canon_is_unknown
 end #/ has_unknown_canon?
-def new_paragraphe?
-  content == RC
-end #/ new_paragraphe?
+
+# @Return TRUE si le text-item est une ponctuation
+def ponctuation?
+  not(mot?) && not(!!FIRST_SIGN_PHRASE[content[0]]) && ( has_point? || new_paragraph? )
+end #/ ponctuation?
+
+# @Return TRUE si c'est un mot est qu'il finit par une apostrophe
+def elized?
+  @content_is_elision ||= (content.end_with?(APO) ? :true : :false)
+  @content_is_elision == :true
+end #/ elised?
+
+def has_point?
+  @text_has_point ||= (content.match?(/[?!;.…:,]/) ? :true : :false)
+  @text_has_point == :true
+end #/ has_point?
+
+def new_paragraph?
+  content.match?(REG_RC)
+end #/ new_paragraph?
 
 def space?
   @is_space ||= (non_mot? && content == SPACE) ? :true : :false
@@ -416,6 +451,18 @@ def has_proximites?
   # log("has_proximites? = #{not(no_proximites?).inspect}")
   not(no_proximites?)
 end #/ has_proximites?
+
+# Renvoie l'indice de couleur pour le texte
+# Pour le moment, on s'en sert uniquement pour coloriser le retour chariot,
+# mais à l'avenir on pourrait aussi s'en servir pour la proximité (en colorisant
+# le text-item, pas seulement l'index)
+def text_color
+  if new_paragraph?
+    CWindow::RETURN_COLOR
+  else
+    CWindow::TEXT_COLOR
+  end
+end #/ text_color
 
 # Renvoie l'indice de couleur en fonction des proximités
 # Note : pour le moment, on prend la plus grosse mais il sera toujours
@@ -458,7 +505,7 @@ def prox_avant
       # fait un rapport ou qu'on débuggue un mot. Dans ce cas-là, la procédure
       # est tout autre.
       if in_extrait?
-        liste_seek =  iext.extrait_pre_items.dup
+        liste_seek =  iext.extrait_pre_titems.dup
         liste_seek += iext.extrait_titems[0...index_in_extrait] if index_in_extrait > 0
       else
         liste_seek = Runner.itexte.get_titems(from_offset: offset - Runner.itexte.distance_minimale_commune, to_offset: offset - 1)
@@ -509,7 +556,7 @@ def prox_apres
       # besoin.
       if in_extrait?
         liste_seek = iextr.extrait_titems[index_in_extrait+1..-1]
-        liste_seek += iextr.extrait_post_items
+        liste_seek += iextr.extrait_post_titems
       else
         liste_seek = Runner.itexte.get_titems(from_offset:offset+1, to_offset:offset + Runner.itexte.distance_minimale_commune)
       end
@@ -545,54 +592,6 @@ def prox_apres=(prox)
   @prox_apres_calculed = true
 end
 
-
-# @Return l'index {String} dans la page
-# Cette méthode est utilisée uniquement pour l'affichage de la page courante,
-# pour afficher les proximités.
-# Il y a trois possibilités et 3 traitements possibles :
-#   - le mot se trouve avant la page affichée => il porte la marque "-" et
-#     l'index dans la page précédente.
-#   - le mot se trouve dans la page affichée => simple, juste l'index
-#   - le mot se trouve dans la page après celle affichée => il porte la marque
-#     "+" et l'index dans la page suivante
-def index_in_page
-  curpage = ProxPage.current_numero_page
-  # log("* Recherche index-in-page de #{cio}")
-  # log("  index in extrait: #{index_in_extrait.inspect}")
-  # log("Numéro page courante : #{curpage.inspect}")
-  # log("Runner.iextrait.to_item: #{Runner.iextrait.to_item.inspect}")
-  # log("Runner.iextrait.from_item: #{Runner.iextrait.from_item.inspect}")
-  if in_current_page?
-    # log("Le mot #{cio} est dans la page courante")
-    index_in_extrait.to_s
-  elsif in_prev_page?
-    # log("Le mot #{cio} est dans la page précédente")
-    if curpage.nil?
-      # Quand l'extrait n'est pas une page (i.e. il a été affiché à partir
-      # d'un `:show xxxx`), on indique simplement la différence d'indice entre
-      # le mot courant et sa proximité
-      "#{index_in_extrait.inspect}".freeze # le "-" sera ajouté
-    else
-      # Une page est affichée, on peut trouver l'indice du mot sur la
-      # page précédente
-      prev_page = ProxPage.pages[curpage - 1]
-      index_rel = index - prev_page.from
-      "-#{index_rel}".freeze
-    end
-  elsif in_next_page?
-    # log("Le mot #{cio} est dans la page suivante")
-    if curpage.nil?
-      "+#{index_in_extrait}".freeze
-    else
-      next_page = ProxPage.pages[curpage + 1]
-      # log("next page : #{next_page.inspect}")
-      index_rel = index - next_page.from
-      # log("=> index_rel +#{index_rel}")
-      "+#{index_rel}".freeze
-    end
-  end
-end #/ index_in_page
-
 private
 
   def in_current_page?
@@ -600,14 +599,14 @@ private
   end #/ in_current_page?
   def in_prev_page?
     if index_in_extrait.nil?
-      index >= Runner.iextrait.extrait_pre_items.first.index &&
+      index >= Runner.iextrait.extrait_pre_titems.first.index &&
       index < Runner.iextrait.extrait_titems.first.index
     else
       index_in_extrait < 0
     end
   end #/ in_prev_page?
   def in_next_page?
-    index > Runner.iextrait.to_item && index <= Runner.iextrait.extrait_post_items.last.index
+    index > Runner.iextrait.to_item && index <= Runner.iextrait.extrait_post_titems.last.index
   end #/ in_next_page?
 
 end #/TexteItem
