@@ -82,7 +82,146 @@ end #/ prepare
 LENGTH_TEXT_IN_TEXT_WINDOW = 1500 # pour essai
 
 # Les espaces pour former la marge gauche
+# OBSOLÈTE avec la nouvelle formule en deux temps (calcul page - affichage page)
 SPACES_LEFT_MARGIN = (SPACE * ProxPage::LEFT_MARGIN).freeze
+
+# Dans l'idée de préparer la fenêtre avant, on fonctionne en deux temps :
+#   1.  On construit une table qui va contenir les différentes lignes à
+#       écrire, calculées d'après le texte à écrire. C'est ce que fait la
+#       méthode +calcul_output_page+
+#   2.  On envoie les données obtenues à la méthode +output+ pour qu'elle
+#       écrive la page.
+def calcul_output_page(x = 1)
+  # Cette liste contiendra à la fin du processus toutes les choses qu'il
+  # faudra écrire à l'écran. Chaque item est un élément qui contient :
+  #   - le contenu des trois lignes ou moins si c'est autre chose qu'un
+  #     text-item.
+  #   - le décalage horizontal
+  #   - la paire-couleur à utiliser
+  # Pour écrire la page, il suffira de passer en revue chaque élément et
+  # de l'envoyer à CWindow.textWind.writepos
+  abcde = []
+  # Une ligne d'entête en quelque sorte, au-dessus du texte
+  abcde << PageElement.new(0, 0, :blank, nil).prepare
+  # La ligne de texte courante à l'écran, qui doit correspondre au nombre
+  # de lignes établies. Noter qu'ici :
+  #
+  #       1 ligne de texte = 3 lignes d'écran
+  #
+  #   1. ligne des index
+  #   2. ligne du texte (des text-items)
+  #   3. ligne des proximités (qu'il y en ait ou non)
+  #
+  current_line = 0
+  # +cursor_offset+ conserve la valeur x du décalage horizontal courant
+  # Comme on a déjà indenté la ligne, on part à la valeur de la
+  # marge gauche. NON. Maintenant, on ne s'encombre plus de ça, on travaille
+  # avec la longueur possible de texte uniquement
+  cursor_offset = 0
+  # Pour suivre l'index du mot dans la page.
+  index_titem_in_extrait = -1 # -1 pour commencer à 0
+  # On commence par mettre une indentation
+  abcde << PageElement.new(1, 0, :indent).prepare
+  # On boucle sur toutes les notes de l'extrait pour les afficher
+  # La liste est inversée pour pop(er) les text-items plutôt que les
+  # shift(er) ce qui va plus vite.
+  duplicate_titems = extrait_titems.reverse
+  while titem = duplicate_titems.pop
+    # On reset toujours le text-item pour forcer tous ses recalculs
+    titem.reset
+    # On lui indique quel index il aura dans cette page-ci, ce qui lui
+    # permettra notamment de connaitre la longueur qu'il va occuper sur
+    # la ligne. Mais aussi de savoir quel nombre afficher au-dessus de
+    # lui, si c'est un mot.
+    titem.index_in_extrait = (index_titem_in_extrait += 1)
+    # On doit calculer la longeur que ce text-item va occuper. Cette longueur
+    # dépend :
+    #
+    #   a) de la longueur du texte lui-même (ponctuation ou mot)
+    #   b) de l'index dans la page courante (3 si "234")
+    #   c) des proximités s'il y en a, et la place qu'elles occupent.
+    #
+    titem.calcule_longueurs(self)
+    # On a besoin de l'item suivant pour plusieurs choses :
+    #   - savoir si le text-item courant est le dernier du texte
+    #   - savoir si le text-item suivant est une ponctuation (si c'est une
+    #     ponctuation, elle doit toujours être attachée au mot courant)
+    next_titem = duplicate_titems[-1]
+    if not next_titem.nil?
+      next_titem.index_in_extrait = index_titem_in_extrait + 1
+      next_titem.calcule_longueurs(self)
+    end
+    # Faut-il coller le text-item courant au text-item suivant ?
+    # (pour pouvoir compter la longueur qu'on obtiendrait). On doit coller
+    # avec le mot suivant lorsque :
+    #   - le mot suivant existe
+    #   - le mot suivant est une ponctuation OU que le mot courant finit
+    #     par une apostrophe
+    next_must_be_joined = not(next_titem.nil?) && (next_titem.ponctuation? || titem.elized?)
+    # On a besoin de savoir si c'est le dernier text-item pour savoir ce que
+    # l'on devra faire en cas d'ajout de blancs.
+    is_last_titem = next_titem.nil?
+    # On calcule le prochain offset (cursor_offset) pour voir si on doit passer à la
+    # ligne avant d'ajouter de text-item.
+    # Dans le nouveau calcul, on doit tenir compte du fait qu'on met toujours
+    # les ponctuations et les retours chariot à la fin de la ligne, jamais au
+    # début de la suivante.
+    titem_total_len = titem.f_length.dup
+    # On ajoute la longueur du text-item suivant si c'est une ponctuation.
+    titem_total_len += next_titem.f_length if next_must_be_joined
+    # Le décalage horizontal si on collait ce mot (et peut-être sa
+    # ponctuation ou son retour chariot)
+    next_offset_virtuel = cursor_offset + titem_total_len
+    # Si le prochain offset, auquel on ajoute la valeur de la marge, est
+    # supérieur à la longueur maximale de la ligne, alors il faut passer
+    # à la ligne suivante
+    if next_offset_virtuel < max_text_length
+      # OK, on ne dépasse pas la longueur maximale.
+    else
+      # On finit la ligne avec les caractères manquants
+      # finir_ligne(current_line, ProxPage::LEFT_MARGIN + cursor_offset)
+      abcde << PageElement.new(current_line, cursor_offset, :finition).prepare
+      # Si c'est le dernier item, on peut s'arrêter là.
+      break if is_last_titem
+      # Si ce n'est pas le dernier text-item à afficher, on doit passer à la
+      # ligne suivante et ajouter la marge gauche (pour la lisibilité)
+      current_line += 1
+      cursor_offset = 0
+      # Une identation pour commencer la ligne
+      abcde << PageElement.new(current_line, 0, :indent).prepare
+    end
+    # *** On écrit LE TEXT-ITEM SUR LES TROIS LIGNES DE LA PHRASE ***
+    abcde << PageElement.new(current_line, cursor_offset, :titem, titem).prepare
+    # On se place sur l'offset suivant
+    cursor_offset += titem.f_length
+    # Si le mot suivant doit être écrit aussi, on le prend en le retirant de
+    # la liste pour ne pas le traiter une seconde fois.
+    if next_must_be_joined
+      # On retire vraiment l'item de la liste et on incrémente vraiment
+      # l'index du text-item dans la page (on ne l'avait fait que virtuellement
+      # avant)
+      duplicate_titems.pop
+      index_titem_in_extrait += 1
+      abcde << PageElement.new(current_line, cursor_offset, :titem, next_titem).prepare
+      # On se place sur l'offset suivant pour poursuivre
+      # Noter qu'ici, forcément, on n'est pas au bout de la ligne
+      cursor_offset += next_titem.f_length
+    end
+  end # fin de boucle sur tous les text-items de la page
+  # On finalise la ligne
+  abcde << PageElement.new(current_line, cursor_offset, :finition).prepare
+  # On passe donc à la ligne suivante
+  current_line += 1
+  # On ajoute les deux lignes de pied de page
+  abcde << PageElement.new(current_line * 3, 0, :blank).prepare
+  abcde << PageElement.new(current_line * 3 + 1, 0, :blank).prepare
+  # On mémorise les pages-elements de cette page
+  @next_page_calculed = abcde
+end #/ calcul_output_page
+
+def output_page_calculed(x = nil)
+  @next_page_calculed.each { |page_element| page_element.output }
+end #/ output_page_calculed
 
 def output
   log("-> ExtraitTexte#output")
@@ -107,6 +246,9 @@ def output
   #
   current_line = 0
 
+  # On écrit une ligne vierge au-dessus pour décoller du bord haut
+  write_blank_line(0, 1)
+
   # On décale toujours d'une espace pour la lisibilité
   write_indentation(current_line)
 
@@ -130,7 +272,7 @@ def output
     titem.reset
     titem.index_in_extrait = (index_titem_in_extrait += 1)
 
-    log_msg << "#{RC*2}* ÉTUDE DE ““#{titem.content}”” (index #{titem.index_in_extrait}) POUR OUTPUT"
+    log_msg << "#{RC*2}* ÉTUDE DE ““#{titem.content.gsub(/\n/,'\n')}”” (index #{titem.index_in_extrait}) POUR OUTPUT"
 
     # On doit calculer la longeur que ce text-item va occuper. Cette longueur
     # dépend :
@@ -170,7 +312,7 @@ def output
       else
         log_msg << "\t\t= next_titem n'est pas un mot"
         if next_must_be_joined
-          log_msg << "\t\t- titem doit être join au suivant"
+          log_msg << "\t\t- titem doit être joint au suivant"
         else
           log_msg << "\t\t- titem ne doit pas être join au suivant"
         end
@@ -214,13 +356,18 @@ def output
     # Le décalage horizontal si on collait ce mot (et peut-être sa
     # ponctuation ou son retour chariot)
     next_offset_virtuel = cursor_offset + titem_total_len
-    log_msg << "\t  === Ce qui conduirait le curseur à #{next_offset_virtuel}"
 
     # Si le prochain offset, auquel on ajoute la valeur de la marge, est
     # supérieur à la longueur maximale de la ligne, alors il faut passer
     # à la ligne suivante
-    if next_offset_virtuel >= max_text_length
+    if next_offset_virtuel < max_text_length
+      # OK, on ne dépasse pas la longueur maximale.
 
+      log_msg << "\t\t=== La nouvelle position du curseur sera #{next_offset_virtuel}"
+
+    else
+
+      log_msg << "\t  === Ce qui conduit le curseur à #{next_offset_virtuel}"
       log_msg << "\t=> next_offset_virtuel (#{next_offset_virtuel.inspect}) > max_text_length (#{max_text_length.inspect}) => On doit passer à la ligne suivante pour écrire “““#{titem.content}”””."
 
       # On finit la ligne avec les caractères manquants
@@ -232,6 +379,7 @@ def output
       # Si ce n'est pas le dernier text-item à afficher, on doit passer à la
       # ligne suivante et ajouter la marge gauche (pour la lisibilité)
       current_line += 1
+      log_msg << "\t\t* Incrémentation du numéro de ligne : #{current_line}"
       write_indentation(current_line)
       cursor_offset = 0
 
@@ -271,9 +419,12 @@ def output
       # On se place sur l'offset suivant
       cursor_offset += next_titem.f_length
 
-    end
+    end # fin de si le suivant doit être ajouté
 
-    log(log_msg.join(RC) + RC*3)
+    # Debug
+    # -----
+    # log(log_msg.join(RC) + RC*3)
+    ## Ce panneau réaffiche toutes les informations sur le découpage
 
   end # Fin de boucle sur tous les items à afficher
 
@@ -281,12 +432,19 @@ def output
   finir_ligne(current_line, ProxPage::LEFT_MARGIN + cursor_offset)
 
   # On ajoute une dernière ligne blanche pour que ce soit mieux
-  CWindow.textWind.writepos([(current_line * 3) + 1, 0], SPACE * max_line_length, CWindow::TEXT_COLOR)
+  current_line += 1
+  write_blank_line(current_line * 3 + 1, 2)
 
   # Il faut se souvenir qu'on a regardé en dernier ce tableau
   Runner.itexte.config.save(last_first_index: from_item)
   log("<- ExtraitTexte#output")
 end #/ output
+
+# Méthode pour écrire une ou +nombre+ ligne vierge à la hauteur +top+
+def write_blank_line(top, nombre = 1)
+  large = Array.new(nombre, blank_line).join(RC)
+  CWindow.textWind.writepos([top, 0], large, CWindow::TEXT_COLOR)
+end #/ write_blank_line
 
 # Méthode générale qui affiche les trois lignes pour le texte
 #
@@ -300,7 +458,7 @@ end #/ output
 #
 def write3lines treelines, curline, curoff, text_color = nil, color_prox = nil
   lgn_idx, lgn_titem, lgn_prox = treelines
-  top = curline * 3
+  top = curline * 3 + 1 # +1 pour la ligne supérieure
   color_prox ||= CWindow::TEXT_COLOR
   text_color ||= CWindow::TEXT_COLOR
   CWindow.textWind.writepos([top,   curoff], lgn_idx,   CWindow::INDEX_COLOR)
@@ -315,6 +473,11 @@ def finir_ligne(current_line, curoff)
   manque = (SPACE * dif).freeze
   write3lines([manque,manque,manque], current_line, curoff)
 end #/ finir_ligne
+
+# @Return {String} une ligne vierge qui couvre toute la page
+def blank_line
+  @blank_line ||= SPACE * max_line_length
+end #/ blank_line = SPACE * max_line_length
 
 # @Return la longueur maximale que peut occuper une ligne
 def max_line_length
