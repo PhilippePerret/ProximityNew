@@ -183,11 +183,11 @@ def db_values
 end #/ db_values
 
 def db_mark_scrivener_start
-  mark_scrivener_start.values.join(VG) unless mark_scrivener_start.nil?
+  [mark_scrivener_start[:lettre],mark_scrivener_start[:id]].join(VG) unless mark_scrivener_start.nil?
 end #/ db_mark_scrivener_start
 
 def db_mark_scrivener_end
-  mark_scrivener_end.values.join(VG) unless mark_scrivener_end.nil?
+  [mark_scrivener_end[:lettre],mark_scrivener_end[:id]].join(VG) unless mark_scrivener_end.nil?
 end #/ db_mark_scrivener_end
 
 # Méthode appelée avant tout recomptage (donc dès qu'une opération est
@@ -323,10 +323,21 @@ end #/ f_content
 def content_rebuilt
   c = content
   if mark_scrivener_start
-    c.prepend("<$Scr_#{mark_scrivener_start[:lettre]}s::#{mark_scrivener_start[:id]}>".freeze)
+    mark_lettre, mark_id =  if mark_scrivener_start.is_a?(String)
+                              mark_scrivener_start.split(VG)
+                            else
+                              mark_scrivener_start.values
+                            end
+    # On ajoute cette marque de début de style
+    c.prepend("<$Scr_#{mark_lettre}s::#{mark_id}>".freeze)
   end
   if mark_scrivener_end
-    c.prepend("<!$Scr_#{mark_scrivener_end[:lettre]}s::#{mark_scrivener_end[:id]}>".freeze)
+    mark_lettre, mark_id =  if mark_scrivener_end.is_a?(String)
+                              mark_scrivener_end.split(VG)
+                            else
+                              mark_scrivener_end.values
+                            end
+    c.prepend("<!$Scr_#{mark_lettre}s::#{mark_id}>".freeze)
   end
   return c
 end #/ content_rebuilt

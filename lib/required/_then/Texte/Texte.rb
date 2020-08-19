@@ -9,7 +9,6 @@ include ConfigModule
 #
 # ---------------------------------------------------------------------
 attr_reader :path
-attr_reader :items
 # Le premier mot (ou non mot) courant
 attr_accessor :current_first_item
 # Le dernier index de mot
@@ -40,9 +39,10 @@ end #/ reset
 #                     :to_offset
 #                     :from_id
 #                     :to_id
-def get_titems(params)
+def get_titems(params = nil)
   where_clause = []
   values = []
+  params ||= {}
   if params.key?(:from_offset)
     where_clause << "Offset >= ?"; values << params[:from_offset]
   end
@@ -62,7 +62,21 @@ def get_titems(params)
     where_clause << "Id <= ?" ; values << params[:to_id]
   end
   db.db.results_as_hash = true
-  request = "SELECT * FROM text_items WHERE #{where_clause.join(AND)};"
+  # On construit la requête
+  request = "SELECT * FROM text_items"
+  unless where_clause.empty?
+    request << " WHERE #{where_clause.join(AND)}".freeze
+  end
+  if params.key?(:order)
+    request << " ORDER BY #{params[:order]}".freeze
+  else
+    request << " ORDER BY Idx ASC".freeze
+  end
+  if params.key?(:limit)
+    request << " LIMIT #{params[:limit]}".freeze
+  end
+  request += ";"
+  request = request.freeze
   stm_get_titems = db.db.prepare(request)
   db_result = stm_get_titems.execute(values)
   # log("#{RC*3}db_result:#{RC}#{db_result.inspect}")
