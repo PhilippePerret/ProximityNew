@@ -285,8 +285,11 @@ def output
 
     # Debug
     # -----
+    #
     # log(log_msg.join(RC) + RC*3)
     ## Ce panneau réaffiche toutes les informations sur le découpage
+    #
+    #
 
   end # Fin de boucle sur tous les items à afficher
 
@@ -425,9 +428,14 @@ def prepare_listes
   # défaut. Cela permet d'accélerer les traitements.
   itexte.db.results_as_hash = false
 
-  # # Décommenter pour débugger tous les items qui seront dans l'extrait,
-  # # avant ou après
+  ### Debug
+  ### -----
+  ###
+  ### Décommenter pour débugger tous les items qui seront dans l'extrait,
+  ### avant ou après
   # debug_trois_listes_titems
+  ###
+  ###
 
 end #/ prepare_listes
 

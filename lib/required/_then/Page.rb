@@ -211,7 +211,16 @@ def calcule_pages(itexte)
     # Réglé en rafale mais de toute façon il y aura une victime…
     Runner.itexte.last_index = titem.index
 
-    log(msg_log.join(RC) + RC*2)
+    ### Debug
+    ### -----
+    ###
+    ### Pour afficher l'analyse du mot. Attention, si c'est un gros
+    ### fichier ça peut produire un erreur journal.log
+    ###
+    # log(msg_log.join(RC) + RC*2)
+    ###
+    ###
+    ###
 
   end
   #/ fin de boucle sur chaque mot (il peut y en avoir des dizaines de milliers)
