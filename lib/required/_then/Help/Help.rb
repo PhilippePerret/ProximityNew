@@ -12,6 +12,21 @@ class << self
 
 
   def show(suite_cmd)
+    options = optionize(suite_cmd)
+    dispatch_options(options)
+    CWindow.log("Affichage de l'aide (ligne #{first_line} à #{last_line}).")
+    CWindow.textWind.clear
+    CWindow.textWind.write(aide_lines[first_line..last_line].join(RC), CWindow::WHITE_ON_BLACK)
+    interact_with_user
+  end #/ show
+
+  def dispatch_options(options)
+    self.first_line   = options[:first_line]
+    self.last_line    = options[:last_line]
+    self.destinataire = options[:destinataire]
+  end #/ dispatch_options
+
+  def optionize(suite_cmd)
     options = {destinataire: :user}
     first_arg = suite_cmd.shift
     case first_arg
@@ -21,13 +36,8 @@ class << self
     # On ajoute les lignes pour savoir où on se trouve
     options.merge!(first_line: 0) unless options.key?(:first_line)
     options.merge!(last_line: CWindow.hauteur_texte) unless options.key?(:last_line)
-    self.first_line = options[:first_line]
-    self.last_line  = options[:last_line]
-    CWindow.log("Affichage de l'aide (ligne #{first_line} à #{last_line}).")
-    CWindow.textWind.clear
-    CWindow.textWind.write(aide_lines[first_line..last_line].join(RC), CWindow::WHITE_ON_BLACK)
-    interact_with_user
-  end #/ show
+    return options
+  end #/ optionize
 
   def aide_lines
     @aide_lines ||= if destinataire == :user
