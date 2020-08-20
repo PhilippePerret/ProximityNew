@@ -9,6 +9,7 @@
 # de Q à M (de 0 à 9)
 # Cette fonctionnalité peut se désactiver dans les préférences de l'application
 COMMANDS_TO_MODE = {
+  'show ' => {mode: :chiffres_simples},
   'del '  => {mode: :chiffres_simples},
   'ign '  => {mode: :chiffres_simples},
   'ins '  => {mode: :chiffres_simples},
@@ -17,9 +18,17 @@ COMMANDS_TO_MODE = {
   'dep '  => {mode: :chiffres_simples},
   'mov '  => {mode: :chiffres_simples},
   'rem '  => {mode: :chiffres_simples},
-  'show ' => {mode: :chiffres_simples},
   'sup '  => {mode: :chiffres_simples},
-  'try (del|ins|rep|mov|rem|sup) ' => {mode: :chiffres_simples},
+  'try del '  => {mode: :chiffres_simples},
+  'try ign '  => {mode: :chiffres_simples},
+  'try ins '  => {mode: :chiffres_simples},
+  'try inj '  => {mode: :chiffres_simples},
+  'try rep '  => {mode: :chiffres_simples},
+  'try dep '  => {mode: :chiffres_simples},
+  'try mov '  => {mode: :chiffres_simples},
+  'try rem '  => {mode: :chiffres_simples},
+  'try sup '  => {mode: :chiffres_simples},
+
 }
 
 MODES_CLAVIER = {
@@ -53,13 +62,16 @@ def interact_with_user
   reset_mode_clavier
   while true
     # On attend sur la touche de l'utilisateur
-    unless @mode_clavier.nil?
+    if @mode_clavier
+      # Si on est en mode clavier, il faut voir si cette touche n'inaugure
+      # pas la fin de ce mode.
       if @mode_clavier[:fin] && command.match?(@mode_clavier[:fin])
         reset_mode_clavier
       end
     end
     s = curse.getch
-    unless @mode_clavier.nil?
+    if @mode_clavier
+      # En mode clavier, il faut réinterpréter la touche.
       s = @mode_clavier[s]
       case s
       when NilClass
@@ -128,11 +140,16 @@ def interact_with_user
       end
       wind.write(s.to_s)
     end
-    # Faut-il passer dans un mode clavier particulier ?
+
+    # MODE CLAVIER SPÉCIAL ?
+    # ----------------------
+    # Faut-il passer dans un mode clavier particulier ? On le sait si
+    # la commande actuelle matche un des départs possibles.
     if start_command && COMMANDS_TO_MODE[command]
       @mode_clavier = MODES_CLAVIER[COMMANDS_TO_MODE[command][:mode]]
       CWindow.init_status_and_cursor(mode_clavier: @mode_clavier[:dim])
     end
+
   end #/ tanq que rien ne sort
 end #/ interact_with_user
 

@@ -13,7 +13,7 @@
   On peut trouver les 256 couleurs disponibles (pour former les paires avec
   init_pair) à l'adresse : https://jonasjacek.github.io/colors/
   Par exemple, un vrai blanc sur noir :
-    Curses.init_pair(1, 0, 15)
+    Curses.init_pair(1, 0, 255)
 
 =end
 require 'curses'
