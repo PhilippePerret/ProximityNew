@@ -292,7 +292,7 @@ class << self
         erreur("Je ne sais pas comment ajouter un/e #{what}")
       end
 
-    when 'help', 'aide'
+    when 'help', 'aide', 'h'
       # Affichage de l'aide
       # On envoie la commande car si le deuxième mot est "dev" ou "developper"
       # on va afficher l'aide pour ça. Sinon, ça peut aussi être l'aide

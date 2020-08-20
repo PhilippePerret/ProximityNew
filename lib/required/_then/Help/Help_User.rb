@@ -11,11 +11,6 @@ AIDE_USER_STRING = <<-EOT
 'q'[ENTER] pour quitter et revenir au texte. Les flèches ⇅ pour monter
 et descendre dans l'aide.
 
-Pour ouvrir un fichier (fichier texte ou projet scrivener), utiliser la
-commande :
-
-    :open /path/to/the/file.txt
-
 Pour forcer le recalcul complet du texte (donc en perdant toutes les
 modifications qui ont été faites jusque-là), utiliser :
 
@@ -161,6 +156,6 @@ MODIFCATION DU TEXTE
   ---------------------
   Pour obtenir l'aide au développement de l'application, il faut ajouter
   'dev' ou 'developper' à la commande d'aide :  ':help dev'
-  
+
 EOT
 end #/Help

@@ -212,8 +212,10 @@ class << self
   def wait_for_user(params = nil)
     params ||= {}
     params[:window] ||= @uiWind
-    logWind.clear
-    logWind.write(params[:message])
+    if params[:message]
+      logWind.clear
+      logWind.write(params[:message])
+    end
     uiWind.clear
     uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
     choix = nil
@@ -226,7 +228,9 @@ class << self
         choix = nil
         break
       elsif params[:keys]
-        uiWind.write("Il faut choisir une lettre parmi : #{params[:keys].inspect}".freeze)
+        uiWind.clear
+        # Si 258 => flèche bas, 259 => flèche haut
+        uiWind.write("Il faut choisir une lettre parmi : #{params[:keys].join(VGE)}.".freeze)
       else
         choix ||= ''
         choix << s.to_s
@@ -234,7 +238,7 @@ class << self
         uiWind.write(choix)
       end
     end
-    logWind.clear
+    # logWind.clear
     uiWind.curse.setpos(uiWind.curse.cury, uiWind.curse.curx)
     return choix
   end #/ wait_for_user

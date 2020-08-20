@@ -52,7 +52,7 @@ end #/ is_first_id_page?
 # Page courante (instance {ProxPage})
 def current_page ; page(current_numero_page) end
 def current_page=(v)
-  self.current_numero_page = v.numero
+  self.current_numero_page = v&.numero || 1
   # log("Numéro page courante : #{current_numero_page.inspect}")
   if current_page.nil?
     raise("Le numéro #{current_numero_page} ne correspond à aucun page !")
