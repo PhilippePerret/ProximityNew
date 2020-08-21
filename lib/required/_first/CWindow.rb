@@ -39,6 +39,7 @@ BLUE_COLOR    = 112
 GREEN_COLOR   = 113
 RETURN_COLOR  = 114
 RED_ON_BLACK_COLOR = 120 # En cas d'erreur
+YELLOW_ON_DARK  = 140 # pour le code dans les fichiers d'aide
 
 CWindow::BnW_BLACK = 0   # pur noir
 CWindow::BnW_WHITE = 255  # pur blanc (plus blanc que 15)
@@ -78,6 +79,7 @@ class << self
     Curses.init_pair(GREEN_COLOR,   112,   CWindow::BnW_WHITE) # 70, 76
     # Messages
     Curses.init_pair(RED_ON_BLACK_COLOR, 196, CWindow::BnW_BLACK)
+    Curses.init_pair(YELLOW_ON_DARK, 11, 28)
 
   end #/ init_curses
 
