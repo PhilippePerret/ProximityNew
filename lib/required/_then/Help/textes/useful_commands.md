@@ -1,42 +1,45 @@
-## Commandes utiles
+## Commandes fréquentes
 
 Cette section présente les commandes les plus utiles et les plus uti-
 lisées avec l'application Proximity.
 
-Ci-dessous, tous les <index> peuvent être indiqués de trois manières
-différentes :
+### Lancer l'application
 
-  * index simple    p.e. '12'
-  * range d'index   p.e. '12-23' (i.e. de 12 à 23)
-  * liste d'index   p.e. '12,14,23' (sans espaces)
+Pour lancer l'application dans le Terminal, avec un fichier particu-
+lier :
 
-Les index se voient toujours par rapport à la page affichée.
+    `> [new]prox /path/to/the/file.scriv`
 
-`:rep <index> <texte>`
-`:= <index> <texte>`
+Si l'on veut reprendre le même texte que précédemment, il suffit de
+jouer :
 
-    Permet de REMPLACER le texte à <index> par le texte
-    <texte>.
+    `> [new]prox`
 
-`:ins <index> <texte>`
-`:+ <index> <texte>`
+### Quitter l'application
 
-    Permet d'INSÉRER le texte <texte> à l'index <index>. Ici, <index>
-    est forcément un nombre simple.
+Pour quitter l'application Proximity, il suffit de jouer : `:q[uit]`.
 
-`:rem <index>`
-`:- <index> <texte>`
-`:del <index>`
-`:sup <index>`
+### Ouvrir un texte
 
-    Permet de SUPPRIMER le texte défini par <index>.
+On ouvre un texte quelconque à l'aide de `:open /path/to/texte.txt`.
+Si ce texte est déjà passé par Proximity, on utilisera son ancienne
+analyse et ses modifications.
 
-Note : toutes ces opérations sont enregistrées dans la table `operations` et permettent d'être retrouvées.
+### Reconstruire un texte
 
-`:ign <index>`
+Après travail sur le texte on peut demander sa reconstruction à
+l'aide de la commnande : `:rebuild`. Si c'est un projet Scrivener,
+il sera entièrement reconstruit fichier par fichier.
 
-    Permet d'IGNORER le mot d'index <index>. Ignorer un mot signifie
-    qu'il ne sera pas considéré lors des analyses de proximité.
-    Noter que cela ne concerne QUE le mot d'index spécifié et aucun
-    des autres mots similaires. Pour supprimer tous les mots simi-
-    laires, il faut rentrer le mot dans la liste des mots à retirer.
+### Obtenir l'aide
+
+Pour afficher cette aide : `:h[elp]`.
+
+Pour afficher un fichier d'aide particulier :
+`:h[elp] <portion nom>`. La recherche de <portion nom> se fera aussi
+bien sur le nom du fichier que sur le titre.
+
+### Modification du texte
+
+Pour voir l'aide sur la modification du texte, rejoindre le sujet
+“Modification du texte” ou taper la commande `:h modify`.

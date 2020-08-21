@@ -17,21 +17,35 @@ TDM = [
   {titre:"Introduction", file: 'introduction'},
   {titre:'Commandes fréquentes', file:'useful_commands'},
   {titre:'Ouverture d’un texte', file:'open_text'},
+  {titre:'Navigation dans le texte', file:'navigation'},
   {titre:'Parsing', file:'parsing_text'},
   {titre:'Modification du texte', file:'modify_text'},
   {titre:'Reconstruction du texte', file:'rebuilding_text'},
+  {titre:'Définition des constantes de proximités', file:'define_constantes'},
   {titre:'Listes spéciales', file:'special_lists'},
-  {titre:'Autres commandes', file:'other_commands'},
+  {titre:'Annexe : autres commandes', file:'other_commands'},
+  {titre:'Annexe : les index', file:'index'},
+  {titre:'Annexe : les modes de clavier', file:'modes_claviers'},
   {titre:'Fin de l’aide', file:'fin'},
 ]
 
 TDM_DEVELOPPER = [
-  {titre:'Introduction au développement', file:'xdev/introduction'}
+  {titre:'Introduction au développement', file:'xdev/introduction'},
+  {titre:'Principes généraux', file:'xdev/principes'},
+  {titre:'Les Classes d’éléments', file:'xdev/classes'},
+  {titre:'Utilisation de la base de données', file:'xdev/database'},
+  {titre:'Modification d’un texte', file:'xdev/modify_text'},
+  {titre:'Les Canons', file:'xdev/canons'},
+  {titre:'Les Proximités', file:'xdev/proximites'},
+  {titre:'Messagerie', file:'xdev/messages'},
+  {titre:'Projets Scrivener', file:'xdev/scrivener'},
+  {titre:'Annexe : réflexions', file:'xdev/reflexions'},
 ]
 
 class << self
-  # Destinataire de l'aide, l'utilisateur ou le développeur
-  attr_accessor :destinataire
+  # Pour savoir quelle aide utilisée, celle pour l'utilisateur ou celle
+  # pour le développeur.
+  attr_reader :tdm
 
   # L'index du fichier d'aide courant, dans TDM ou TDM_DEVELOPPER
   attr_accessor :aide_index
@@ -47,16 +61,22 @@ class << self
   # en entier. En entier, elle est simplement reconstituée à partir des
   # fichiers du dossier 'textes'
   def show(suite_cmd)
+    define_type_aide(suite_cmd) # utilisateur ou développeur
     define_current_aide(suite_cmd.shift)
-    options = optionize(suite_cmd)
-    dispatch_options(options)
     current.output
     interact
     on_quit
   end #/ show
 
+  def define_type_aide(suite_cmd)
+    for_developper = ['--dev', '-d'].include?(suite_cmd[0])
+    @tdm = for_developper ? TDM_DEVELOPPER : TDM
+    suite_cmd.pop if for_developper
+  end #/ define_type_aide
+
   # Méthode qui définit, au début de l'aide, le fichier d'aide à utiliser et
-  # son index.
+  # son index. Quand on parle de fichier d'aide ici, on parle de fichier dans
+  # le dossier Help/textes (ou Help/textes/xdev pour l'aide au développement)
   # +which+ est le premier argument donné à la commande :help. Il peut être
   # nil, dans ce cas, on affiche le premier fichier d'aide. Sinon, on cherche
   # à quel fichier il peut appartenir et on en déduit l'index et le fichier
@@ -67,7 +87,7 @@ class << self
   def define_current_aide(which)
     @aide_index = nil
     if not(which.nil?)
-      TDM.each do |daide, idx_aide|
+      tdm.each do |daide, idx_aide|
         if daide[:file].match?(which) || daide[:titre].match?(which)
           @aide_index = idx_aide
           break
@@ -80,7 +100,7 @@ class << self
     @aide_index = 0 if @aide_index.nil?
 
     # Définition du fichier d'aide courant
-    @current = new(TDM[@aide_index])
+    @current = new(tdm[@aide_index])
   end #/ define_current_aide
 
   # Pour intéragir avec l'user
@@ -109,7 +129,8 @@ class << self
 
   # Pour afficher le fichier d'aide suivant
   def next_aide
-    next_data = TDM[aide_index + 1]
+    next_data = tdm[aide_index + 1]
+    log("next_data: #{next_data.inspect}",true)
     if not(next_data.nil?)
       @current = new(next_data)
       @current.output
@@ -121,7 +142,7 @@ class << self
 
   def prev_aide
     if aide_index > 0
-      @current = new(TDM[@aide_index -= 1])
+      @current = new(tdm[@aide_index -= 1])
       @current.output
     else
       log("Début de l'aide. Aucun texte avant.".freeze, true)
@@ -139,22 +160,6 @@ class << self
   def max_lines_count
     @max_lines_count ||= Curses.lines - 15
   end #/ max_lines_count
-
-  # On dispatche les options dans les variables de classe de l'aide
-  def dispatch_options(options)
-    self.destinataire = options[:destinataire]
-  end #/ dispatch_options
-
-  # On définit les options à utiliser pour l'appel de l'aide courant
-  def optionize(suite_cmd)
-    options = {destinataire: :user}
-    first_arg = suite_cmd.shift
-    case first_arg
-    when 'dev', 'developper', 'development', 'developpement'
-      options[:destinataire] = :developper
-    end
-    return options
-  end #/ optionize
 
   def on_quit
     log("Retour au texte.", true)
