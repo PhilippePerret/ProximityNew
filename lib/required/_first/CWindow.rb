@@ -79,7 +79,7 @@ class << self
     Curses.init_pair(GREEN_COLOR,   112,   CWindow::BnW_WHITE) # 70, 76
     # Messages
     Curses.init_pair(RED_ON_BLACK_COLOR, 196, CWindow::BnW_BLACK)
-    Curses.init_pair(YELLOW_ON_DARK, 11, 28)
+    Curses.init_pair(YELLOW_ON_DARK, 20, 253)
 
   end #/ init_curses
 

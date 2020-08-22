@@ -223,21 +223,27 @@ def show_lines(first_line)
   CWindow.textWind.clear
   2.times { CWindow.textWind.write(classe.blank_line + RC, CWindow::TEXT_COLOR) }
   (first_line..last_line).each do |iline|
-    @formated_lines[iline].each do |aline|
-      aline.each do |data_segment|
-        CWindow.textWind.write(*data_segment)
-      end
+    CWindow.textWind.write(LEFT_MARGIN, CWindow::TEXT_COLOR)
+    (@formated_lines[iline]||[[SPACE*LINE_WIDTH,CWindow::TEXT_COLOR]]).each do |data_segment|
+      log("data_segment: #{data_segment.inspect}")
+      CWindow.textWind.write(*data_segment)
     end
+    CWindow.textWind.write(RIGHT_MARGIN + RC, CWindow::TEXT_COLOR)
   end
   2.times { CWindow.textWind.write(classe.blank_line + RC, CWindow::TEXT_COLOR) }
   CWindow.log(INVITE % {first:first_line, last:last_line})
 end #/ show_lines
 
 # Formatage des lignes du fichier d'aide courant
+# Dans ce fichier, les "lignes" ne sont pas à proprement parler des "lignes". Elles
+# peuvent dépasser la longueur d'une ligne écran, il faut donc les couper en vraies
+# lignes pour qu'elles tiennent dans l'interface courant.
 def formate_lines
+  # La liste dans laquelle chaque élément sera une ligne, mais sous forme de liste
+  # de segments
   @formated_lines = []
   lines.each do |line|
-    @formated_lines = segments_line_traited(line, @formated_lines)
+    @formated_lines += segments_line_traited(line)
   end
   @lines_has_been_formated = true
 end #/ formate_lines
@@ -248,80 +254,115 @@ end #/ formate_lines
 # style ou sa couleur.
 # @Params
 #   +flines+ {Array} Les lignes actuelles de l'aide
-def segments_line_traited(rawline, flines)
-  segments = []
+def segments_line_traited(rawline)
   # On commence par s'assurer que les lignes ne soient pas trop longues
-  if rawline.length > LINE_WIDTH
-    rawline = rawline.strip
-    segstr = ""
-    seglen = 0
-    rawline.split(SPACE).each do |motstr|
-      motstr += SPACE
-      motlen = motstr.length
-      if seglen + motlen > LINE_WIDTH
-        segments << segstr
-        segstr = ""
-        seglen = 0
+  # On découpe donc la ligne originale en segments qui correspondent à
+  # la longueur de ligne de l'interface (LINE_WIDTH). Cela va produire
+  # la liste raw_segments
+  raw_lines = String.tronconne(rawline, LINE_WIDTH)
+
+  # Dans raw_lines, il n'y a que des lignes brutes, sans indentation et
+  # sans retour charriot, sans couleur ni mise en forme. Chaque segment
+  # représente une ligne.
+  lines = []
+  raw_lines.each_with_index do |line, idx|
+    # La liste dans laquelle on va placer les segments de ligne. Un segment
+    # de ligne est aussi une liste, qui contient en premier élément le texte
+    # et en second la couleur et le style.
+    # Cette liste sera mise ensuite dans +lines+ qui sera retourné
+
+    if line.start_with?('~~~')
+      # C'est soit le début d'un bloc de code, soit la fin. Dans tous les
+      # cas, ce ne sera pas une ligne écrite.
+      if @block_code_on
+        # Si on se trouve dans un bloc de code, la marque '~~~' indique
+        # que nous en sortons. On ajoute juste une ligne vierge de pied
+        # de page pour que le code ne soit pas collé en bas du bloc.
+        lines << header_block_code
+        @block_code_on = false
+        next
+      else
+        # Si on ne se trouve pas dans un bloc de code, la marque '~~~' indique
+        # qu'on y entre et on ajoute juste une ligne d'entête pour que le code
+        # ne soit pas collé au-dessus.
+        lines << header_block_code
+        @block_code_on = true
+        next
       end
-      segstr << motstr
-      seglen += motlen
     end
-    # On ajoute la fin
-    segments << segstr unless segstr.empty?
-  else
-    segments << rawline
-  end
-  # Ici, dans new_segments, il n'y a que des segments sans indentation et
-  # sans retour charriot.
-  new_segments = []
-  segments.each_with_index do |segment, idx|
-    if segment.start_with?('#')
+
+    # Liste dans laquelle on place tous ls segments de ligne
+    line_segments = []
+
+    if @block_code_on
+      # On se trouve dans un bloc de code, chaque ligne doit être traitée
+      # comme du code.
+      line = (SPACE * 2 + line).freeze
+      line_segments << [SPACE*2, CWindow::TEXT_COLOR]
+      line_segments << [line.ljust(LINE_WIDTH - 4), CWindow::YELLOW_ON_DARK]
+      line_segments << [SPACE*2, CWindow::TEXT_COLOR]
+    elsif line.start_with?('#')
       # Si c'est un titre
-      segment = segment.strip
+      line = line.strip
       level = nil
-      segment.sub!(/^(#+) /){
+      line.sub!(/^(#+) /){
         level = $1.length
-        EMPTY_STRING
+        EMPTY_STRING # on efface le marqueur de titre
       }
+      titre_len = line.length
       sign = level < 2 ? '='.freeze : TIRET
-      soulignement = [LEFT_MARGIN + (sign * segment.length).ljust(LINE_WIDTH) + RIGHT_MARGIN + RC, CWindow::ORANGE_COLOR|Curses::A_BOLD]
       # On ajoute autant d'espace après que de dièses retirés
-      segment = segment + SPACE * (level + 1)
-      flines << [[LEFT_MARGIN + segment.upcase.ljust(LINE_WIDTH) + RIGHT_MARGIN + RC, CWindow::ORANGE_COLOR|Curses::A_BOLD]]
-      flines << [soulignement]
-    elsif segment.match?(/`(.+?)`/)
-      segment = segment.strip
-      segs = segment.split(/`(.+?)`/)
+      line = line + SPACE * (level + 1)
+      # Il faut mettre le titre dans +lines+ car c'est une nouvelle ligne,
+      # tandis que son soulignement sera mis dans la ligne courante
+      lines << [[line.upcase.ljust(LINE_WIDTH), CWindow::ORANGE_COLOR|Curses::A_BOLD]]
+      line_segments << [(sign * titre_len).ljust(LINE_WIDTH), CWindow::ORANGE_COLOR|Curses::A_BOLD]
+    elsif line.match?(/`(.+?)`/)
+      # Quand le texte possède du code (illustration)
+      line = line.strip
+      segs = line.split(/`(.+?)`/)
       line_len = 0
-      new_segments << [LEFT_MARGIN, CWindow::TEXT_COLOR]
       if segs.first.empty?
         # Une ligne qui commence par du code
         segs.shift
-        code = segs.shift
-        new_segments << [code, CWindow::YELLOW_ON_DARK]
+        code = (SPACE+segs.shift+SPACE).freeze
+        line_segments << [code, CWindow::YELLOW_ON_DARK]
         line_len += code.length
       end
       segs.reverse!
       while seg = segs.pop
-        new_segments << [seg, CWindow::TEXT_COLOR] # du code
+        line_segments << [seg, CWindow::TEXT_COLOR] # du code
         line_len += seg.length
         code = segs.pop
         unless code.nil?
+          code = (SPACE+code+SPACE).freeze
           line_len += code.length
-          new_segments << [code, CWindow::YELLOW_ON_DARK]
+          line_segments << [code, CWindow::YELLOW_ON_DARK]
         end
       end
       if line_len < LINE_WIDTH
-        new_segments << [SPACE * (LINE_WIDTH - line_len), CWindow::TEXT_COLOR]
+        # On doit combler la ligne jusqu'au bout
+        line_segments << [SPACE * (LINE_WIDTH - line_len), CWindow::TEXT_COLOR]
       end
-      new_segments << [RIGHT_MARGIN + RC, CWindow::TEXT_COLOR]
-      flines << new_segments
     else
-      flines << [[LEFT_MARGIN + segment.ljust(LINE_WIDTH) + RIGHT_MARGIN + RC, CWindow::TEXT_COLOR]]
+      line_segments << [line.ljust(LINE_WIDTH), CWindow::TEXT_COLOR]
     end
-  end
-  return flines
+    # On ajoute cette ligne (ses segments) à la liste complète des segements
+    lines << line_segments
+  end # Boucle sur chaque segment-line brut (raw_lines)
+  # On retourne la liste des lignes
+  return lines
 end #/ segments_line_traited
+
+# Ligne d'entête et de pied de page pour un bloc de code
+def header_block_code
+  @header_block_code ||= begin
+    a = []
+    a << [SPACE*2, CWindow::TEXT_COLOR]
+    a << ["#{SPACE}".ljust(LINE_WIDTH - 4), CWindow::YELLOW_ON_DARK]
+    a << [SPACE*2, CWindow::TEXT_COLOR]
+  end
+end
 
 # Toutes les lignes du texte à afficher. Maintenant, elles peuvent être
 # plus longues que l'affichage puisqu'elles seront découpées.
