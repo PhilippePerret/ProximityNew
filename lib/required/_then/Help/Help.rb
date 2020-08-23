@@ -31,6 +31,7 @@ TDM = [
 
 TDM_DEVELOPPER = [
   {titre:'Introduction au développement', file:'xdev/introduction'},
+  {titre:'Modules généraux', file:'xdev/main_modules'},
   {titre:'Principes généraux', file:'xdev/principes'},
   {titre:'Les Classes d’éléments', file:'xdev/classes'},
   {titre:'Utilisation de la base de données', file:'xdev/database'},
@@ -40,6 +41,7 @@ TDM_DEVELOPPER = [
   {titre:'Messagerie', file:'xdev/messages'},
   {titre:'Projets Scrivener', file:'xdev/scrivener'},
   {titre:'Annexe : réflexions', file:'xdev/reflexions'},
+  {titre:'Annexe : aide', file:'xdev/help'},
 ]
 
 class << self
