@@ -1,5 +1,6 @@
 # encoding: UTF-8
 TIRET             = '-'.freeze unless defined?(TIRET)
+BARV              = '|'.freeze unless defined?(BARV)
 TIRET_DIALOGUE    = '–'.freeze unless defined?(TIRET_DIALOGUE)
 UNDERSCORE        = '_'.freeze unless defined?(UNDERSCORE)
 AND               = ' AND '.freeze unless defined?(AND)
@@ -47,6 +48,7 @@ class String
   def integer?
     self.gsub(/[0-9]/,'').empty?
   end #/ integer?
+  alias :numeric? :integer?
 
 
   def decamelize

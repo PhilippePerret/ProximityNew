@@ -150,9 +150,35 @@ def stm_titem_by_index
   end
 end #/ stm_titem_by_index
 
+# Retourne le nombre d'occurences du mot 'mot' dans le texte.
+def occurences_of_mot(mot)
+  db_result = stm_occurences_of_mot.execute(mot)
+  db_result.next.first
+end #/ occurences_of_mot
+def stm_occurences_of_mot
+  @stm_occurences_of_mot ||= begin
+    cmd = "SELECT COUNT(Content) FROM text_items WHERE Content = ?".freeze
+    stm = db.prepare(cmd); all_statements << stm; stm
+  end
+end #/ stm_occurences_of_mot
+
+# Retourne le nombre d'occurences du canon 'can' dans le texte
+def occurences_of_canon(can)
+  db_result = stm_occurences_of_canon.execute(can)
+  db_result.next.first
+end #/ occurences_of_canon
+def stm_occurences_of_canon
+  @stm_occurences_of_canon ||= begin
+    cmd = "SELECT COUNT(Canon) FROM text_items WHERE Canon = ?".freeze
+    stm = db.prepare(cmd); all_statements << stm; stm
+  end
+end #/ stm_occurences_of_canon
+
+
 # Renvoie les données du canon du mot +mot+, c'est-à-dire une table
-# contenant ['Mot', 'Type', 'Canon', 'Canon_alt']
+# contenant ['Mot', 'Type', 'Canon', 'Canon_alt', 'Checked']
 #
+# ATTENTION : cette méthode fonctionne avec Runner.db, PAS avec texte.db
 def get_canon(mot)
   db.results_as_hash = true
   res = stm_get_canon.execute(mot.downcase)
@@ -170,6 +196,7 @@ def stm_get_canon
 end #/ stm_get_canon
 
 # Pour ajouter un mot-canon à la table lemmas
+# ATTENTION : cette méthode fonctionne avec Runner.db, PAS avec texte.db
 def add_mot_and_canon(mot, type, canon)
   canon, canon_alt = canon.split(BARREV)
   stm_set_lemma.execute(mot, type, canon)
@@ -181,6 +208,7 @@ end #/ stm_lemma
 # Au cours du parsing, on a besoin de savoir si le mot +mot+ possède déjà
 # la définition de son canon dans la base de données (de l'application).
 # Cette méthode retourne true si c'est le cas, false dans le cas contraire
+# ATTENTION : cette méthode fonctionne avec Runner.db, PAS avec texte.db
 def canon_exists_for?(mot)
   res = stm_for_canon_existence.execute(mot)
   res.next != nil

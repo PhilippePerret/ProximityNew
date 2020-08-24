@@ -235,6 +235,11 @@ class << self
       Runner.iextrait.replace(content:texte, at:index_ref, cancellor:@operation_cancellor)
       Runner.itexte.cancellor.add_and_save(@operation_cancellor)
 
+    when 'occ', 'occurence'
+      mot_ref = cmd.join(SPACE)
+      mot_ref = Runner.iextrait.extrait_titems[mot_ref.to_i] if mot_ref.numeric?
+      Runner.itexte.show_occurences_of(mot_ref)
+
       # *** Méthodes d'affichage ***
 
     when 'show'

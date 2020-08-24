@@ -40,6 +40,20 @@ class << self
     lemma_result
   end #/ parse
 
+  # Analyse le texte +str+ et retourne en fonction des options soit le
+  # texte brut (MOT\tTYPE\tCANON), soit une liste ["mot","type","canon"] soit
+  # une instance de text-item.
+  #
+  # Noter que pour un seul mot, on renverra quand même une liste d'éléments.
+  # Donc, par exemple, Lemma.parse_str("coucou", format: :array) retournera :
+  #   [ ["coucou", "NOM", "coucou"] ]
+  # 
+  # @Params
+  #   +str+     {String}  Le texte à analyser, qui contient souvent plusieurs
+  #                       mots.
+  #   +options+ {Hash}    Table des options
+  #                       :format     Entre :raw, :array et :instance
+  #
   def parse_str(str, options = nil)
     options ||= {}
     options[:system] ||= true # pour utiliser Open3.popen3
