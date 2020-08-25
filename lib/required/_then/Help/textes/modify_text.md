@@ -60,3 +60,9 @@ Note : toutes ces opérations sont enregistrées dans la table
     Réduction de “injecter”, cette commande permet de “désignorer” un
     mot qui aurait été exclu de l'analyse avec la commande précédente
     ou qui le serait pour une autre raison comme sa brièveté.
+
+`:occ[urences] <index|mot>`
+
+    Permet d'obtenir le nombre d'occurences du mot <mot> ou du mot se
+    situant à l'index <index> dans le texte courant. La commande af-
+    fiche l'occurence du mot exact ainsi que l'occurence du canon.

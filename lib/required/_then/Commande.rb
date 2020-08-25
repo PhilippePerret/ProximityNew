@@ -215,20 +215,20 @@ class << self
       Runner.iextrait.unignore(at: index_ref, cancellor: @operation_cancellor)
       Runner.itexte.cancellor.add_and_save(@operation_cancellor)
 
-    when 'sup', 'del', 'rem'
+    when 'sup', 'del', 'rem', '-'
       index_ref = cmd.shift
       @operation_cancellor = OpeCancellor.new(cmd_init)
       Runner.iextrait.remove(at:index_ref, cancellor: @operation_cancellor)
       Runner.itexte.cancellor.add_and_save(@operation_cancellor)
 
-    when 'ins', 'insert'
+    when 'ins', 'insert', '+'
       index_ref = cmd.shift
       texte = cmd.join(SPACE)
       @operation_cancellor = OpeCancellor.new(cmd_init)
       Runner.iextrait.insert(content:texte, at:index_ref, cancellor:@operation_cancellor)
       Runner.itexte.cancellor.add_and_save(@operation_cancellor)
 
-    when 'rep', 'replace'
+    when 'rep', 'replace', '='
       index_ref = cmd.shift
       texte = cmd.join(SPACE)
       @operation_cancellor = OpeCancellor.new(cmd_init)
