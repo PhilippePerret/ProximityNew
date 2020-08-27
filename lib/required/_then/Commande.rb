@@ -1,6 +1,10 @@
 # encoding: UTF-8
 class Commande
 class << self
+  # Contient l'historique des messages
+  # Mis en public pour les tests
+  attr_reader :historique
+
   # Jouer la commande voulue
   def run(cmd)
     log("♻︎ Commande jouée : #{cmd.inspect}")
@@ -53,6 +57,8 @@ class << self
         else
           Runner.show_extrait(numero_page: Runner.iextrait.page.numero + 1)
         end
+      else
+        erreur("Je ne sais pas traiter le 'next' de '#{what}'.")
       end
 
     when 'prev'
