@@ -17,6 +17,16 @@ class << self
     @messages_log << msg
   end #/ log
 
+
+  # Les trois parties de l'interface
+  def logWind
+    @logWind ||= new(:log)
+  end #/ logWind
+
+  def textWind
+    @textWind ||= new(:text)
+  end #/ textWind
+
   # ---------------------------------------------------------------------
   #
   #   MÉTHODES FONCTIONNELLES
@@ -32,5 +42,33 @@ class << self
     (@messages_log || []).last
   end #/ last_log
 end # /<< self
+# ---------------------------------------------------------------------
+#
+#   INSTANCE
+#
+# ---------------------------------------------------------------------
 
+# ---------------------------------------------------------------------
+#
+#   MÉTHODES D'INSTANCE SIMULÉES
+#
+# ---------------------------------------------------------------------
+
+def initalize(type)
+  @type = type
+  @commandes = [] # pour les tests
+end #/ initalize
+
+def clear
+  @commandes << :clear
+end #/ clear
+
+
+
+# ---------------------------------------------------------------------
+#
+#   MÉTHODES FONCTIONNELLES
+#
+# ---------------------------------------------------------------------
+private
 end #/CWindow
